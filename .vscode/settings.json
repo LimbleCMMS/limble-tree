@@ -1,0 +1,57 @@
+{
+   "editor.formatOnSave": true,
+   "editor.tabSize": 3,
+   "editor.detectIndentation": false,
+   "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+   },
+   "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+   },
+   "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+   },
+   "[css]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+   },
+   "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+   },
+   "intelephense.environment.phpVersion": "7.3.18",
+   "typescript.tsdk": "node_modules\\typescript\\lib",
+   "cSpell.words": [
+      "phpscripts",
+      "angular",
+      "Angular",
+      "angular's",
+      "Angular's",
+      "angularjs",
+      "AngularJS",
+      "angularjs's",
+      "AngularJS's",
+      "limble",
+      "limblecmms",
+      "contenteditable",
+      "imonnit",
+      "monnit",
+      "cmms",
+      "recaptcha",
+      "datepicker",
+      "chartjs",
+      "tabindex",
+      "limble's",
+      "disableeditor",
+      "dismissable",
+      "youtube",
+      "powerpoint",
+      "rfdc",
+      "destructure",
+      "destructured",
+      "eslint's",
+      "grecaptcha"
+   ],
+   "eslint.options": {
+      "extensions": [".js", ".ts", ".html"]
+   },
+   "eslint.validate": ["javascript", "typescript", "html"]
+}

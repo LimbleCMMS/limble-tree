@@ -1,16 +1,16 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed } from "@angular/core/testing";
 
-import { LimbleTreeService } from './limble-tree.service';
+import { LimbleTreeService } from "./limble-tree.service";
 
-describe('LimbleTreeService', () => {
-  let service: LimbleTreeService;
+describe("LimbleTreeService", () => {
+   let service: LimbleTreeService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(LimbleTreeService);
-  });
+   beforeEach(() => {
+      TestBed.configureTestingModule({});
+      service = TestBed.inject(LimbleTreeService);
+   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+   it("should be created", () => {
+      expect(service).toBeTruthy();
+   });
 });

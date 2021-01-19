@@ -25,7 +25,7 @@ module.exports = function (config) {
          suppressAll: true // removes the duplicated traces
       },
       coverageReporter: {
-         dir: require("path").join(__dirname, "../../coverage/limble-tree"),
+         dir: require("path").join(__dirname, "../../coverage/sandbox"),
          subdir: ".",
          reporters: [{ type: "html" }, { type: "text-summary" }]
       },

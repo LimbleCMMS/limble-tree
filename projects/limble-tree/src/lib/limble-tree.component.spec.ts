@@ -1,25 +1,24 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { LimbleTreeComponent } from './limble-tree.component';
+import { LimbleTreeComponent } from "./limble-tree.component";
 
-describe('LimbleTreeComponent', () => {
-  let component: LimbleTreeComponent;
-  let fixture: ComponentFixture<LimbleTreeComponent>;
+describe("LimbleTreeComponent", () => {
+   let component: LimbleTreeComponent;
+   let fixture: ComponentFixture<LimbleTreeComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ LimbleTreeComponent ]
-    })
-    .compileComponents();
-  });
+   beforeEach(async () => {
+      await TestBed.configureTestingModule({
+         declarations: [LimbleTreeComponent]
+      }).compileComponents();
+   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LimbleTreeComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+   beforeEach(() => {
+      fixture = TestBed.createComponent(LimbleTreeComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+   it("should create", () => {
+      expect(component).toBeTruthy();
+   });
 });
