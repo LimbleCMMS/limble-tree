@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { NodeInserterService } from "./nodeInserter.service";
+import { ComponentCreatorService } from "./componentCreator.service";
 import { DropZoneComponent } from "./drop-zone/drop-zone.component";
 import { LimbleTreeComponent } from "./limble-tree.component";
 import { LimbleTreeService } from "./limble-tree.service";
@@ -14,6 +14,6 @@ import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.com
    ],
    imports: [CommonModule],
    exports: [LimbleTreeComponent],
-   providers: [NodeInserterService, LimbleTreeService]
+   providers: [ComponentCreatorService, LimbleTreeService]
 })
 export class LimbleTreeModule {}

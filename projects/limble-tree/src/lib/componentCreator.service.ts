@@ -6,7 +6,7 @@ import {
 } from "@angular/core";
 
 @Injectable()
-export class NodeInserterService {
+export class ComponentCreatorService {
    constructor(private readonly factoryResolver: ComponentFactoryResolver) {
       this.factoryResolver = factoryResolver;
    }

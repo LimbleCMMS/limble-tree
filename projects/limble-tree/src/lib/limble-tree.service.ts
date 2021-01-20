@@ -1,6 +1,7 @@
 import { Injectable, Type, ViewContainerRef } from "@angular/core";
 import { LimbleTreeComponent } from "./limble-tree.component";
-import { NodeInserterService } from "./nodeInserter.service";
+import { ComponentCreatorService } from "./componentCreator.service";
+import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
 
 export interface LimbleTreeNode {
    nodes?: Array<LimbleTreeNode>;
@@ -24,7 +25,9 @@ export interface ComponentObj {
 
 @Injectable()
 export class LimbleTreeService {
-   constructor(private readonly nodeInserterService: NodeInserterService) {}
+   constructor(
+      private readonly componentCreatorService: ComponentCreatorService
+   ) {}
 
    public render(host: ViewContainerRef, treeData: LimbleTreeData) {
       host.clear();
@@ -37,16 +40,14 @@ export class LimbleTreeService {
          if (component === undefined) {
             throw new Error("limbleTree requires a component to render");
          }
-         const componentRef = this.nodeInserterService.appendComponent<any>(
-            component.class,
+         const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
+            LimbleTreeNodeComponent,
             host
          );
          componentRef.instance.nodeData = node.data;
-         for (const binding in component.bindings) {
-            componentRef.instance[binding] = component.bindings[binding];
-         }
+         componentRef.instance.component = component;
          if (node.nodes && node.nodes.length > 0) {
-            const newBranch = this.nodeInserterService.appendComponent<LimbleTreeComponent>(
+            const newBranch = this.componentCreatorService.appendComponent<LimbleTreeComponent>(
                LimbleTreeComponent,
                host
             );

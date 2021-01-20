@@ -1,5 +1,7 @@
-<ng-container
-   [ngTemplateOutlet]="nodeTemplate"
-   [ngTemplateOutletContext]="{ $implicit: node }"
+<div
+   draggable="true"
+   (dragstart)="dragstartHandler($event)"
+   (dragend)="dragendHandler($event)"
 >
-</ng-container>
+   <ng-template #nodeHost> </ng-template>
+</div>
