@@ -5,6 +5,7 @@ import { LimbleTreeComponent } from "./limble-tree.component";
 import { LimbleTreeService } from "./limble-tree.service";
 import { CommonModule } from "@angular/common";
 import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
+import { TempService } from "./temp.service";
 
 @NgModule({
    declarations: [
@@ -14,6 +15,6 @@ import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.com
    ],
    imports: [CommonModule],
    exports: [LimbleTreeComponent],
-   providers: [ComponentCreatorService, LimbleTreeService]
+   providers: [ComponentCreatorService, LimbleTreeService, TempService]
 })
 export class LimbleTreeModule {}

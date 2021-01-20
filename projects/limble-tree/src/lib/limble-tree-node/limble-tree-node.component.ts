@@ -8,6 +8,7 @@ import {
 } from "@angular/core";
 import { ComponentCreatorService } from "../componentCreator.service";
 import { ComponentObj, LimbleTreeNode } from "../limble-tree.service";
+import { TempService } from "../temp.service";
 
 @Component({
    selector: "limble-tree-node",
@@ -23,7 +24,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
-      private readonly changeDetectorRef: ChangeDetectorRef
+      private readonly changeDetectorRef: ChangeDetectorRef,
+      private readonly tempService: TempService
    ) {}
 
    ngAfterViewInit() {
@@ -44,21 +46,19 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    public dragstartHandler(event: DragEvent): void {
       event.stopPropagation();
       console.log("drag started", event);
-      // this.enableDropZones = false;
-      // if (event.dataTransfer === null) {
-      //    return;
-      // }
-      // event.dataTransfer.dropEffect = "move";
-      // const draggedElement = event.target as HTMLElement;
-      // draggedElement.classList.add("dragging");
-      // this.tempService.set(draggedElement);
+      if (event.dataTransfer === null) {
+         return;
+      }
+      event.dataTransfer.dropEffect = "move";
+      const draggedElement = event.target as HTMLElement;
+      draggedElement.classList.add("dragging");
+      this.tempService.set(draggedElement);
    }
 
    public dragendHandler(event: DragEvent): void {
       event.stopPropagation();
       console.log("drag ended", event);
-      // const draggedElement = event.target as HTMLElement;
-      // draggedElement.classList.remove("dragging");
-      // this.enableDropZones = true;
+      const draggedElement = event.target as HTMLElement;
+      draggedElement.classList.remove("dragging");
    }
 }
