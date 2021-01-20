@@ -1,1 +1,5 @@
-<div>NODE</div>
+<ng-container
+   [ngTemplateOutlet]="nodeTemplate"
+   [ngTemplateOutletContext]="{ $implicit: node }"
+>
+</ng-container>

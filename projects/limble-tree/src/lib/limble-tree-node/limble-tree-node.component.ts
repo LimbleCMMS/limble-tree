@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, TemplateRef } from "@angular/core";
 import { LimbleTreeNode } from "../limble-tree.service";
 
 @Component({
@@ -8,4 +8,5 @@ import { LimbleTreeNode } from "../limble-tree.service";
 })
 export class LimbleTreeNodeComponent {
    @Input() node: LimbleTreeNode | undefined;
+   @Input() nodeTemplate: TemplateRef<unknown> | null = null;
 }

@@ -9,8 +9,9 @@ import { LimbleTreeData } from "projects/limble-tree/src/public-api";
 export class AppComponent {
    public limbleTreeData: LimbleTreeData = {
       nodes: [
-         { data: { value1: "this thing", value2: "other thing" } },
-         { data: { valueA: "this thing", valueB: "other thing" } }
+         { data: { value1: "this thing" } },
+         { data: { value1: "that thing" } },
+         { data: { value1: "these things" } }
       ]
    };
 }

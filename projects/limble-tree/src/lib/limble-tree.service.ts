@@ -10,7 +10,5 @@ export interface LimbleTreeData {
    options?: {};
 }
 
-@Injectable({
-   providedIn: "root"
-})
+@Injectable()
 export class LimbleTreeService {}
