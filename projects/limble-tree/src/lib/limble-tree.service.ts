@@ -27,6 +27,7 @@ export class LimbleTreeService {
    constructor(private readonly nodeInserterService: NodeInserterService) {}
 
    public render(host: ViewContainerRef, treeData: LimbleTreeData) {
+      host.clear();
       const offset = 45;
       for (const node of treeData.nodes) {
          let component = node.component;
@@ -44,19 +45,17 @@ export class LimbleTreeService {
          for (const binding in component.bindings) {
             componentRef.instance[binding] = component.bindings[binding];
          }
-         const newBranch = this.nodeInserterService.appendComponent<LimbleTreeComponent>(
-            LimbleTreeComponent,
-            host
-         );
-         newBranch.instance.treeData = {
-            nodes: node.nodes ?? [],
-            options: treeData.options
-         };
-         newBranch.instance.offset = offset;
+         if (node.nodes && node.nodes.length > 0) {
+            const newBranch = this.nodeInserterService.appendComponent<LimbleTreeComponent>(
+               LimbleTreeComponent,
+               host
+            );
+            newBranch.instance.treeData = {
+               nodes: node.nodes,
+               options: treeData.options
+            };
+            newBranch.instance.offset = offset;
+         }
       }
-   }
-
-   public clear(host: ViewContainerRef) {
-      host.clear();
    }
 }

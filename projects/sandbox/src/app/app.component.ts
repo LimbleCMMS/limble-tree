@@ -22,7 +22,10 @@ export class AppComponent implements DoCheck {
             nodes: [
                { data: { value1: "other thing" } },
                {
-                  data: { value1: "another thing" },
+                  data: {
+                     value1:
+                        "another thing. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+                  },
                   nodes: [
                      { data: { value1: "his thing" } },
                      { data: { value1: "her thing" } }
@@ -30,7 +33,12 @@ export class AppComponent implements DoCheck {
                }
             ]
          },
-         { data: { value1: "that thing" } },
+         {
+            data: {
+               value1:
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+            }
+         },
          {
             component: {
                class: TreeItemAltComponent,

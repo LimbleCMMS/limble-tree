@@ -50,7 +50,6 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
       if (this.treeData === undefined) {
          throw new Error(`limbleTree requires a data object`);
       }
-      this.limbleTreeService.clear(this.host);
       this.limbleTreeService.render(this.host, this.treeData);
    }
 }
