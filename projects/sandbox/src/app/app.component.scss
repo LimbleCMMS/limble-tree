@@ -4,4 +4,11 @@
    box-shadow: 0 0 4px 0 #888;
    padding: 20px;
    background-color: #fafafa;
+   display: flex;
+}
+
+.jsonOutput {
+   white-space: pre-wrap;
+   font-size: 12px;
+   font-family: "Courier New", Courier, monospace;
 }

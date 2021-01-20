@@ -1,4 +1,22 @@
 <h2>Limble Tree</h2>
 <div class="container">
-   <limble-tree [treeData]="limbleTreeData"></limble-tree>
+   <div style="min-width: 50%">
+      <h3>Rendered Tree</h3>
+      <limble-tree [treeData]="limbleTreeData" #tree></limble-tree>
+      <br />
+      <button (click)="addNode({ data: { value1: 'extra node' } })">
+         Add Node
+      </button>
+   </div>
+   <div style="min-width: 50%">
+      <h3>
+         Data Object
+         <span style="font-weight: normal">
+            (does not show component <em>class</em> property)
+         </span>
+      </h3>
+      <div class="jsonOutput">
+         {{ limbleTreeDataString }}
+      </div>
+   </div>
 </div>

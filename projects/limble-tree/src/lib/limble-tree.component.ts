@@ -3,6 +3,7 @@ import {
    ChangeDetectorRef,
    Component,
    Input,
+   OnChanges,
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
@@ -13,12 +14,12 @@ import { LimbleTreeData, LimbleTreeService } from "./limble-tree.service";
    templateUrl: "./limble-tree.component.html",
    styles: ["./limble-tree.component.scss"]
 })
-export class LimbleTreeComponent implements AfterViewInit {
-   @Input() treeData: LimbleTreeData | undefined;
+export class LimbleTreeComponent implements AfterViewInit, OnChanges {
+   @Input() public treeData: LimbleTreeData | undefined;
 
-   @Input() offset: number;
+   @Input() public offset: number;
 
-   @ViewChild("host", { read: ViewContainerRef }) host:
+   @ViewChild("host", { read: ViewContainerRef }) private host:
       | ViewContainerRef
       | undefined;
 
@@ -30,6 +31,17 @@ export class LimbleTreeComponent implements AfterViewInit {
    }
 
    ngAfterViewInit() {
+      this.reRender();
+      this.changeDetectorRef.detectChanges();
+   }
+
+   ngOnChanges() {
+      if (this.host !== undefined && this.treeData !== undefined) {
+         this.reRender();
+      }
+   }
+
+   public reRender() {
       if (this.host === undefined) {
          throw new Error(
             "Failed to render limble tree. Failure occurred at root."
@@ -38,7 +50,7 @@ export class LimbleTreeComponent implements AfterViewInit {
       if (this.treeData === undefined) {
          throw new Error(`limbleTree requires a data object`);
       }
+      this.limbleTreeService.clear(this.host);
       this.limbleTreeService.render(this.host, this.treeData);
-      this.changeDetectorRef.detectChanges();
    }
 }
