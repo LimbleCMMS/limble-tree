@@ -15,21 +15,29 @@ export class DropZoneComponent {
       console.log("dropped", event);
       const dropZone = event.target as HTMLElement;
       const draggedElement = this.tempService.get() as HTMLElement;
-      if (draggedElement.parentNode === null || draggedElement.parentElement === null) {
+      if (
+         draggedElement.parentNode === null ||
+         draggedElement.parentElement === null
+      ) {
          return;
       }
       draggedElement.parentElement.parentElement?.removeChild(
          draggedElement.parentElement
       );
-      const desiredPlacement = dropZone.closest("limble-tree-node")?.parentElement;
+      const desiredPlacement = dropZone.closest("limble-tree-node")
+         ?.parentElement;
       // console.log(desiredPlacement, draggedElement.parentElement);
       if (!desiredPlacement) {
          throw new Error("Failed to place dropped element");
       }
       if (this.relativeToNode === "above") {
-         dropZone.closest("limble-tree-node")?.before(draggedElement.parentElement);
+         dropZone
+            .closest("limble-tree-node")
+            ?.before(draggedElement.parentElement);
       } else if (this.relativeToNode === "below") {
-         dropZone.closest("limble-tree-node")?.after(draggedElement.parentElement);
+         dropZone
+            .closest("limble-tree-node")
+            ?.after(draggedElement.parentElement);
       } else {
          throw new Error("Failed to place dropped element");
       }
