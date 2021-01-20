@@ -1,8 +1,15 @@
-import { Component } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
+import { LimbleTreeData } from "./limble-tree.service";
 
 @Component({
    selector: "limble-tree",
-   template: ` <p>limble-tree works!</p> `,
-   styles: []
+   templateUrl: "./limble-tree.component.html",
+   styles: ["./limble-tree.component.scss"]
 })
-export class LimbleTreeComponent {}
+export class LimbleTreeComponent implements OnInit {
+   @Input() treeData: LimbleTreeData | undefined;
+
+   ngOnInit() {
+      console.log(this.treeData);
+   }
+}
