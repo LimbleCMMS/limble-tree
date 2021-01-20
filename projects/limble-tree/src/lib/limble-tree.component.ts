@@ -2,14 +2,11 @@ import {
    AfterViewInit,
    ChangeDetectorRef,
    Component,
-   ContentChild,
    Input,
-   TemplateRef,
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
-import { NodeInserterService } from "./nodeInserter.service";
-import { LimbleTreeData } from "./limble-tree.service";
+import { LimbleTreeData, LimbleTreeService } from "./limble-tree.service";
 
 @Component({
    selector: "limble-tree",
@@ -19,17 +16,18 @@ import { LimbleTreeData } from "./limble-tree.service";
 export class LimbleTreeComponent implements AfterViewInit {
    @Input() treeData: LimbleTreeData | undefined;
 
-   @ContentChild("limbleTreeNodeTemplate", { read: TemplateRef })
-   nodeTemplate: TemplateRef<unknown> | undefined;
+   @Input() offset: number;
 
    @ViewChild("host", { read: ViewContainerRef }) host:
       | ViewContainerRef
       | undefined;
 
    constructor(
-      private readonly componentCreatorService: NodeInserterService,
+      private readonly limbleTreeService: LimbleTreeService,
       private readonly changeDetectorRef: ChangeDetectorRef
-   ) {}
+   ) {
+      this.offset = 0;
+   }
 
    ngAfterViewInit() {
       if (this.host === undefined) {
@@ -40,18 +38,7 @@ export class LimbleTreeComponent implements AfterViewInit {
       if (this.treeData === undefined) {
          throw new Error(`limbleTree requires a data object`);
       }
-      if (this.nodeTemplate === undefined) {
-         throw new Error(
-            `limbleTree requires a template reference called #limbleTreeNodeTemplate`
-         );
-      }
-      for (const item of this.treeData.nodes) {
-         this.componentCreatorService.appendNode(
-            this.host,
-            item,
-            this.nodeTemplate
-         );
-      }
+      this.limbleTreeService.render(this.host, this.treeData);
       this.changeDetectorRef.detectChanges();
    }
 }

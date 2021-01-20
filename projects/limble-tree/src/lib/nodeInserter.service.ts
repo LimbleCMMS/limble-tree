@@ -1,11 +1,9 @@
 import {
    ComponentFactoryResolver,
    Injectable,
-   TemplateRef,
+   Type,
    ViewContainerRef
 } from "@angular/core";
-import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
-import { LimbleTreeNode } from "./limble-tree.service";
 
 @Injectable()
 export class NodeInserterService {
@@ -13,18 +11,16 @@ export class NodeInserterService {
       this.factoryResolver = factoryResolver;
    }
 
-   appendNode(
-      viewContainerRef: ViewContainerRef,
-      node: LimbleTreeNode,
-      nodeTemplate: TemplateRef<unknown>
+   appendComponent<T = unknown>(
+      component: Type<T>,
+      viewContainerRef: ViewContainerRef
    ) {
       const componentFactory = this.factoryResolver.resolveComponentFactory(
-         LimbleTreeNodeComponent
+         component
       );
-      const componentRef = viewContainerRef.createComponent<LimbleTreeNodeComponent>(
+      const componentRef = viewContainerRef.createComponent<T>(
          componentFactory
       );
-      componentRef.instance.node = node;
-      componentRef.instance.nodeTemplate = nodeTemplate;
+      return componentRef;
    }
 }
