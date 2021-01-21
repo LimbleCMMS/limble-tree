@@ -11,9 +11,9 @@ import { DropZoneService } from "../drop-zone/drop-zone.service";
 import { LimbleTreeComponent } from "../limble-tree.component";
 import {
    ComponentObj,
-   LimbleTreeData,
+   INDENT,
    LimbleTreeNode,
-   TreeLocationObj
+   LimbleTreeOptions
 } from "../limble-tree.service";
 import { TempService } from "../temp.service";
 
@@ -25,10 +25,9 @@ import { TempService } from "../temp.service";
 export class LimbleTreeNodeComponent implements AfterViewInit {
    @Input() component: ComponentObj | undefined;
    @Input() nodeData: LimbleTreeNode["data"];
-   @Input() location: TreeLocationObj | undefined;
+   @Input() coordinates: Array<number> | undefined;
    @Input() childNodes: Array<LimbleTreeNode> | undefined;
-   @Input() options: LimbleTreeData["options"];
-   @Input() offset: number = 0;
+   @Input() options: LimbleTreeOptions | undefined;
    @ViewChild("nodeHost", { read: ViewContainerRef }) private nodeHost:
       | ViewContainerRef
       | undefined;
@@ -55,26 +54,27 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
 
    public dragstartHandler(event: DragEvent): void {
       event.stopPropagation();
-      console.log("drag started", event);
       if (event.dataTransfer === null) {
          return;
       }
       event.dataTransfer.dropEffect = "move";
       const draggedElement = event.target as HTMLElement;
       draggedElement.classList.add("dragging");
-      this.tempService.set(this.location);
+      this.tempService.set(this.coordinates);
    }
 
    public dragendHandler(event: DragEvent): void {
       event.stopPropagation();
-      console.log("drag ended", event);
       const draggedElement = event.target as HTMLElement;
       draggedElement.classList.remove("dragging");
       this.dropZoneService.removeDropZone();
    }
 
    public dragoverHandler(event: DragEvent) {
-      if (this.tempService.get() === undefined || this.location === undefined) {
+      if (
+         this.tempService.get() === undefined ||
+         this.coordinates === undefined
+      ) {
          return;
       }
       event.stopPropagation();
@@ -87,9 +87,11 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dropZoneService.getCurrentDropZoneContainer() !==
             this.dropZoneBelow
       ) {
+         const dropCoordinates = [...this.coordinates];
+         dropCoordinates[dropCoordinates.length - 1]++;
          this.dropZoneService.showDropZone(
             this.dropZoneBelow,
-            this.location,
+            dropCoordinates,
             1
          );
       }
@@ -99,9 +101,10 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dropZoneService.getCurrentDropZoneContainer() !==
             this.dropZoneAbove
       ) {
+         const dropCoordinates = [...this.coordinates];
          this.dropZoneService.showDropZone(
             this.dropZoneAbove,
-            this.location,
+            dropCoordinates,
             0
          );
       }
@@ -127,6 +130,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.childNodes.length > 0 &&
          this.children !== undefined
       ) {
+         if (this.coordinates === undefined) {
+            throw new Error("coordinates are undefined");
+         }
          const newBranch = this.componentCreatorService.appendComponent<LimbleTreeComponent>(
             LimbleTreeComponent,
             this.children
@@ -135,7 +141,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             nodes: this.childNodes,
             options: this.options
          };
-         newBranch.instance.offset = this.offset;
+         newBranch.instance.indent = this.options?.indent ?? INDENT;
+         newBranch.instance.coordinates = [...this.coordinates];
       }
    }
 }

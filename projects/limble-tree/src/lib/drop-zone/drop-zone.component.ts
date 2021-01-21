@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { getLocationIndex, TreeLocationObj } from "../limble-tree.service";
+import { LimbleTreeService } from "../limble-tree.service";
 import { TempService } from "../temp.service";
 
 @Component({
@@ -8,26 +8,21 @@ import { TempService } from "../temp.service";
    styleUrls: ["./drop-zone.component.scss"]
 })
 export class DropZoneComponent {
-   constructor(private readonly tempService: TempService) {}
+   constructor(
+      private readonly tempService: TempService,
+      private readonly limbleTreeService: LimbleTreeService
+   ) {}
 
-   @Input() dropZoneLocation: TreeLocationObj | undefined;
+   @Input() dropZoneCoordinates: Array<number> | undefined;
    @Input() modifier: number = 0;
 
-   public dropHandler(event: DragEvent) {
-      console.log("dropped", event);
-      const sourceLocation = this.tempService.get() as TreeLocationObj;
+   public dropHandler() {
+      const sourceCoordinates = this.tempService.get() as Array<number>;
       this.tempService.delete();
-      if (this.dropZoneLocation === undefined) {
-         return;
+      if (this.dropZoneCoordinates === undefined) {
+         throw new Error("could not determine drop zone location");
       }
-      const source = sourceLocation.parentContainerRef.detach(
-         getLocationIndex(sourceLocation)
-      );
-      if (source === null) {
-         return;
-      }
-      const index = getLocationIndex(this.dropZoneLocation) + this.modifier;
-      this.dropZoneLocation.parentContainerRef.insert(source, index);
+      this.limbleTreeService.move(sourceCoordinates, this.dropZoneCoordinates);
    }
 
    public dragoverHandler(event: DragEvent) {

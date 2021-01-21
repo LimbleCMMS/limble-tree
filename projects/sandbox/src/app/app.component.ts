@@ -77,7 +77,6 @@ export class AppComponent implements DoCheck {
 
    private reRenderTree() {
       if (this.limbleTree !== undefined) {
-         console.log("reRendering");
          this.limbleTree.reRender();
       }
    }

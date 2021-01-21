@@ -3,8 +3,8 @@ import { NgModule } from "@angular/core";
 
 import { AppComponent } from "./app.component";
 import { LimbleTreeModule } from "limble-tree";
-import { TreeItemComponent } from './tree-item/tree-item.component';
-import { TreeItemAltComponent } from './tree-item-alt/tree-item-alt.component';
+import { TreeItemComponent } from "./tree-item/tree-item.component";
+import { TreeItemAltComponent } from "./tree-item-alt/tree-item-alt.component";
 
 @NgModule({
    declarations: [AppComponent, TreeItemComponent, TreeItemAltComponent],

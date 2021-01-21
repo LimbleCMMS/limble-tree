@@ -15,9 +15,9 @@ import { LimbleTreeData, LimbleTreeService } from "./limble-tree.service";
    styles: ["./limble-tree.component.scss"]
 })
 export class LimbleTreeComponent implements AfterViewInit, OnChanges {
-   @Input() public treeData: LimbleTreeData | undefined;
-
-   @Input() public offset: number;
+   @Input() treeData: LimbleTreeData | undefined;
+   @Input() coordinates: Array<number> | undefined;
+   @Input() indent: number;
 
    @ViewChild("host", { read: ViewContainerRef }) private host:
       | ViewContainerRef
@@ -27,7 +27,7 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
       private readonly limbleTreeService: LimbleTreeService,
       private readonly changeDetectorRef: ChangeDetectorRef
    ) {
-      this.offset = 0;
+      this.indent = 0;
    }
 
    ngAfterViewInit() {
@@ -50,6 +50,14 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
       if (this.treeData === undefined) {
          throw new Error(`limbleTree requires a data object`);
       }
-      this.limbleTreeService.render(this.host, this.treeData);
+      if (this.coordinates === undefined) {
+         this.limbleTreeService.renderRoot(this.host, this.treeData);
+      } else {
+         this.limbleTreeService.render(
+            this.host,
+            this.treeData,
+            this.coordinates
+         );
+      }
    }
 }

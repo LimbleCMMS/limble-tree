@@ -1,6 +1,5 @@
 import { Injectable, ViewContainerRef } from "@angular/core";
 import { ComponentCreatorService } from "../componentCreator.service";
-import { TreeLocationObj } from "../limble-tree.service";
 import { DropZoneComponent } from "./drop-zone.component";
 
 @Injectable()
@@ -15,7 +14,7 @@ export class DropZoneService {
 
    public showDropZone(
       dropZoneRef: ViewContainerRef,
-      location: TreeLocationObj,
+      dropCoordinates: Array<number>,
       modifier: 0 | 1 | -1 = 0
    ) {
       this.removeDropZone();
@@ -24,7 +23,7 @@ export class DropZoneService {
          DropZoneComponent,
          dropZoneRef
       );
-      componentRef.instance.dropZoneLocation = location;
+      componentRef.instance.dropZoneCoordinates = dropCoordinates;
       componentRef.instance.modifier = modifier;
    }
 
