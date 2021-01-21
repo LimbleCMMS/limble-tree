@@ -54,22 +54,14 @@ export class LimbleTreeService {
             host
          );
          componentRef.instance.nodeData = node.data;
+         componentRef.instance.childNodes = node.nodes;
          componentRef.instance.component = component;
+         componentRef.instance.options = treeData.options;
+         componentRef.instance.offset = offset;
          componentRef.instance.location = {
             parentContainerRef: host,
             viewRef: componentRef.hostView
          };
-         if (node.nodes && node.nodes.length > 0) {
-            const newBranch = this.componentCreatorService.appendComponent<LimbleTreeComponent>(
-               LimbleTreeComponent,
-               host
-            );
-            newBranch.instance.treeData = {
-               nodes: node.nodes,
-               options: treeData.options
-            };
-            newBranch.instance.offset = offset;
-         }
       }
    }
 }

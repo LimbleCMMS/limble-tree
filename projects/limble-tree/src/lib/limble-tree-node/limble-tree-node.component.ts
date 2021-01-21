@@ -8,8 +8,10 @@ import {
 } from "@angular/core";
 import { ComponentCreatorService } from "../componentCreator.service";
 import { DropZoneService } from "../drop-zone/drop-zone.service";
+import { LimbleTreeComponent } from "../limble-tree.component";
 import {
    ComponentObj,
+   LimbleTreeData,
    LimbleTreeNode,
    TreeLocationObj
 } from "../limble-tree.service";
@@ -24,6 +26,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    @Input() component: ComponentObj | undefined;
    @Input() nodeData: LimbleTreeNode["data"];
    @Input() location: TreeLocationObj | undefined;
+   @Input() childNodes: Array<LimbleTreeNode> | undefined;
+   @Input() options: LimbleTreeData["options"];
+   @Input() offset: number = 0;
    @ViewChild("nodeHost", { read: ViewContainerRef }) private nodeHost:
       | ViewContainerRef
       | undefined;
@@ -31,6 +36,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    private dropZoneAbove: ViewContainerRef | undefined;
    @ViewChild("dropZoneBelow", { read: ViewContainerRef })
    private dropZoneBelow: ViewContainerRef | undefined;
+   @ViewChild("children", { read: ViewContainerRef }) private children:
+      | ViewContainerRef
+      | undefined;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
@@ -40,17 +48,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    ) {}
 
    ngAfterViewInit() {
-      if (this.nodeHost === undefined || this.component === undefined) {
-         throw new Error("Failed to render tree node");
-      }
-      const componentRef = this.componentCreatorService.appendComponent<any>(
-         this.component.class,
-         this.nodeHost
-      );
-      componentRef.instance.nodeData = this.nodeData;
-      for (const binding in this.component.bindings) {
-         componentRef.instance[binding] = this.component.bindings[binding];
-      }
+      this.renderSelf();
+      this.renderChildren();
       this.changeDetectorRef.detectChanges();
    }
 
@@ -105,6 +104,38 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             this.location,
             0
          );
+      }
+   }
+
+   private renderSelf() {
+      if (this.nodeHost === undefined || this.component === undefined) {
+         throw new Error("Failed to render tree node");
+      }
+      const componentRef = this.componentCreatorService.appendComponent<any>(
+         this.component.class,
+         this.nodeHost
+      );
+      componentRef.instance.nodeData = this.nodeData;
+      for (const binding in this.component.bindings) {
+         componentRef.instance[binding] = this.component.bindings[binding];
+      }
+   }
+
+   private renderChildren() {
+      if (
+         this.childNodes &&
+         this.childNodes.length > 0 &&
+         this.children !== undefined
+      ) {
+         const newBranch = this.componentCreatorService.appendComponent<LimbleTreeComponent>(
+            LimbleTreeComponent,
+            this.children
+         );
+         newBranch.instance.treeData = {
+            nodes: this.childNodes,
+            options: this.options
+         };
+         newBranch.instance.offset = this.offset;
       }
    }
 }
