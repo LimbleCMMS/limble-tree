@@ -1,4 +1,4 @@
-import { Injectable, Type, ViewContainerRef } from "@angular/core";
+import { Injectable, Type, ViewContainerRef, ViewRef } from "@angular/core";
 import { LimbleTreeComponent } from "./limble-tree.component";
 import { ComponentCreatorService } from "./componentCreator.service";
 import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
@@ -21,6 +21,15 @@ export interface ComponentObj {
    bindings?: {
       [index: string]: unknown;
    };
+}
+
+export interface TreeLocationObj {
+   parentContainerRef: ViewContainerRef;
+   viewRef: ViewRef;
+}
+
+export function getLocationIndex(location: TreeLocationObj) {
+   return location.parentContainerRef.indexOf(location.viewRef);
 }
 
 @Injectable()
@@ -46,6 +55,10 @@ export class LimbleTreeService {
          );
          componentRef.instance.nodeData = node.data;
          componentRef.instance.component = component;
+         componentRef.instance.location = {
+            parentContainerRef: host,
+            viewRef: componentRef.hostView
+         };
          if (node.nodes && node.nodes.length > 0) {
             const newBranch = this.componentCreatorService.appendComponent<LimbleTreeComponent>(
                LimbleTreeComponent,

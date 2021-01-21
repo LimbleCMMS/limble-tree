@@ -8,7 +8,11 @@ import {
 } from "@angular/core";
 import { ComponentCreatorService } from "../componentCreator.service";
 import { DropZoneService } from "../drop-zone/drop-zone.service";
-import { ComponentObj, LimbleTreeNode } from "../limble-tree.service";
+import {
+   ComponentObj,
+   LimbleTreeNode,
+   TreeLocationObj
+} from "../limble-tree.service";
 import { TempService } from "../temp.service";
 
 @Component({
@@ -19,6 +23,7 @@ import { TempService } from "../temp.service";
 export class LimbleTreeNodeComponent implements AfterViewInit {
    @Input() component: ComponentObj | undefined;
    @Input() nodeData: LimbleTreeNode["data"];
+   @Input() location: TreeLocationObj | undefined;
    @ViewChild("nodeHost", { read: ViewContainerRef }) private nodeHost:
       | ViewContainerRef
       | undefined;
@@ -58,7 +63,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       event.dataTransfer.dropEffect = "move";
       const draggedElement = event.target as HTMLElement;
       draggedElement.classList.add("dragging");
-      this.tempService.set(draggedElement);
+      this.tempService.set(this.location);
    }
 
    public dragendHandler(event: DragEvent): void {
@@ -70,7 +75,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    }
 
    public dragoverHandler(event: DragEvent) {
-      if (this.tempService.get() === undefined) {
+      if (this.tempService.get() === undefined || this.location === undefined) {
          return;
       }
       event.stopPropagation();
@@ -83,7 +88,11 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dropZoneService.getCurrentDropZoneContainer() !==
             this.dropZoneBelow
       ) {
-         this.dropZoneService.showDropZone(this.dropZoneBelow);
+         this.dropZoneService.showDropZone(
+            this.dropZoneBelow,
+            this.location,
+            1
+         );
       }
       if (
          event.offsetY <= dividingLine &&
@@ -91,7 +100,11 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dropZoneService.getCurrentDropZoneContainer() !==
             this.dropZoneAbove
       ) {
-         this.dropZoneService.showDropZone(this.dropZoneAbove);
+         this.dropZoneService.showDropZone(
+            this.dropZoneAbove,
+            this.location,
+            0
+         );
       }
    }
 }

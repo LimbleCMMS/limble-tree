@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
+import { getLocationIndex, TreeLocationObj } from "../limble-tree.service";
 import { TempService } from "../temp.service";
-import { DropZoneService } from "./drop-zone.service";
 
 @Component({
    selector: "drop-zone",
@@ -8,48 +8,30 @@ import { DropZoneService } from "./drop-zone.service";
    styleUrls: ["./drop-zone.component.scss"]
 })
 export class DropZoneComponent {
-   constructor(
-      private readonly tempService: TempService,
-      private readonly dropZoneService: DropZoneService
-   ) {}
+   constructor(private readonly tempService: TempService) {}
 
-   @Input() relativeToNode: "above" | "below" | undefined;
+   @Input() dropZoneLocation: TreeLocationObj | undefined;
+   @Input() modifier: number = 0;
 
    public dropHandler(event: DragEvent) {
       console.log("dropped", event);
-      // const dropZone = event.target as HTMLElement;
-      // const draggedElement = this.tempService.get() as HTMLElement;
-      // if (
-      //    draggedElement.parentNode === null ||
-      //    draggedElement.parentElement === null
-      // ) {
-      //    return;
-      // }
-      // draggedElement.parentElement.parentElement?.removeChild(
-      //    draggedElement.parentElement
-      // );
-      // const desiredPlacement = dropZone.closest("limble-tree-node")
-      //    ?.parentElement;
-      // // console.log(desiredPlacement, draggedElement.parentElement);
-      // if (!desiredPlacement) {
-      //    throw new Error("Failed to place dropped element");
-      // }
-      // if (this.relativeToNode === "above") {
-      //    dropZone
-      //       .closest("limble-tree-node")
-      //       ?.before(draggedElement.parentElement);
-      // } else if (this.relativeToNode === "below") {
-      //    dropZone
-      //       .closest("limble-tree-node")
-      //       ?.after(draggedElement.parentElement);
-      // } else {
-      //    throw new Error("Failed to place dropped element");
-      // }
-      // this.tempService.delete();
+      const sourceLocation = this.tempService.get() as TreeLocationObj;
+      this.tempService.delete();
+      if (this.dropZoneLocation === undefined) {
+         return;
+      }
+      const source = sourceLocation.parentContainerRef.detach(
+         getLocationIndex(sourceLocation)
+      );
+      if (source === null) {
+         return;
+      }
+      const index = getLocationIndex(this.dropZoneLocation) + this.modifier;
+      this.dropZoneLocation.parentContainerRef.insert(source, index);
    }
 
    public dragoverHandler(event: DragEvent) {
-      //This is required because by default the browser prevents anything from happening while dropping onto the HTML element
+      //This is required because by default the browser prevents anything from happening while dragging
       event.stopPropagation();
       event.preventDefault();
    }
