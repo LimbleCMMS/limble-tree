@@ -29,5 +29,16 @@ export class DropZoneComponent {
       //This is required because by default the browser prevents anything from happening while dragging
       event.stopPropagation();
       event.preventDefault();
+      if (event.dataTransfer === null) {
+         return;
+      }
+      event.dataTransfer.dropEffect = "move";
+   }
+
+   public dragleaveHandler(event: DragEvent) {
+      if (event.dataTransfer === null) {
+         return;
+      }
+      event.dataTransfer.dropEffect = "none";
    }
 }

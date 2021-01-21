@@ -13,9 +13,10 @@ import {
    ComponentObj,
    INDENT,
    LimbleTreeNode,
-   LimbleTreeOptions
+   LimbleTreeService
 } from "../limble-tree.service";
 import { TempService } from "../temp.service";
+import { arraysAreEqual } from "../util";
 
 @Component({
    selector: "limble-tree-node",
@@ -27,7 +28,6 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    @Input() nodeData: LimbleTreeNode["data"];
    @Input() coordinates: Array<number> | undefined;
    @Input() childNodes: Array<LimbleTreeNode> | undefined;
-   @Input() options: LimbleTreeOptions | undefined;
    @ViewChild("nodeHost", { read: ViewContainerRef }) private nodeHost:
       | ViewContainerRef
       | undefined;
@@ -43,7 +43,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       private readonly componentCreatorService: ComponentCreatorService,
       private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly tempService: TempService,
-      private readonly dropZoneService: DropZoneService
+      private readonly dropZoneService: DropZoneService,
+      private readonly limbleTreeService: LimbleTreeService
    ) {}
 
    ngAfterViewInit() {
@@ -57,7 +58,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       if (event.dataTransfer === null) {
          return;
       }
-      event.dataTransfer.dropEffect = "move";
+      event.dataTransfer.effectAllowed = "move";
       const draggedElement = event.target as HTMLElement;
       draggedElement.classList.add("dragging");
       this.tempService.set(this.coordinates);
@@ -77,9 +78,19 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       ) {
          return;
       }
+      const sourceCoordinates = this.tempService.get() as Array<number>;
+      //If trying to drop on self, remove any remaining drop zones and return.
+      if (
+         arraysAreEqual(
+            sourceCoordinates,
+            this.coordinates.slice(0, sourceCoordinates.length)
+         )
+      ) {
+         this.dropZoneService.removeDropZone();
+         return;
+      }
       event.stopPropagation();
-      event.preventDefault();
-      const target = event.target as HTMLElement;
+      const target = event.currentTarget as HTMLElement;
       const dividingLine = target.offsetHeight / 2;
       if (
          event.offsetY > dividingLine &&
@@ -94,8 +105,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             dropCoordinates,
             1
          );
-      }
-      if (
+      } else if (
          event.offsetY <= dividingLine &&
          this.dropZoneAbove !== undefined &&
          this.dropZoneService.getCurrentDropZoneContainer() !==
@@ -139,9 +149,10 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          );
          newBranch.instance.treeData = {
             nodes: this.childNodes,
-            options: this.options
+            options: this.limbleTreeService.getTreeData().options
          };
-         newBranch.instance.indent = this.options?.indent ?? INDENT;
+         newBranch.instance.indent =
+            this.limbleTreeService.getTreeData().options?.indent ?? INDENT;
          newBranch.instance.coordinates = [...this.coordinates];
       }
    }

@@ -81,7 +81,6 @@ export class LimbleTreeService {
          componentRef.instance.nodeData = node.data;
          componentRef.instance.childNodes = node.nodes;
          componentRef.instance.component = component;
-         componentRef.instance.options = treeData.options;
          const newCoordinates = [...coordinates];
          newCoordinates.push(index);
          componentRef.instance.coordinates = newCoordinates;
@@ -109,6 +108,13 @@ export class LimbleTreeService {
          this.insertNodeIntoGroup(sourceNode, targetGroup, targetIndex);
       }
       this.renderRoot();
+   }
+
+   public getTreeData(): LimbleTreeData {
+      if (this.treeData === undefined) {
+         throw new Error("could not get tree data");
+      }
+      return this.treeData;
    }
 
    private removeNodeFromGroup(

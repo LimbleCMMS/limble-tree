@@ -3,9 +3,10 @@
    draggable="true"
    (dragstart)="dragstartHandler($event)"
    (dragend)="dragendHandler($event)"
-   (dragover)="dragoverHandler($event)"
 >
-   <ng-template #nodeHost> </ng-template>
-   <ng-template #children> </ng-template>
+   <div (dragover)="dragoverHandler($event)">
+      <ng-template #nodeHost></ng-template>
+   </div>
+   <ng-template #children></ng-template>
 </div>
 <ng-template #dropZoneBelow></ng-template>

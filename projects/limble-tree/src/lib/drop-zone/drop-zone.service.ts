@@ -29,6 +29,7 @@ export class DropZoneService {
 
    public removeDropZone() {
       this.currentDropZoneContainer?.clear();
+      this.currentDropZoneContainer = null;
    }
 
    public getCurrentDropZoneContainer() {
