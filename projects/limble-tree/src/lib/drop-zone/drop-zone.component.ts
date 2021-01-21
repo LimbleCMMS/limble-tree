@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { TempService } from "../temp.service";
+import { DropZoneService } from "./drop-zone.service";
 
 @Component({
    selector: "drop-zone",
@@ -7,41 +8,44 @@ import { TempService } from "../temp.service";
    styleUrls: ["./drop-zone.component.scss"]
 })
 export class DropZoneComponent {
-   constructor(private readonly tempService: TempService) {}
+   constructor(
+      private readonly tempService: TempService,
+      private readonly dropZoneService: DropZoneService
+   ) {}
 
    @Input() relativeToNode: "above" | "below" | undefined;
 
    public dropHandler(event: DragEvent) {
       console.log("dropped", event);
-      const dropZone = event.target as HTMLElement;
-      const draggedElement = this.tempService.get() as HTMLElement;
-      if (
-         draggedElement.parentNode === null ||
-         draggedElement.parentElement === null
-      ) {
-         return;
-      }
-      draggedElement.parentElement.parentElement?.removeChild(
-         draggedElement.parentElement
-      );
-      const desiredPlacement = dropZone.closest("limble-tree-node")
-         ?.parentElement;
-      // console.log(desiredPlacement, draggedElement.parentElement);
-      if (!desiredPlacement) {
-         throw new Error("Failed to place dropped element");
-      }
-      if (this.relativeToNode === "above") {
-         dropZone
-            .closest("limble-tree-node")
-            ?.before(draggedElement.parentElement);
-      } else if (this.relativeToNode === "below") {
-         dropZone
-            .closest("limble-tree-node")
-            ?.after(draggedElement.parentElement);
-      } else {
-         throw new Error("Failed to place dropped element");
-      }
-      this.tempService.delete();
+      // const dropZone = event.target as HTMLElement;
+      // const draggedElement = this.tempService.get() as HTMLElement;
+      // if (
+      //    draggedElement.parentNode === null ||
+      //    draggedElement.parentElement === null
+      // ) {
+      //    return;
+      // }
+      // draggedElement.parentElement.parentElement?.removeChild(
+      //    draggedElement.parentElement
+      // );
+      // const desiredPlacement = dropZone.closest("limble-tree-node")
+      //    ?.parentElement;
+      // // console.log(desiredPlacement, draggedElement.parentElement);
+      // if (!desiredPlacement) {
+      //    throw new Error("Failed to place dropped element");
+      // }
+      // if (this.relativeToNode === "above") {
+      //    dropZone
+      //       .closest("limble-tree-node")
+      //       ?.before(draggedElement.parentElement);
+      // } else if (this.relativeToNode === "below") {
+      //    dropZone
+      //       .closest("limble-tree-node")
+      //       ?.after(draggedElement.parentElement);
+      // } else {
+      //    throw new Error("Failed to place dropped element");
+      // }
+      // this.tempService.delete();
    }
 
    public dragoverHandler(event: DragEvent) {

@@ -6,6 +6,7 @@ import { LimbleTreeService } from "./limble-tree.service";
 import { CommonModule } from "@angular/common";
 import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
 import { TempService } from "./temp.service";
+import { DropZoneService } from "./drop-zone/drop-zone.service";
 
 @NgModule({
    declarations: [
@@ -15,6 +16,11 @@ import { TempService } from "./temp.service";
    ],
    imports: [CommonModule],
    exports: [LimbleTreeComponent],
-   providers: [ComponentCreatorService, LimbleTreeService, TempService]
+   providers: [
+      ComponentCreatorService,
+      LimbleTreeService,
+      TempService,
+      DropZoneService
+   ]
 })
 export class LimbleTreeModule {}

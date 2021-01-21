@@ -1,7 +1,10 @@
+<ng-template #dropZoneAbove></ng-template>
 <div
    draggable="true"
    (dragstart)="dragstartHandler($event)"
    (dragend)="dragendHandler($event)"
+   (dragover)="dragoverHandler($event)"
 >
    <ng-template #nodeHost> </ng-template>
 </div>
+<ng-template #dropZoneBelow></ng-template>
