@@ -7,6 +7,7 @@ import {
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
+import { DropZoneService } from "./drop-zone/drop-zone.service";
 import { LimbleTreeData, LimbleTreeService } from "./limble-tree.service";
 
 @Component({
@@ -25,7 +26,8 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
 
    constructor(
       private readonly limbleTreeService: LimbleTreeService,
-      private readonly changeDetectorRef: ChangeDetectorRef
+      private readonly changeDetectorRef: ChangeDetectorRef,
+      private readonly dropZoneService: DropZoneService
    ) {
       this.indent = 0;
    }
@@ -59,5 +61,26 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
             this.coordinates
          );
       }
+   }
+
+   public dragoverHandler(event: DragEvent) {
+      if (this.coordinates !== undefined || event.dataTransfer === null) {
+         return;
+      }
+      event.stopPropagation();
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+   }
+
+   public dragleaveHandler(event: DragEvent) {
+      if (
+         this.coordinates !== undefined ||
+         (event.currentTarget as HTMLElement).contains(
+            event.relatedTarget as Node
+         )
+      ) {
+         return;
+      }
+      this.dropZoneService.removeDropZone();
    }
 }

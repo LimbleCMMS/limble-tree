@@ -4,35 +4,38 @@ import { DropZoneComponent } from "./drop-zone.component";
 
 @Injectable()
 export class DropZoneService {
-   private currentDropZoneContainer: ViewContainerRef | null;
+   private currentDropZoneInfo: {
+      dropZoneContainer: ViewContainerRef;
+      dropCoordinates: Array<number>;
+   } | null;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService
    ) {
-      this.currentDropZoneContainer = null;
+      this.currentDropZoneInfo = null;
    }
 
    public showDropZone(
       dropZoneRef: ViewContainerRef,
-      dropCoordinates: Array<number>,
-      modifier: 0 | 1 | -1 = 0
+      dropCoordinates: Array<number>
    ) {
       this.removeDropZone();
-      this.currentDropZoneContainer = dropZoneRef;
-      const componentRef = this.componentCreatorService.appendComponent<DropZoneComponent>(
+      this.currentDropZoneInfo = {
+         dropZoneContainer: dropZoneRef,
+         dropCoordinates: dropCoordinates
+      };
+      this.componentCreatorService.appendComponent<DropZoneComponent>(
          DropZoneComponent,
          dropZoneRef
       );
-      componentRef.instance.dropZoneCoordinates = dropCoordinates;
-      componentRef.instance.modifier = modifier;
    }
 
    public removeDropZone() {
-      this.currentDropZoneContainer?.clear();
-      this.currentDropZoneContainer = null;
+      this.currentDropZoneInfo?.dropZoneContainer.clear();
+      this.currentDropZoneInfo = null;
    }
 
-   public getCurrentDropZoneContainer() {
-      return this.currentDropZoneContainer;
+   public getCurrentDropZoneInfo() {
+      return this.currentDropZoneInfo;
    }
 }

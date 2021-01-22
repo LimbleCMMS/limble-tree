@@ -67,6 +67,19 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    public dragendHandler(event: DragEvent): void {
       event.stopPropagation();
       const draggedElement = event.target as HTMLElement;
+      const sourceCoordinates = this.tempService.get() as Array<number>;
+      this.tempService.delete();
+      const dropZoneInfo = this.dropZoneService.getCurrentDropZoneInfo();
+      if (dropZoneInfo === null) {
+         return;
+      }
+      if (dropZoneInfo.dropCoordinates === undefined) {
+         throw new Error("could not determine drop zone location");
+      }
+      this.limbleTreeService.move(
+         sourceCoordinates,
+         dropZoneInfo.dropCoordinates
+      );
       draggedElement.classList.remove("dragging");
       this.dropZoneService.removeDropZone();
    }
@@ -89,34 +102,25 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dropZoneService.removeDropZone();
          return;
       }
-      event.stopPropagation();
       const target = event.currentTarget as HTMLElement;
       const dividingLine = target.offsetHeight / 2;
       if (
          event.offsetY > dividingLine &&
          this.dropZoneBelow !== undefined &&
-         this.dropZoneService.getCurrentDropZoneContainer() !==
+         this.dropZoneService.getCurrentDropZoneInfo()?.dropZoneContainer !==
             this.dropZoneBelow
       ) {
          const dropCoordinates = [...this.coordinates];
          dropCoordinates[dropCoordinates.length - 1]++;
-         this.dropZoneService.showDropZone(
-            this.dropZoneBelow,
-            dropCoordinates,
-            1
-         );
+         this.dropZoneService.showDropZone(this.dropZoneBelow, dropCoordinates);
       } else if (
          event.offsetY <= dividingLine &&
          this.dropZoneAbove !== undefined &&
-         this.dropZoneService.getCurrentDropZoneContainer() !==
+         this.dropZoneService.getCurrentDropZoneInfo()?.dropZoneContainer !==
             this.dropZoneAbove
       ) {
          const dropCoordinates = [...this.coordinates];
-         this.dropZoneService.showDropZone(
-            this.dropZoneAbove,
-            dropCoordinates,
-            0
-         );
+         this.dropZoneService.showDropZone(this.dropZoneAbove, dropCoordinates);
       }
    }
 

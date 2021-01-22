@@ -1,3 +1,7 @@
-<div [style.marginLeft.px]="indent">
+<div
+   [style.marginLeft.px]="indent"
+   (dragover)="dragoverHandler($event)"
+   (dragleave)="dragleaveHandler($event)"
+>
    <ng-template #host></ng-template>
 </div>
