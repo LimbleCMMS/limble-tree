@@ -18,6 +18,7 @@ import {
 import { TempService } from "../singletons/temp.service";
 import { TreeRendererService } from "../singletons/tree-renderer.service";
 import { arraysAreEqual } from "../util";
+import { BehaviorSubject } from "rxjs";
 
 @Component({
    selector: "limble-tree-node",
@@ -36,6 +37,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    private dropZoneAbove: ViewContainerRef | undefined;
    @ViewChild("dropZoneBelow", { read: ViewContainerRef })
    private dropZoneBelow: ViewContainerRef | undefined;
+   private dropZoneInside: ViewContainerRef | undefined;
    @ViewChild("children", { read: ViewContainerRef }) private children:
       | ViewContainerRef
       | undefined;
@@ -105,9 +107,33 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          return;
       }
       const target = event.currentTarget as HTMLElement;
-      const dividingLine = target.offsetHeight / 2;
+      const topLine = target.offsetHeight / 4; //an imaginary line 25% of the way down from the top of the element;
+      const bottomLine = topLine * 3; //an imaginary line 25% of the way up from the bottom of the element;
       if (
-         event.offsetY > dividingLine &&
+         event.offsetY < topLine &&
+         this.dropZoneAbove !== undefined &&
+         this.dropZoneService.getActiveDropZoneInfo()?.container !==
+            this.dropZoneAbove
+      ) {
+         const dropCoordinates = [...this.coordinates];
+         this.limbleTreeService.showDropZoneFamily({
+            container: this.dropZoneAbove,
+            coordinates: dropCoordinates
+         });
+      } else if (
+         event.offsetY < bottomLine &&
+         this.dropZoneInside !== undefined &&
+         this.dropZoneService.getActiveDropZoneInfo()?.container !==
+            this.dropZoneInside
+      ) {
+         const dropCoordinates = [...this.coordinates];
+         dropCoordinates.push(0);
+         this.limbleTreeService.showDropZoneFamily({
+            container: this.dropZoneInside,
+            coordinates: dropCoordinates
+         });
+      } else if (
+         event.offsetY >= bottomLine &&
          this.dropZoneBelow !== undefined &&
          this.dropZoneService.getActiveDropZoneInfo()?.container !==
             this.dropZoneBelow &&
@@ -117,17 +143,6 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          dropCoordinates[dropCoordinates.length - 1]++;
          this.limbleTreeService.showDropZoneFamily({
             container: this.dropZoneBelow,
-            coordinates: dropCoordinates
-         });
-      } else if (
-         event.offsetY <= dividingLine &&
-         this.dropZoneAbove !== undefined &&
-         this.dropZoneService.getActiveDropZoneInfo()?.container !==
-            this.dropZoneAbove
-      ) {
-         const dropCoordinates = [...this.coordinates];
-         this.limbleTreeService.showDropZoneFamily({
-            container: this.dropZoneAbove,
             coordinates: dropCoordinates
          });
       }
@@ -148,11 +163,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    }
 
    private renderChildren() {
-      if (
-         this.childNodes &&
-         this.childNodes.length > 0 &&
-         this.children !== undefined
-      ) {
+      if (this.children !== undefined) {
          if (this.coordinates === undefined) {
             throw new Error("coordinates are undefined");
          }
@@ -161,12 +172,26 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             this.children
          );
          newBranch.instance.treeData = {
-            nodes: this.childNodes,
+            nodes: this.childNodes ?? [],
             options: this.treeRendererService.getTreeData().options
          };
          newBranch.instance.indent =
             this.treeRendererService.getTreeData().options?.indent ?? INDENT;
          newBranch.instance.coordinates = [...this.coordinates];
+         newBranch.instance.dropZoneInside$.subscribe((dropZone) => {
+            if (dropZone !== undefined) {
+               this.dropZoneInside = dropZone;
+               if (this.coordinates === undefined) {
+                  throw new Error("failed to register inner drop zone");
+               }
+               const dropCoordinatesInside = [...this.coordinates];
+               dropCoordinatesInside.push(0);
+               this.dropZoneService.addDropZone({
+                  container: this.dropZoneInside,
+                  coordinates: dropCoordinatesInside
+               });
+            }
+         });
       }
    }
 

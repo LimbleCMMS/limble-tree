@@ -4,9 +4,11 @@ import {
    Component,
    Input,
    OnChanges,
+   Output,
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
 import { DropZoneService } from "./singletons/drop-zone.service";
 import { LimbleTreeData } from "./singletons/limble-tree.service";
 import { TreeRendererService } from "./singletons/tree-renderer.service";
@@ -26,15 +28,24 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
       | ViewContainerRef
       | undefined;
 
+   @ViewChild("dropZoneInside", { read: ViewContainerRef })
+   dropZoneInside: ViewContainerRef | undefined;
+
+   @Output()
+   readonly dropZoneInside$: BehaviorSubject<ViewContainerRef | undefined>;
+
    constructor(
       private readonly treeRendererService: TreeRendererService,
       private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly dropZoneService: DropZoneService
    ) {
       this.indent = 0;
+      this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
    }
 
    ngAfterViewInit() {
+      this.dropZoneInside$.next(this.dropZoneInside);
+      this.dropZoneInside$.complete();
       this.reRender();
       this.changeDetectorRef.detectChanges();
    }
@@ -75,12 +86,13 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
    }
 
    public dragleaveHandler(event: DragEvent) {
+      const currentTarget = event.currentTarget;
+      const relatedTarget = event.relatedTarget;
       if (
          this.coordinates !== undefined ||
-         isElementDescendant(
-            event.currentTarget as Node,
-            event.relatedTarget as Node
-         ) !== false
+         !(currentTarget instanceof Node) ||
+         !(relatedTarget instanceof Node) ||
+         isElementDescendant(currentTarget, relatedTarget) !== false
       ) {
          return;
       }

@@ -1,7 +1,5 @@
 import { Injectable, Type } from "@angular/core";
-import { DropZoneComponent } from "../drop-zone/drop-zone.component";
 import { arraysAreEqual } from "../util";
-import { ComponentCreatorService } from "./component-creator.service";
 import { DropZoneInfo, DropZoneService } from "./drop-zone.service";
 import { TreeRendererService } from "./tree-renderer.service";
 
@@ -36,8 +34,7 @@ export const INDENT = 45;
 export class LimbleTreeService {
    constructor(
       private readonly treeRendererService: TreeRendererService,
-      private readonly dropZoneService: DropZoneService,
-      private readonly componentCreatorService: ComponentCreatorService
+      private readonly dropZoneService: DropZoneService
    ) {}
 
    public move(
@@ -139,6 +136,20 @@ export class LimbleTreeService {
             if (secondaryDropZone !== undefined) {
                this.showDropZoneFamily(secondaryDropZone, false, "below");
             }
+         } else {
+            const secondaryDropZoneCoordinates = [...previousSibling];
+            secondaryDropZoneCoordinates.push(0);
+            const secondaryDropZone = this.dropZoneService
+               .getDropZones()
+               .find((dropZoneInfo) => {
+                  return arraysAreEqual(
+                     dropZoneInfo.coordinates,
+                     secondaryDropZoneCoordinates
+                  );
+               });
+            if (secondaryDropZone !== undefined) {
+               this.showDropZoneFamily(secondaryDropZone, false, "below");
+            }
          }
       }
    }
@@ -188,13 +199,21 @@ export class LimbleTreeService {
          throw new Error("treeData is not defined");
       }
       let group = treeData.nodes;
+      let allowSingleUndefined = true;
       for (const [index, key] of coordinates.entries()) {
          if (index === coordinates.length - 1) {
             break;
          }
-         const newGroup = group[key].nodes;
+         let newGroup = group[key].nodes;
          if (newGroup === undefined) {
-            throw new Error("bad coordinates");
+            if (allowSingleUndefined === true) {
+               //This allows us to create an "inner" group on the fly -- but only once during this function
+               group[key].nodes = [];
+               newGroup = group[key].nodes as Array<LimbleTreeNode>;
+               allowSingleUndefined = false;
+            } else {
+               throw new Error("bad coordinates");
+            }
          }
          group = newGroup;
       }
