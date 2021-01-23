@@ -6,16 +6,17 @@ import {
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
-import { ComponentCreatorService } from "../componentCreator.service";
-import { DropZoneService } from "../drop-zone/drop-zone.service";
+import { ComponentCreatorService } from "../singletons/component-creator.service";
+import { DropZoneService } from "../singletons/drop-zone.service";
 import { LimbleTreeComponent } from "../limble-tree.component";
 import {
    ComponentObj,
    INDENT,
    LimbleTreeNode,
    LimbleTreeService
-} from "../limble-tree.service";
-import { TempService } from "../temp.service";
+} from "../singletons/limble-tree.service";
+import { TempService } from "../singletons/temp.service";
+import { TreeRendererService } from "../singletons/tree-renderer.service";
 import { arraysAreEqual } from "../util";
 
 @Component({
@@ -44,10 +45,12 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly tempService: TempService,
       private readonly dropZoneService: DropZoneService,
-      private readonly limbleTreeService: LimbleTreeService
+      private readonly limbleTreeService: LimbleTreeService,
+      private readonly treeRendererService: TreeRendererService
    ) {}
 
    ngAfterViewInit() {
+      this.registerDropZones();
       this.renderSelf();
       this.renderChildren();
       this.changeDetectorRef.detectChanges();
@@ -69,19 +72,16 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       const draggedElement = event.target as HTMLElement;
       const sourceCoordinates = this.tempService.get() as Array<number>;
       this.tempService.delete();
-      const dropZoneInfo = this.dropZoneService.getCurrentDropZoneInfo();
+      draggedElement.classList.remove("dragging");
+      const dropZoneInfo = this.dropZoneService.getActiveDropZoneInfo();
       if (dropZoneInfo === null) {
          return;
       }
-      if (dropZoneInfo.dropCoordinates === undefined) {
+      this.dropZoneService.removeActiveAndSecondaryZones();
+      if (dropZoneInfo.coordinates === undefined) {
          throw new Error("could not determine drop zone location");
       }
-      this.limbleTreeService.move(
-         sourceCoordinates,
-         dropZoneInfo.dropCoordinates
-      );
-      draggedElement.classList.remove("dragging");
-      this.dropZoneService.removeDropZone();
+      this.limbleTreeService.move(sourceCoordinates, dropZoneInfo.coordinates);
    }
 
    public dragoverHandler(event: DragEvent) {
@@ -99,7 +99,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             this.coordinates.slice(0, sourceCoordinates.length)
          )
       ) {
-         this.dropZoneService.removeDropZone();
+         this.dropZoneService.removeActiveAndSecondaryZones();
          return;
       }
       const target = event.currentTarget as HTMLElement;
@@ -107,20 +107,26 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       if (
          event.offsetY > dividingLine &&
          this.dropZoneBelow !== undefined &&
-         this.dropZoneService.getCurrentDropZoneInfo()?.dropZoneContainer !==
+         this.dropZoneService.getActiveDropZoneInfo()?.container !==
             this.dropZoneBelow
       ) {
          const dropCoordinates = [...this.coordinates];
          dropCoordinates[dropCoordinates.length - 1]++;
-         this.dropZoneService.showDropZone(this.dropZoneBelow, dropCoordinates);
+         this.limbleTreeService.showDropZoneFamily({
+            container: this.dropZoneBelow,
+            coordinates: dropCoordinates
+         });
       } else if (
          event.offsetY <= dividingLine &&
          this.dropZoneAbove !== undefined &&
-         this.dropZoneService.getCurrentDropZoneInfo()?.dropZoneContainer !==
+         this.dropZoneService.getActiveDropZoneInfo()?.container !==
             this.dropZoneAbove
       ) {
          const dropCoordinates = [...this.coordinates];
-         this.dropZoneService.showDropZone(this.dropZoneAbove, dropCoordinates);
+         this.limbleTreeService.showDropZoneFamily({
+            container: this.dropZoneAbove,
+            coordinates: dropCoordinates
+         });
       }
    }
 
@@ -153,11 +159,32 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          );
          newBranch.instance.treeData = {
             nodes: this.childNodes,
-            options: this.limbleTreeService.getTreeData().options
+            options: this.treeRendererService.getTreeData().options
          };
          newBranch.instance.indent =
-            this.limbleTreeService.getTreeData().options?.indent ?? INDENT;
+            this.treeRendererService.getTreeData().options?.indent ?? INDENT;
          newBranch.instance.coordinates = [...this.coordinates];
       }
+   }
+
+   private registerDropZones() {
+      if (
+         this.dropZoneAbove === undefined ||
+         this.dropZoneBelow === undefined ||
+         this.coordinates === undefined
+      ) {
+         throw new Error("failed to register drop zones");
+      }
+      const dropCoordinatesAbove = [...this.coordinates];
+      this.dropZoneService.addDropZone({
+         container: this.dropZoneAbove,
+         coordinates: dropCoordinatesAbove
+      });
+      const dropCoordinatesBelow = [...this.coordinates];
+      dropCoordinatesBelow[dropCoordinatesBelow.length - 1]++;
+      this.dropZoneService.addDropZone({
+         container: this.dropZoneBelow,
+         coordinates: dropCoordinatesBelow
+      });
    }
 }

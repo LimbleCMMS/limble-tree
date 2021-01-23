@@ -7,8 +7,9 @@ import {
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
-import { DropZoneService } from "./drop-zone/drop-zone.service";
-import { LimbleTreeData, LimbleTreeService } from "./limble-tree.service";
+import { DropZoneService } from "./singletons/drop-zone.service";
+import { LimbleTreeData } from "./singletons/limble-tree.service";
+import { TreeRendererService } from "./singletons/tree-renderer.service";
 
 @Component({
    selector: "limble-tree",
@@ -25,7 +26,7 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
       | undefined;
 
    constructor(
-      private readonly limbleTreeService: LimbleTreeService,
+      private readonly treeRendererService: TreeRendererService,
       private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly dropZoneService: DropZoneService
    ) {
@@ -53,9 +54,9 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
          throw new Error(`limbleTree requires a data object`);
       }
       if (this.coordinates === undefined) {
-         this.limbleTreeService.renderRoot(this.host, this.treeData);
+         this.treeRendererService.renderRoot(this.host, this.treeData);
       } else {
-         this.limbleTreeService.render(
+         this.treeRendererService.render(
             this.host,
             this.treeData,
             this.coordinates
@@ -73,6 +74,7 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
    }
 
    public dragleaveHandler(event: DragEvent) {
+      //TODO This isn't working
       if (
          this.coordinates !== undefined ||
          (event.currentTarget as HTMLElement).contains(
@@ -81,6 +83,6 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
       ) {
          return;
       }
-      this.dropZoneService.removeDropZone();
+      // this.dropZoneService.removeActiveAndSecondaryZones();
    }
 }

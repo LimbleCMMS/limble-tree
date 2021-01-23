@@ -1,3 +1,3 @@
-<div class="dropZoneContainer">
-   <div class="dropZone"></div>
+<div class="dropZoneContainer" (dragenter)="dragenterHandler()">
+   <div [ngClass]="{ active: active, related: !active }"></div>
 </div>

@@ -1,12 +1,13 @@
 import { NgModule } from "@angular/core";
-import { ComponentCreatorService } from "./componentCreator.service";
+import { ComponentCreatorService } from "./singletons/component-creator.service";
 import { DropZoneComponent } from "./drop-zone/drop-zone.component";
 import { LimbleTreeComponent } from "./limble-tree.component";
-import { LimbleTreeService } from "./limble-tree.service";
+import { LimbleTreeService } from "./singletons/limble-tree.service";
 import { CommonModule } from "@angular/common";
 import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
-import { TempService } from "./temp.service";
-import { DropZoneService } from "./drop-zone/drop-zone.service";
+import { TempService } from "./singletons/temp.service";
+import { DropZoneService } from "./singletons/drop-zone.service";
+import { TreeRendererService } from "./singletons/tree-renderer.service";
 
 @NgModule({
    declarations: [
@@ -20,7 +21,8 @@ import { DropZoneService } from "./drop-zone/drop-zone.service";
       ComponentCreatorService,
       LimbleTreeService,
       TempService,
-      DropZoneService
+      DropZoneService,
+      TreeRendererService
    ]
 })
 export class LimbleTreeModule {}

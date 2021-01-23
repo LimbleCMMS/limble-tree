@@ -1,6 +1,7 @@
 import { Injectable, Type, ViewContainerRef } from "@angular/core";
-import { ComponentCreatorService } from "./componentCreator.service";
-import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
+import { ComponentCreatorService } from "./component-creator.service";
+import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
+import { DropZoneService } from "./drop-zone.service";
 
 export interface LimbleTreeNode {
    nodes?: Array<LimbleTreeNode>;
@@ -30,12 +31,13 @@ export const INDENT = 45;
 @Injectable({
    providedIn: "root"
 })
-export class LimbleTreeService {
+export class TreeRendererService {
    private treeData: LimbleTreeData | undefined;
    private host: ViewContainerRef | undefined;
 
    constructor(
-      private readonly componentCreatorService: ComponentCreatorService
+      private readonly componentCreatorService: ComponentCreatorService,
+      private readonly dropZoneService: DropZoneService
    ) {}
 
    public renderRoot(host?: ViewContainerRef, treeData?: LimbleTreeData) {
@@ -48,6 +50,7 @@ export class LimbleTreeService {
       if (this.host === undefined || this.treeData === undefined) {
          throw new Error("not enough data to render root");
       }
+      this.dropZoneService.clearDropZones();
       this.render(this.host, this.treeData, []);
    }
 
@@ -87,66 +90,10 @@ export class LimbleTreeService {
       }
    }
 
-   public move(
-      sourceCoordinates: Array<number>,
-      targetCoordinates: Array<number>
-   ) {
-      const sourceGroup = this.getCoordinatesGroup(sourceCoordinates);
-      const sourceIndex = sourceCoordinates[sourceCoordinates.length - 1];
-      const sourceNode = sourceGroup[sourceIndex];
-      const targetGroup = this.getCoordinatesGroup(targetCoordinates);
-      const targetIndex = targetCoordinates[targetCoordinates.length - 1];
-      if (sourceGroup === targetGroup && sourceIndex < targetIndex) {
-         //The node is moving down in its current branch, so we have to insert before we delete.
-         this.insertNodeIntoGroup(sourceNode, targetGroup, targetIndex);
-         this.removeNodeFromGroup(sourceNode, sourceGroup);
-      } else {
-         //The node is either:
-         //(1) leaving its current branch, so we can do the insert and delete in any order; or
-         //(2) moving up its current branch, so we have to delete first before inserting.
-         this.removeNodeFromGroup(sourceNode, sourceGroup);
-         this.insertNodeIntoGroup(sourceNode, targetGroup, targetIndex);
-      }
-      this.renderRoot();
-   }
-
    public getTreeData(): LimbleTreeData {
       if (this.treeData === undefined) {
          throw new Error("could not get tree data");
       }
       return this.treeData;
-   }
-
-   private removeNodeFromGroup(
-      node: LimbleTreeNode,
-      nodeGroup: Array<LimbleTreeNode>
-   ) {
-      nodeGroup.splice(nodeGroup.indexOf(node), 1);
-   }
-
-   private insertNodeIntoGroup(
-      node: LimbleTreeNode,
-      nodeGroup: Array<LimbleTreeNode>,
-      index: number
-   ) {
-      nodeGroup.splice(index, 0, node);
-   }
-
-   private getCoordinatesGroup(coordinates: Array<number>) {
-      if (this.treeData === undefined) {
-         throw new Error("treeData is not defined");
-      }
-      let group = this.treeData.nodes;
-      for (const [index, key] of coordinates.entries()) {
-         if (index === coordinates.length - 1) {
-            break;
-         }
-         const newGroup = group[key].nodes;
-         if (newGroup === undefined) {
-            throw new Error("bad coordinates");
-         }
-         group = newGroup;
-      }
-      return group;
    }
 }
