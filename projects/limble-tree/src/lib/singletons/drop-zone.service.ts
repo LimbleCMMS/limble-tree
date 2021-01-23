@@ -39,7 +39,6 @@ export class DropZoneService {
    }
 
    public removeActiveAndSecondaryZones() {
-      console.log("removing");
       this.activeDropZoneInfo?.container.clear();
       this.activeDropZoneInfo = null;
       for (const secondaryZone of this.secondaryDropZones) {

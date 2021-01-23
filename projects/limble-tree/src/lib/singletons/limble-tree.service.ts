@@ -118,8 +118,8 @@ export class LimbleTreeService {
          }
          const previousSibling = [...dropZone.coordinates];
          previousSibling[previousSibling.length - 1]--;
-         const children = this.getCoordinatesChildren(previousSibling);
-         if (children !== undefined && children.length > 0) {
+         const hasChildren = this.coordinatesHasChildren(previousSibling);
+         if (hasChildren) {
             const previousSiblingFirstChild = [...previousSibling];
             previousSiblingFirstChild.push(0);
             let secondaryDropZoneCoordinates: Array<number> = previousSiblingFirstChild;
@@ -143,6 +143,11 @@ export class LimbleTreeService {
       }
    }
 
+   public coordinatesHasChildren(coordinates: Array<number>): boolean {
+      const children = this.getCoordinatesChildren(coordinates);
+      return children !== undefined && children.length > 0;
+   }
+
    public swapActiveDropZone(dropZoneInfo: DropZoneInfo) {
       if (this.dropZoneService.getActiveDropZoneInfo() === null) {
          throw new Error("could not get active drop zone");
@@ -154,7 +159,6 @@ export class LimbleTreeService {
       if (index === -1) {
          throw new Error("failed to swap active drop zone");
       }
-      console.log("swapping");
       this.showDropZoneFamily(dropZoneInfo);
    }
 

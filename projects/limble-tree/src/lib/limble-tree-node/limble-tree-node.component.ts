@@ -110,7 +110,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          event.offsetY > dividingLine &&
          this.dropZoneBelow !== undefined &&
          this.dropZoneService.getActiveDropZoneInfo()?.container !==
-            this.dropZoneBelow
+            this.dropZoneBelow &&
+         !this.limbleTreeService.coordinatesHasChildren(this.coordinates)
       ) {
          const dropCoordinates = [...this.coordinates];
          dropCoordinates[dropCoordinates.length - 1]++;
