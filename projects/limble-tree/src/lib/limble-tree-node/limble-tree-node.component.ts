@@ -99,7 +99,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             this.coordinates.slice(0, sourceCoordinates.length)
          )
       ) {
-         this.dropZoneService.removeActiveAndSecondaryZones();
+         if (this.dropZoneService.getActiveDropZoneInfo() !== null) {
+            this.dropZoneService.removeActiveAndSecondaryZones();
+         }
          return;
       }
       const target = event.currentTarget as HTMLElement;

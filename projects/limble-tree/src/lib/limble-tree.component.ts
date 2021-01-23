@@ -10,6 +10,7 @@ import {
 import { DropZoneService } from "./singletons/drop-zone.service";
 import { LimbleTreeData } from "./singletons/limble-tree.service";
 import { TreeRendererService } from "./singletons/tree-renderer.service";
+import { isElementDescendant } from "./util";
 
 @Component({
    selector: "limble-tree",
@@ -74,15 +75,15 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
    }
 
    public dragleaveHandler(event: DragEvent) {
-      //TODO This isn't working
       if (
          this.coordinates !== undefined ||
-         (event.currentTarget as HTMLElement).contains(
+         isElementDescendant(
+            event.currentTarget as Node,
             event.relatedTarget as Node
-         )
+         ) !== false
       ) {
          return;
       }
-      // this.dropZoneService.removeActiveAndSecondaryZones();
+      this.dropZoneService.removeActiveAndSecondaryZones();
    }
 }

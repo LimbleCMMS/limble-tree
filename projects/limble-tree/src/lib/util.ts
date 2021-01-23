@@ -17,3 +17,24 @@ export function arraysAreEqual(
    }
    return true;
 }
+
+export function isElementDescendant(
+   potentialAncestor: Node,
+   potentialDescendant: Node
+): boolean | undefined {
+   if (potentialAncestor === potentialDescendant) {
+      return true;
+   }
+   let cursor = potentialDescendant.parentNode;
+   while (cursor !== document) {
+      if (cursor === null) {
+         //Did not reach `document` or ancestor. potentialDescendant is not part of the DOM.
+         return undefined;
+      }
+      if (cursor === potentialAncestor) {
+         return true;
+      }
+      cursor = cursor.parentNode;
+   }
+   return false;
+}
