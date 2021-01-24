@@ -226,7 +226,6 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       }
       const element = this.draggableDiv.nativeElement;
       const handle = element.querySelector(".limble-tree-handle");
-      console.log(handle);
       if (handle === null) {
          element.setAttribute("draggable", "true");
       } else {
