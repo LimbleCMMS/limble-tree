@@ -2,6 +2,7 @@ import {
    AfterViewInit,
    ChangeDetectorRef,
    Component,
+   ElementRef,
    Input,
    ViewChild,
    ViewContainerRef
@@ -18,7 +19,6 @@ import {
 import { TempService } from "../singletons/temp.service";
 import { TreeRendererService } from "../singletons/tree-renderer.service";
 import { arraysAreEqual } from "../util";
-import { BehaviorSubject } from "rxjs";
 
 @Component({
    selector: "limble-tree-node",
@@ -41,6 +41,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    @ViewChild("children", { read: ViewContainerRef }) private children:
       | ViewContainerRef
       | undefined;
+   @ViewChild("draggableDiv", { read: ElementRef }) private draggableDiv:
+      | ElementRef<HTMLElement>
+      | undefined;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
@@ -55,6 +58,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       this.registerDropZones();
       this.renderSelf();
       this.renderChildren();
+      this.checkForHandle();
       this.changeDetectorRef.detectChanges();
    }
 
@@ -214,5 +218,24 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          container: this.dropZoneBelow,
          coordinates: dropCoordinatesBelow
       });
+   }
+
+   private checkForHandle(): void {
+      if (this.draggableDiv === undefined) {
+         return;
+      }
+      const element = this.draggableDiv.nativeElement;
+      const handle = element.querySelector(".limble-tree-handle");
+      console.log(handle);
+      if (handle === null) {
+         element.setAttribute("draggable", "true");
+      } else {
+         handle.addEventListener("mousedown", () => {
+            element.setAttribute("draggable", "true");
+         });
+         handle.addEventListener("mouseup", () => {
+            element.setAttribute("draggable", "false");
+         });
+      }
    }
 }
