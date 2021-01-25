@@ -1,6 +1,7 @@
 import { Injectable, Type } from "@angular/core";
 import { arraysAreEqual } from "../util";
 import { DropZoneInfo, DropZoneService } from "./drop-zone.service";
+import { TempService } from "./temp.service";
 import { TreeRendererService } from "./tree-renderer.service";
 
 /** An object describing a node or "leaf" of the tree */
@@ -53,7 +54,8 @@ export const INDENT = 45;
 export class LimbleTreeService {
    constructor(
       private readonly treeRendererService: TreeRendererService,
-      private readonly dropZoneService: DropZoneService
+      private readonly dropZoneService: DropZoneService,
+      private readonly tempService: TempService
    ) {}
 
    public move(
@@ -155,7 +157,12 @@ export class LimbleTreeService {
             if (secondaryDropZone !== undefined) {
                this.showDropZoneFamily(secondaryDropZone, false, "below");
             }
-         } else {
+         } else if (
+            !arraysAreEqual(
+               this.tempService.get() as Array<number>,
+               previousSibling
+            )
+         ) {
             const treeData = this.treeRendererService.getTreeData();
             if (treeData.options?.allowNesting !== false) {
                const secondaryDropZoneCoordinates = [...previousSibling];
