@@ -67,8 +67,11 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       if (event.dataTransfer === null) {
          return;
       }
-      event.dataTransfer.effectAllowed = "move";
       const draggedElement = event.target as HTMLElement;
+      if (draggedElement.parentElement?.tagName !== "LIMBLE-TREE-NODE") {
+         return;
+      }
+      event.dataTransfer.effectAllowed = "move";
       draggedElement.classList.add("dragging");
       this.tempService.set(this.coordinates);
    }
@@ -97,7 +100,12 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       ) {
          return;
       }
-      const sourceCoordinates = this.tempService.get() as Array<number>;
+      const sourceCoordinates = this.tempService.get() as
+         | Array<number>
+         | undefined;
+      if (sourceCoordinates === undefined) {
+         return;
+      }
       //If trying to drop on self, remove any remaining drop zones and return.
       if (
          arraysAreEqual(
