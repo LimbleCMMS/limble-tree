@@ -187,7 +187,11 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             false
          ) {
             newBranch.instance.dropZoneInside$.subscribe((dropZone) => {
-               if (dropZone !== undefined) {
+               if (
+                  dropZone !== undefined &&
+                  this.treeRendererService.getTreeData().options
+                     ?.allowDragging !== false
+               ) {
                   this.dropZoneInside = dropZone;
                   if (this.coordinates === undefined) {
                      throw new Error("failed to register inner drop zone");
@@ -205,6 +209,11 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    }
 
    private registerDropZones() {
+      if (
+         this.treeRendererService.getTreeData().options?.allowDragging === false
+      ) {
+         return;
+      }
       if (
          this.dropZoneAbove === undefined ||
          this.dropZoneBelow === undefined ||
@@ -231,7 +240,12 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       }
       const element = this.draggableDiv.nativeElement;
       const handle = element.querySelector(".limble-tree-handle");
-      if (handle === null) {
+      if (
+         this.treeRendererService.getTreeData()?.options?.allowDragging ===
+         false
+      ) {
+         element.setAttribute("draggable", "false");
+      } else if (handle === null) {
          element.setAttribute("draggable", "true");
       } else {
          handle.addEventListener("mousedown", () => {

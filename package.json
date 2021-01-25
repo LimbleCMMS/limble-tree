@@ -3,7 +3,7 @@
    "version": "0.0.0",
    "scripts": {
       "ng": "ng",
-      "buildLibs": "ng build limble-tree",
+      "buildLibs": "ng build --prod limble-tree",
       "start": "ng serve",
       "buildAndStart": "npm run buildLibs && npm run start",
       "test": "ng test",

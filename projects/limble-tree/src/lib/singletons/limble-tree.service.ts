@@ -18,6 +18,7 @@ export interface LimbleTreeOptions {
    defaultComponent?: ComponentObj;
    indent?: number;
    allowNesting?: boolean;
+   allowDragging?: boolean;
 }
 
 export interface ComponentObj {

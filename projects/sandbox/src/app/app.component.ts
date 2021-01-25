@@ -57,8 +57,7 @@ export class AppComponent implements DoCheck {
       ],
       options: {
          defaultComponent: { class: TreeItemComponent },
-         indent: 60,
-         allowNesting: true
+         indent: 60
       }
    };
 
@@ -83,7 +82,7 @@ export class AppComponent implements DoCheck {
 
    private reRenderTree() {
       if (this.limbleTree !== undefined) {
-         this.limbleTree.reRender();
+         this.limbleTree.update();
       }
    }
 }

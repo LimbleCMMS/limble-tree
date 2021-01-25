@@ -55,17 +55,17 @@ export class LimbleTreeRootComponent
    ngAfterViewInit() {
       this.dropZoneInside$.next(this.dropZoneInside);
       this.dropZoneInside$.complete();
-      this.reRender();
+      this.update();
       this.changeDetectorRef.detectChanges();
    }
 
    ngOnChanges() {
       if (this.host !== undefined && this.treeData !== undefined) {
-         this.reRender();
+         this.update();
       }
    }
 
-   public reRender() {
+   public update() {
       if (this.host === undefined) {
          throw new Error(
             "Failed to render limble tree. Failure occurred at root."
