@@ -3,26 +3,43 @@ import { arraysAreEqual } from "../util";
 import { DropZoneInfo, DropZoneService } from "./drop-zone.service";
 import { TreeRendererService } from "./tree-renderer.service";
 
+/** An object describing a node or "leaf" of the tree */
 export interface LimbleTreeNode {
+   /** A list of nodes to be rendered "under" this one, one level deeper in the tree. */
    nodes?: Array<LimbleTreeNode>;
+   /** A custom data object that will be passed into the component as an `Input()` binding called `nodeData` */
    data: unknown;
+   /** An object that describes the component which will represent this node in the visual tree */
    component?: ComponentObj;
 }
 
+/** An object that the limble-tree-root component uses to build the tree */
 export interface LimbleTreeData {
+   /** A list of LimbleTreeNode objects, which the limble-tree-root component uses to build the tree's structure and contents */
    nodes: Array<LimbleTreeNode>;
+   /** A optional group of settings that can change the functionality of the tree */
    options?: LimbleTreeOptions;
 }
 
+/** A group of settings for changing the functionality of the tree */
 export interface LimbleTreeOptions {
+   /** The component object to use if one is not specified for a particular node */
    defaultComponent?: ComponentObj;
+   /** The number of pixels to indent each level of the tree. Defaults to 45 */
    indent?: number;
+   /** Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch)
+    * when dragging a node. Defaults to true.
+    */
    allowNesting?: boolean;
+   /** Whether to allow drag-and-drop functionality. Defaults to true.*/
    allowDragging?: boolean;
 }
 
+/** An object that references the component to be rendered and its bindings */
 export interface ComponentObj {
+   /** The component class */
    class: Type<unknown>;
+   /** The bindings (inputs and outputs) of the class */
    bindings?: {
       [index: string]: unknown;
    };
