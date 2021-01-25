@@ -56,7 +56,9 @@ export class AppComponent implements DoCheck {
          }
       ],
       options: {
-         defaultComponent: { class: TreeItemComponent }
+         defaultComponent: { class: TreeItemComponent },
+         indent: 60,
+         allowNesting: true
       }
    };
 

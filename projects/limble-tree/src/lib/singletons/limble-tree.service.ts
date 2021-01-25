@@ -17,6 +17,7 @@ export interface LimbleTreeData {
 export interface LimbleTreeOptions {
    defaultComponent?: ComponentObj;
    indent?: number;
+   allowNesting?: boolean;
 }
 
 export interface ComponentObj {
@@ -137,18 +138,21 @@ export class LimbleTreeService {
                this.showDropZoneFamily(secondaryDropZone, false, "below");
             }
          } else {
-            const secondaryDropZoneCoordinates = [...previousSibling];
-            secondaryDropZoneCoordinates.push(0);
-            const secondaryDropZone = this.dropZoneService
-               .getDropZones()
-               .find((dropZoneInfo) => {
-                  return arraysAreEqual(
-                     dropZoneInfo.coordinates,
-                     secondaryDropZoneCoordinates
-                  );
-               });
-            if (secondaryDropZone !== undefined) {
-               this.showDropZoneFamily(secondaryDropZone, false, "below");
+            const treeData = this.treeRendererService.getTreeData();
+            if (treeData.options?.allowNesting !== false) {
+               const secondaryDropZoneCoordinates = [...previousSibling];
+               secondaryDropZoneCoordinates.push(0);
+               const secondaryDropZone = this.dropZoneService
+                  .getDropZones()
+                  .find((dropZoneInfo) => {
+                     return arraysAreEqual(
+                        dropZoneInfo.coordinates,
+                        secondaryDropZoneCoordinates
+                     );
+                  });
+               if (secondaryDropZone !== undefined) {
+                  this.showDropZoneFamily(secondaryDropZone, false, "below");
+               }
             }
          }
       }

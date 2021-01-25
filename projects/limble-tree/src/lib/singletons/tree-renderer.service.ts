@@ -1,33 +1,9 @@
-import { Injectable, Type, ViewContainerRef } from "@angular/core";
+import { Injectable, ViewContainerRef } from "@angular/core";
 import { ComponentCreatorService } from "./component-creator.service";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 import { DropZoneService } from "./drop-zone.service";
 import { BehaviorSubject } from "rxjs";
-
-export interface LimbleTreeNode {
-   nodes?: Array<LimbleTreeNode>;
-   data: unknown;
-   component?: ComponentObj;
-}
-
-export interface LimbleTreeData {
-   nodes: Array<LimbleTreeNode>;
-   options?: LimbleTreeOptions;
-}
-
-export interface LimbleTreeOptions {
-   defaultComponent?: ComponentObj;
-   indent?: number;
-}
-
-export interface ComponentObj {
-   class: Type<unknown>;
-   bindings?: {
-      [index: string]: unknown;
-   };
-}
-
-export const INDENT = 45;
+import { INDENT, LimbleTreeData } from "./limble-tree.service";
 
 @Injectable({
    providedIn: "root"

@@ -182,20 +182,25 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          newBranch.instance.indent =
             this.treeRendererService.getTreeData().options?.indent ?? INDENT;
          newBranch.instance.coordinates = [...this.coordinates];
-         newBranch.instance.dropZoneInside$.subscribe((dropZone) => {
-            if (dropZone !== undefined) {
-               this.dropZoneInside = dropZone;
-               if (this.coordinates === undefined) {
-                  throw new Error("failed to register inner drop zone");
+         if (
+            this.treeRendererService.getTreeData().options?.allowNesting !==
+            false
+         ) {
+            newBranch.instance.dropZoneInside$.subscribe((dropZone) => {
+               if (dropZone !== undefined) {
+                  this.dropZoneInside = dropZone;
+                  if (this.coordinates === undefined) {
+                     throw new Error("failed to register inner drop zone");
+                  }
+                  const dropCoordinatesInside = [...this.coordinates];
+                  dropCoordinatesInside.push(0);
+                  this.dropZoneService.addDropZone({
+                     container: this.dropZoneInside,
+                     coordinates: dropCoordinatesInside
+                  });
                }
-               const dropCoordinatesInside = [...this.coordinates];
-               dropCoordinatesInside.push(0);
-               this.dropZoneService.addDropZone({
-                  container: this.dropZoneInside,
-                  coordinates: dropCoordinatesInside
-               });
-            }
-         });
+            });
+         }
       }
    }
 
