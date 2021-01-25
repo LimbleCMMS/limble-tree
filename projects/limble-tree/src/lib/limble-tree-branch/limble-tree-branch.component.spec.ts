@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { LimbleTreeComponent } from "./limble-tree.component";
+import { LimbleTreeBranchComponent } from "./limble-tree-branch.component";
 
 describe("LimbleTreeComponent", () => {
-   let component: LimbleTreeComponent;
-   let fixture: ComponentFixture<LimbleTreeComponent>;
+   let component: LimbleTreeBranchComponent;
+   let fixture: ComponentFixture<LimbleTreeBranchComponent>;
 
    beforeEach(async () => {
       await TestBed.configureTestingModule({
-         declarations: [LimbleTreeComponent]
+         declarations: [LimbleTreeBranchComponent]
       }).compileComponents();
    });
 
    beforeEach(() => {
-      fixture = TestBed.createComponent(LimbleTreeComponent);
+      fixture = TestBed.createComponent(LimbleTreeBranchComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
    });

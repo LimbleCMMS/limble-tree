@@ -2,27 +2,28 @@ import {
    AfterViewInit,
    ChangeDetectorRef,
    Component,
+   EventEmitter,
    Input,
    OnChanges,
+   OnDestroy,
    Output,
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
-import { DropZoneService } from "./singletons/drop-zone.service";
-import { LimbleTreeData } from "./singletons/limble-tree.service";
-import { TreeRendererService } from "./singletons/tree-renderer.service";
-import { isElementDescendant } from "./util";
+import { BehaviorSubject, Subscription } from "rxjs";
+import { DropZoneService } from "../singletons/drop-zone.service";
+import { LimbleTreeData } from "../singletons/limble-tree.service";
+import { TreeRendererService } from "../singletons/tree-renderer.service";
+import { isElementDescendant } from "../util";
 
 @Component({
-   selector: "limble-tree",
-   templateUrl: "./limble-tree.component.html",
-   styles: ["./limble-tree.component.scss"]
+   selector: "limble-tree-root",
+   templateUrl: "./limble-tree-root.component.html",
+   styleUrls: ["./limble-tree-root.component.scss"]
 })
-export class LimbleTreeComponent implements AfterViewInit, OnChanges {
+export class LimbleTreeRootComponent
+   implements AfterViewInit, OnChanges, OnDestroy {
    @Input() treeData: LimbleTreeData | undefined;
-   @Input() coordinates: Array<number> | undefined;
-   @Input() indent: number;
 
    @ViewChild("host", { read: ViewContainerRef }) private host:
       | ViewContainerRef
@@ -34,13 +35,21 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
    @Output()
    readonly dropZoneInside$: BehaviorSubject<ViewContainerRef | undefined>;
 
+   @Output() readonly treeChange = new EventEmitter();
+
+   private readonly changesSubscription: Subscription;
+
    constructor(
       private readonly treeRendererService: TreeRendererService,
       private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly dropZoneService: DropZoneService
    ) {
-      this.indent = 0;
       this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
+      this.changesSubscription = this.treeRendererService.changes$.subscribe(
+         () => {
+            this.treeChange.emit();
+         }
+      );
    }
 
    ngAfterViewInit() {
@@ -65,19 +74,11 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
       if (this.treeData === undefined) {
          throw new Error(`limbleTree requires a data object`);
       }
-      if (this.coordinates === undefined) {
-         this.treeRendererService.renderRoot(this.host, this.treeData);
-      } else {
-         this.treeRendererService.render(
-            this.host,
-            this.treeData,
-            this.coordinates
-         );
-      }
+      this.treeRendererService.renderRoot(this.host, this.treeData);
    }
 
    public dragoverHandler(event: DragEvent) {
-      if (this.coordinates !== undefined || event.dataTransfer === null) {
+      if (event.dataTransfer === null) {
          return;
       }
       event.stopPropagation();
@@ -89,7 +90,6 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
       const currentTarget = event.currentTarget;
       const relatedTarget = event.relatedTarget;
       if (
-         this.coordinates !== undefined ||
          !(currentTarget instanceof Node) ||
          !(relatedTarget instanceof Node) ||
          isElementDescendant(currentTarget, relatedTarget) !== false
@@ -97,5 +97,9 @@ export class LimbleTreeComponent implements AfterViewInit, OnChanges {
          return;
       }
       this.dropZoneService.removeActiveAndSecondaryZones();
+   }
+
+   ngOnDestroy() {
+      this.changesSubscription.unsubscribe();
    }
 }

@@ -9,7 +9,7 @@ import {
 } from "@angular/core";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
 import { DropZoneService } from "../singletons/drop-zone.service";
-import { LimbleTreeComponent } from "../limble-tree.component";
+import { LimbleTreeBranchComponent } from "../limble-tree-branch/limble-tree-branch.component";
 import {
    ComponentObj,
    INDENT,
@@ -171,8 +171,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          if (this.coordinates === undefined) {
             throw new Error("coordinates are undefined");
          }
-         const newBranch = this.componentCreatorService.appendComponent<LimbleTreeComponent>(
-            LimbleTreeComponent,
+         const newBranch = this.componentCreatorService.appendComponent<LimbleTreeBranchComponent>(
+            LimbleTreeBranchComponent,
             this.children
          );
          newBranch.instance.treeData = {

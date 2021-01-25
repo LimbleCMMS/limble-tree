@@ -1,6 +1,6 @@
 import { Component, DoCheck, ViewChild } from "@angular/core";
 import {
-   LimbleTreeComponent,
+   LimbleTreeRootComponent,
    LimbleTreeData,
    LimbleTreeNode
 } from "projects/limble-tree/src/public-api";
@@ -13,7 +13,7 @@ import { TreeItemComponent } from "./tree-item/tree-item.component";
    styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements DoCheck {
-   @ViewChild("tree") limbleTree: LimbleTreeComponent | undefined;
+   @ViewChild("tree") limbleTree: LimbleTreeRootComponent | undefined;
 
    public limbleTreeData: LimbleTreeData = {
       nodes: [
@@ -73,6 +73,10 @@ export class AppComponent implements DoCheck {
    public addNode(node: LimbleTreeNode) {
       this.limbleTreeData.nodes.push(node);
       this.reRenderTree();
+   }
+
+   public treeChangeHandler() {
+      console.log("changed!");
    }
 
    private reRenderTree() {

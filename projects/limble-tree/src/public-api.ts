@@ -7,5 +7,5 @@ export {
    LimbleTreeData,
    ComponentObj
 } from "./lib/singletons/limble-tree.service";
-export { LimbleTreeComponent } from "./lib/limble-tree.component";
+export { LimbleTreeRootComponent } from "./lib/limble-tree-root/limble-tree-root.component";
 export { LimbleTreeModule } from "./lib/limble-tree.module";

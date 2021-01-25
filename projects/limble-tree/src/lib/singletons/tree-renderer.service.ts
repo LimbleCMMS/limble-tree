@@ -2,6 +2,7 @@ import { Injectable, Type, ViewContainerRef } from "@angular/core";
 import { ComponentCreatorService } from "./component-creator.service";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 import { DropZoneService } from "./drop-zone.service";
+import { BehaviorSubject } from "rxjs";
 
 export interface LimbleTreeNode {
    nodes?: Array<LimbleTreeNode>;
@@ -34,11 +35,14 @@ export const INDENT = 45;
 export class TreeRendererService {
    private treeData: LimbleTreeData | undefined;
    private host: ViewContainerRef | undefined;
+   public changes$: BehaviorSubject<null>;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
       private readonly dropZoneService: DropZoneService
-   ) {}
+   ) {
+      this.changes$ = new BehaviorSubject(null);
+   }
 
    public renderRoot(host?: ViewContainerRef, treeData?: LimbleTreeData) {
       if (host !== undefined) {
@@ -52,6 +56,7 @@ export class TreeRendererService {
       }
       this.dropZoneService.clearDropZones();
       this.render(this.host, this.treeData, []);
+      this.changes$.next(null);
    }
 
    public render(

@@ -2,7 +2,11 @@
 <div class="container">
    <div style="min-width: 40%; padding-right: 5%">
       <h3>Rendered Tree</h3>
-      <limble-tree [treeData]="limbleTreeData" #tree></limble-tree>
+      <limble-tree-root
+         [treeData]="limbleTreeData"
+         (treeChange)="treeChangeHandler()"
+         #tree
+      ></limble-tree-root>
       <br />
       <button (click)="addNode({ data: { value1: 'extra thing' } })">
          Add Node
