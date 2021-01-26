@@ -154,6 +154,46 @@
                }
             }
          }
+      },
+      "branches": {
+         "projectType": "library",
+         "root": "projects/branches",
+         "sourceRoot": "projects/branches/src",
+         "prefix": "lib",
+         "architect": {
+            "build": {
+               "builder": "@angular-devkit/build-angular:ng-packagr",
+               "options": {
+                  "tsConfig": "projects/branches/tsconfig.lib.json",
+                  "project": "projects/branches/ng-package.json"
+               },
+               "configurations": {
+                  "production": {
+                     "tsConfig": "projects/branches/tsconfig.lib.prod.json"
+                  }
+               }
+            },
+            "test": {
+               "builder": "@angular-devkit/build-angular:karma",
+               "options": {
+                  "main": "projects/branches/src/test.ts",
+                  "tsConfig": "projects/branches/tsconfig.spec.json",
+                  "karmaConfig": "projects/branches/karma.conf.js"
+               }
+            },
+            "lint": {
+               "builder": "@angular-devkit/build-angular:tslint",
+               "options": {
+                  "tsConfig": [
+                     "projects/branches/tsconfig.lib.json",
+                     "projects/branches/tsconfig.spec.json"
+                  ],
+                  "exclude": [
+                     "**/node_modules/**"
+                  ]
+               }
+            }
+         }
       }
    },
    "defaultProject": "sandbox"

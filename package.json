@@ -3,8 +3,8 @@
    "version": "0.0.0",
    "scripts": {
       "ng": "ng",
-      "buildLibs": "ng build --prod limble-tree",
-      "start": "ng serve",
+      "buildLibs": "ng build --prod branches && ng build --prod limble-tree",
+      "start": "ng serve sandbox",
       "buildAndStart": "npm run buildLibs && npm run start",
       "test": "ng test",
       "lintCheck": "eslint projects/limble-tree/src/lib projects/sandbox/src/app --cache --ext .js --ext .ts --ext .html",
