@@ -1,6 +1,13 @@
 import { Injectable, ViewContainerRef } from "@angular/core";
 import { ComponentCreatorService } from "./component-creator.service";
 import { DropZoneComponent } from "../drop-zone/drop-zone.component";
+import { arraysAreEqual } from "../util";
+import {
+   LimbleTreeData,
+   LimbleTreeNode,
+   LimbleTreeOptions
+} from "../limble-tree-root/tree.service";
+import { TempService } from "./temp.service";
 
 export interface DropZoneInfo {
    container: ViewContainerRef;
@@ -12,13 +19,21 @@ export class DropZoneService {
    private activeDropZoneInfo: DropZoneInfo | null;
    private secondaryDropZones: Array<DropZoneInfo>;
    private dropZones: Array<DropZoneInfo>;
+   private treeData: LimbleTreeData | undefined;
+   private treeOptions: LimbleTreeOptions | undefined;
 
    constructor(
-      private readonly componentCreatorService: ComponentCreatorService
+      private readonly componentCreatorService: ComponentCreatorService,
+      private readonly tempService: TempService
    ) {
       this.activeDropZoneInfo = null;
       this.secondaryDropZones = [];
       this.dropZones = [];
+   }
+
+   public init(treeData: LimbleTreeData, treeOptions: LimbleTreeOptions) {
+      this.treeData = treeData;
+      this.treeOptions = treeOptions;
    }
 
    public showSingleDropZone(dropZone: DropZoneInfo, active: boolean = true) {
@@ -72,5 +87,171 @@ export class DropZoneService {
    public clearDropZones() {
       this.removeActiveAndSecondaryZones();
       this.dropZones = [];
+   }
+
+   private isLastDropZoneInBranch(coordinates: Array<number>): boolean {
+      const group = this.getCoordinatesGroup(coordinates);
+      if (group.length - 1 < coordinates[coordinates.length - 1]) {
+         return true;
+      }
+      return false;
+   }
+
+   private isOnRoot(coordinates: Array<number>): boolean {
+      return coordinates.length === 1;
+   }
+
+   public showDropZoneFamily(
+      dropZone: DropZoneInfo,
+      active: boolean = true,
+      skip: "below" | "above" | false = false
+   ) {
+      this.showSingleDropZone(dropZone, active);
+      if (
+         !this.isOnRoot(dropZone.coordinates) &&
+         this.isLastDropZoneInBranch(dropZone.coordinates) &&
+         skip !== "below"
+      ) {
+         const parent = [...dropZone.coordinates];
+         parent.pop();
+         const secondaryDropZoneCoordinates = this.getNextSibling(parent);
+         if (secondaryDropZoneCoordinates === null) {
+            throw new Error("Could not get secondary drop zone coordinates");
+         }
+         const secondaryDropZone = this.getDropZones().find((dropZoneInfo) => {
+            return arraysAreEqual(
+               dropZoneInfo.coordinates,
+               secondaryDropZoneCoordinates
+            );
+         });
+         if (secondaryDropZone !== undefined) {
+            this.showDropZoneFamily(secondaryDropZone, false, "above");
+         }
+      }
+      if (skip !== "above") {
+         const position = dropZone.coordinates[dropZone.coordinates.length - 1];
+         if (position === 0) {
+            return;
+         }
+         const previousSibling = [...dropZone.coordinates];
+         previousSibling[previousSibling.length - 1]--;
+         const hasChildren = this.coordinatesHasChildren(previousSibling);
+         if (hasChildren) {
+            const previousSiblingFirstChild = [...previousSibling];
+            previousSiblingFirstChild.push(0);
+            let secondaryDropZoneCoordinates: Array<number> = previousSiblingFirstChild;
+            let next = this.getNextSibling(secondaryDropZoneCoordinates);
+            while (next !== null) {
+               secondaryDropZoneCoordinates = next;
+               next = this.getNextSibling(secondaryDropZoneCoordinates);
+            }
+            const secondaryDropZone = this.getDropZones().find(
+               (dropZoneInfo) => {
+                  return arraysAreEqual(
+                     dropZoneInfo.coordinates,
+                     secondaryDropZoneCoordinates
+                  );
+               }
+            );
+            if (secondaryDropZone !== undefined) {
+               this.showDropZoneFamily(secondaryDropZone, false, "below");
+            }
+         } else if (
+            !arraysAreEqual(
+               this.tempService.get()?.getCoordinates() ?? [],
+               previousSibling
+            )
+         ) {
+            if (this.treeOptions?.allowNesting !== false) {
+               const secondaryDropZoneCoordinates = [...previousSibling];
+               secondaryDropZoneCoordinates.push(0);
+               const secondaryDropZone = this.getDropZones().find(
+                  (dropZoneInfo) => {
+                     return arraysAreEqual(
+                        dropZoneInfo.coordinates,
+                        secondaryDropZoneCoordinates
+                     );
+                  }
+               );
+               if (secondaryDropZone !== undefined) {
+                  this.showDropZoneFamily(secondaryDropZone, false, "below");
+               }
+            }
+         }
+      }
+   }
+
+   private coordinatesHasChildren(coordinates: Array<number>): boolean {
+      const children = this.getCoordinatesChildren(coordinates);
+      return children !== undefined && children.length > 0;
+   }
+
+   public swapActiveDropZone(dropZoneInfo: DropZoneInfo) {
+      if (this.getActiveDropZoneInfo() === null) {
+         throw new Error("could not get active drop zone");
+      }
+      const secondaryDropZones = this.getSecondaryDropZones();
+      const index = secondaryDropZones.findIndex((dropZone) => {
+         return dropZone.coordinates === dropZoneInfo.coordinates;
+      });
+      if (index === -1) {
+         throw new Error("failed to swap active drop zone");
+      }
+      this.showDropZoneFamily(dropZoneInfo);
+   }
+
+   private getNextSibling(coordinates: Array<number>): Array<number> | null {
+      const temp = [...coordinates];
+      const group = this.getCoordinatesGroup(temp);
+      const nextPosition = temp[temp.length - 1]++;
+      if (group.length <= nextPosition) {
+         return null;
+      }
+      return temp;
+   }
+
+   private getCoordinatesGroup(
+      coordinates: Array<number>
+   ): Array<LimbleTreeNode> {
+      if (this.treeData === undefined) {
+         throw new Error("treeData is not defined");
+      }
+      let group = this.treeData;
+      let allowSingleUndefined = true;
+      for (const [index, key] of coordinates.entries()) {
+         if (index === coordinates.length - 1) {
+            break;
+         }
+         let newGroup = group[key].nodes;
+         if (newGroup === undefined) {
+            if (allowSingleUndefined === true) {
+               //This allows us to create an "inner" group on the fly -- but only once during this function
+               group[key].nodes = [];
+               newGroup = group[key].nodes as Array<LimbleTreeNode>;
+               allowSingleUndefined = false;
+            } else {
+               throw new Error("bad coordinates");
+            }
+         }
+         group = newGroup;
+      }
+      return group;
+   }
+
+   private getCoordinatesChildren(
+      coordinates: Array<number>
+   ): Array<LimbleTreeNode> | undefined {
+      if (this.treeData === undefined) {
+         throw new Error("treeData is not defined");
+      }
+      let cursor = this.treeData;
+      for (const key of coordinates) {
+         const newCursor = cursor[key].nodes;
+         if (newCursor === undefined) {
+            return undefined;
+         }
+         cursor = newCursor;
+      }
+      return cursor;
    }
 }

@@ -111,7 +111,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             this.dropZoneAbove
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
-         this.treeService.showDropZoneFamily({
+         this.dropZoneService.showDropZoneFamily({
             container: this.dropZoneAbove,
             coordinates: dropCoordinates
          });
@@ -123,7 +123,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates.push(0);
-         this.treeService.showDropZoneFamily({
+         this.dropZoneService.showDropZoneFamily({
             container: this.dropZoneInside,
             coordinates: dropCoordinates
          });
@@ -136,7 +136,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates[dropCoordinates.length - 1]++;
-         this.treeService.showDropZoneFamily({
+         this.dropZoneService.showDropZoneFamily({
             container: this.dropZoneBelow,
             coordinates: dropCoordinates
          });

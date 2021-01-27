@@ -1,11 +1,9 @@
 import { Injectable, Type, ViewContainerRef } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
-import { DropZoneInfo, DropZoneService } from "../singletons/drop-zone.service";
+import { DropZoneService } from "../singletons/drop-zone.service";
 import { Branch } from "branches";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
-import { arraysAreEqual } from "../util";
-import { TempService } from "../singletons/temp.service";
 
 /** An object describing a node of the tree */
 export interface LimbleTreeNode {
@@ -64,8 +62,7 @@ export class TreeService {
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
-      private readonly dropZoneService: DropZoneService,
-      private readonly tempService: TempService
+      private readonly dropZoneService: DropZoneService
    ) {
       this.changes$ = new BehaviorSubject(null);
       this.treeModel = new Branch(null);
@@ -78,21 +75,26 @@ export class TreeService {
    ) {
       this.host = host;
       this.treeData = data;
-      this.treeModel = new Branch(null);
       this.treeOptions = this.processOptions(options);
+      this.render();
+   }
+
+   private render() {
+      if (
+         this.host === undefined ||
+         this.treeData === undefined ||
+         this.treeOptions === undefined
+      ) {
+         throw new Error("TreeModel not initialized");
+      }
+      this.host.clear();
+      this.treeModel = new Branch(null);
       this.dropZoneService.clearDropZones();
+      this.dropZoneService.init(this.treeData, this.treeOptions);
       for (const node of this.treeData) {
          const branch = new Branch(node);
          this.treeModel.appendChild(branch);
       }
-      this.render();
-   }
-
-   public render() {
-      if (this.host === undefined || this.treeModel === undefined) {
-         throw new Error("TreeModel not initialized");
-      }
-      this.host.clear();
       for (const branch of this.treeModel.getChildren()) {
          const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
             LimbleTreeNodeComponent,
@@ -143,174 +145,6 @@ export class TreeService {
       targetParent.insertChild(source, index);
       this.rebuildTreeData();
       this.render();
-   }
-
-   public isLastDropZoneInBranch(coordinates: Array<number>): boolean {
-      const group = this.getCoordinatesGroup(coordinates);
-      if (group.length - 1 < coordinates[coordinates.length - 1]) {
-         return true;
-      }
-      return false;
-   }
-
-   public isOnRoot(coordinates: Array<number>): boolean {
-      return coordinates.length === 1;
-   }
-
-   public showDropZoneFamily(
-      dropZone: DropZoneInfo,
-      active: boolean = true,
-      skip: "below" | "above" | false = false
-   ) {
-      this.dropZoneService.showSingleDropZone(dropZone, active);
-      if (
-         !this.isOnRoot(dropZone.coordinates) &&
-         this.isLastDropZoneInBranch(dropZone.coordinates) &&
-         skip !== "below"
-      ) {
-         const parent = [...dropZone.coordinates];
-         parent.pop();
-         const secondaryDropZoneCoordinates = this.getNextSibling(parent);
-         if (secondaryDropZoneCoordinates === null) {
-            throw new Error("Could not get secondary drop zone coordinates");
-         }
-         const secondaryDropZone = this.dropZoneService
-            .getDropZones()
-            .find((dropZoneInfo) => {
-               return arraysAreEqual(
-                  dropZoneInfo.coordinates,
-                  secondaryDropZoneCoordinates
-               );
-            });
-         if (secondaryDropZone !== undefined) {
-            this.showDropZoneFamily(secondaryDropZone, false, "above");
-         }
-      }
-      if (skip !== "above") {
-         const position = dropZone.coordinates[dropZone.coordinates.length - 1];
-         if (position === 0) {
-            return;
-         }
-         const previousSibling = [...dropZone.coordinates];
-         previousSibling[previousSibling.length - 1]--;
-         const hasChildren = this.coordinatesHasChildren(previousSibling);
-         if (hasChildren) {
-            const previousSiblingFirstChild = [...previousSibling];
-            previousSiblingFirstChild.push(0);
-            let secondaryDropZoneCoordinates: Array<number> = previousSiblingFirstChild;
-            let next = this.getNextSibling(secondaryDropZoneCoordinates);
-            while (next !== null) {
-               secondaryDropZoneCoordinates = next;
-               next = this.getNextSibling(secondaryDropZoneCoordinates);
-            }
-            const secondaryDropZone = this.dropZoneService
-               .getDropZones()
-               .find((dropZoneInfo) => {
-                  return arraysAreEqual(
-                     dropZoneInfo.coordinates,
-                     secondaryDropZoneCoordinates
-                  );
-               });
-            if (secondaryDropZone !== undefined) {
-               this.showDropZoneFamily(secondaryDropZone, false, "below");
-            }
-         } else if (
-            !arraysAreEqual(
-               this.tempService.get()?.getCoordinates() ?? [],
-               previousSibling
-            )
-         ) {
-            if (this.treeOptions?.allowNesting !== false) {
-               const secondaryDropZoneCoordinates = [...previousSibling];
-               secondaryDropZoneCoordinates.push(0);
-               const secondaryDropZone = this.dropZoneService
-                  .getDropZones()
-                  .find((dropZoneInfo) => {
-                     return arraysAreEqual(
-                        dropZoneInfo.coordinates,
-                        secondaryDropZoneCoordinates
-                     );
-                  });
-               if (secondaryDropZone !== undefined) {
-                  this.showDropZoneFamily(secondaryDropZone, false, "below");
-               }
-            }
-         }
-      }
-   }
-
-   public coordinatesHasChildren(coordinates: Array<number>): boolean {
-      const children = this.getCoordinatesChildren(coordinates);
-      return children !== undefined && children.length > 0;
-   }
-
-   public swapActiveDropZone(dropZoneInfo: DropZoneInfo) {
-      if (this.dropZoneService.getActiveDropZoneInfo() === null) {
-         throw new Error("could not get active drop zone");
-      }
-      const secondaryDropZones = this.dropZoneService.getSecondaryDropZones();
-      const index = secondaryDropZones.findIndex((dropZone) => {
-         return dropZone.coordinates === dropZoneInfo.coordinates;
-      });
-      if (index === -1) {
-         throw new Error("failed to swap active drop zone");
-      }
-      this.showDropZoneFamily(dropZoneInfo);
-   }
-
-   private getNextSibling(coordinates: Array<number>): Array<number> | null {
-      const temp = [...coordinates];
-      const group = this.getCoordinatesGroup(temp);
-      const nextPosition = temp[temp.length - 1]++;
-      if (group.length <= nextPosition) {
-         return null;
-      }
-      return temp;
-   }
-
-   private getCoordinatesGroup(
-      coordinates: Array<number>
-   ): Array<LimbleTreeNode> {
-      if (this.treeData === undefined) {
-         throw new Error("treeData is not defined");
-      }
-      let group = this.treeData;
-      let allowSingleUndefined = true;
-      for (const [index, key] of coordinates.entries()) {
-         if (index === coordinates.length - 1) {
-            break;
-         }
-         let newGroup = group[key].nodes;
-         if (newGroup === undefined) {
-            if (allowSingleUndefined === true) {
-               //This allows us to create an "inner" group on the fly -- but only once during this function
-               group[key].nodes = [];
-               newGroup = group[key].nodes as Array<LimbleTreeNode>;
-               allowSingleUndefined = false;
-            } else {
-               throw new Error("bad coordinates");
-            }
-         }
-         group = newGroup;
-      }
-      return group;
-   }
-
-   private getCoordinatesChildren(
-      coordinates: Array<number>
-   ): Array<LimbleTreeNode> | undefined {
-      if (this.treeData === undefined) {
-         throw new Error("treeData is not defined");
-      }
-      let cursor = this.treeData;
-      for (const key of coordinates) {
-         const newCursor = cursor[key].nodes;
-         if (newCursor === undefined) {
-            return undefined;
-         }
-         cursor = newCursor;
-      }
-      return cursor;
    }
 
    private rebuildTreeData(): void {
