@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { DropZoneInfo } from "../singletons/drop-zone.service";
-import { LimbleTreeService } from "../singletons/limble-tree.service";
+import { TreeService } from "../limble-tree-root/tree.service";
 
 @Component({
    selector: "drop-zone",
@@ -11,12 +11,12 @@ export class DropZoneComponent {
    @Input() active: boolean = false;
    @Input() dropZoneInfo: DropZoneInfo | undefined;
 
-   constructor(private readonly limbleTreeService: LimbleTreeService) {}
+   constructor(private readonly treeService: TreeService) {}
 
    public dragenterHandler() {
       if (this.active === true || this.dropZoneInfo === undefined) {
          return;
       }
-      this.limbleTreeService.swapActiveDropZone(this.dropZoneInfo);
+      this.treeService.swapActiveDropZone(this.dropZoneInfo);
    }
 }

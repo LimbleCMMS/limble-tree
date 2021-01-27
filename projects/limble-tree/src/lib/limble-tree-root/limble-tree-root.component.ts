@@ -12,18 +12,23 @@ import {
 } from "@angular/core";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { DropZoneService } from "../singletons/drop-zone.service";
-import { LimbleTreeData } from "../singletons/limble-tree.service";
-import { TreeRendererService } from "../singletons/tree-renderer.service";
+import {
+   LimbleTreeData,
+   LimbleTreeOptions
+} from "../limble-tree-root/tree.service";
+import { TreeService } from "./tree.service";
 import { isElementDescendant } from "../util";
 
 @Component({
    selector: "limble-tree-root",
    templateUrl: "./limble-tree-root.component.html",
-   styleUrls: ["./limble-tree-root.component.scss"]
+   styleUrls: ["./limble-tree-root.component.scss"],
+   providers: [TreeService]
 })
 export class LimbleTreeRootComponent
    implements AfterViewInit, OnChanges, OnDestroy {
-   @Input() treeData: LimbleTreeData | undefined;
+   @Input() data: LimbleTreeData | undefined;
+   @Input() options: LimbleTreeOptions | undefined;
 
    @ViewChild("host", { read: ViewContainerRef }) private host:
       | ViewContainerRef
@@ -40,16 +45,14 @@ export class LimbleTreeRootComponent
    private readonly changesSubscription: Subscription;
 
    constructor(
-      private readonly treeRendererService: TreeRendererService,
+      private readonly treeService: TreeService,
       private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly dropZoneService: DropZoneService
    ) {
       this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
-      this.changesSubscription = this.treeRendererService.changes$.subscribe(
-         () => {
-            this.treeChange.emit();
-         }
-      );
+      this.changesSubscription = this.treeService.changes$.subscribe(() => {
+         this.treeChange.emit();
+      });
    }
 
    ngAfterViewInit() {
@@ -60,7 +63,7 @@ export class LimbleTreeRootComponent
    }
 
    ngOnChanges() {
-      if (this.host !== undefined && this.treeData !== undefined) {
+      if (this.host !== undefined && this.data !== undefined) {
          this.update();
       }
    }
@@ -71,10 +74,10 @@ export class LimbleTreeRootComponent
             "Failed to render limble tree. Failure occurred at root."
          );
       }
-      if (this.treeData === undefined) {
+      if (this.data === undefined) {
          throw new Error(`limbleTree requires a data object`);
       }
-      this.treeRendererService.renderRoot(this.host, this.treeData);
+      this.treeService.init(this.host, this.data, this.options);
    }
 
    public dragoverHandler(event: DragEvent) {

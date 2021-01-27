@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
+import { Branch } from "branches";
 
 @Injectable()
 export class TempService {
-   private _tempData: unknown;
+   private _tempData: Branch<any> | undefined;
 
-   public set(value: unknown) {
+   public set(value: Branch<any>) {
       this._tempData = value;
    }
 

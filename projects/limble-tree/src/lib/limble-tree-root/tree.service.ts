@@ -1,26 +1,25 @@
-import { Injectable, Type } from "@angular/core";
+import { Injectable, Type, ViewContainerRef } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
+import { ComponentCreatorService } from "../singletons/component-creator.service";
+import { DropZoneInfo, DropZoneService } from "../singletons/drop-zone.service";
+import { Branch } from "branches";
+import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 import { arraysAreEqual } from "../util";
-import { DropZoneInfo, DropZoneService } from "./drop-zone.service";
-import { TempService } from "./temp.service";
-import { TreeRendererService } from "./tree-renderer.service";
+import { TempService } from "../singletons/temp.service";
 
-/** An object describing a node or "leaf" of the tree */
+/** An object describing a node of the tree */
 export interface LimbleTreeNode {
    /** A list of nodes to be rendered "under" this one, one level deeper in the tree. */
-   nodes?: Array<LimbleTreeNode>;
-   /** A custom data object that will be passed into the component as an `Input()` binding called `nodeData` */
-   data: unknown;
+   nodes?: LimbleTreeData;
+   // /** A custom data object that will be passed into the component as an `Input()` binding called `nodeData` */
+   // data: unknown;
    /** An object that describes the component which will represent this node in the visual tree */
    component?: ComponentObj;
+   [index: string]: unknown;
 }
 
 /** An object that the limble-tree-root component uses to build the tree */
-export interface LimbleTreeData {
-   /** A list of LimbleTreeNode objects, which the limble-tree-root component uses to build the tree's structure and contents */
-   nodes: Array<LimbleTreeNode>;
-   /** A optional group of settings that can change the functionality of the tree */
-   options?: LimbleTreeOptions;
-}
+export type LimbleTreeData = Array<LimbleTreeNode>;
 
 /** A group of settings for changing the functionality of the tree */
 export interface LimbleTreeOptions {
@@ -48,37 +47,102 @@ export interface ComponentObj {
 
 export const INDENT = 45;
 
-@Injectable({
-   providedIn: "root"
-})
-export class LimbleTreeService {
+export interface ProcessedOptions {
+   defaultComponent?: ComponentObj;
+   indent: number;
+   allowNesting: boolean;
+   allowDragging: boolean;
+}
+
+@Injectable()
+export class TreeService {
+   public changes$: BehaviorSubject<null>;
+   private host: ViewContainerRef | undefined;
+   public treeData: LimbleTreeData | undefined;
+   public treeOptions: ProcessedOptions | undefined;
+   public treeModel: Branch<any>;
+
    constructor(
-      private readonly treeRendererService: TreeRendererService,
+      private readonly componentCreatorService: ComponentCreatorService,
       private readonly dropZoneService: DropZoneService,
       private readonly tempService: TempService
-   ) {}
-
-   public move(
-      sourceCoordinates: Array<number>,
-      targetCoordinates: Array<number>
    ) {
-      const sourceGroup = this.getCoordinatesGroup(sourceCoordinates);
-      const sourceIndex = sourceCoordinates[sourceCoordinates.length - 1];
-      const sourceNode = sourceGroup[sourceIndex];
-      const targetGroup = this.getCoordinatesGroup(targetCoordinates);
-      const targetIndex = targetCoordinates[targetCoordinates.length - 1];
-      if (sourceGroup === targetGroup && sourceIndex < targetIndex) {
-         //The node is moving down in its current branch, so we have to insert before we delete.
-         this.insertNodeIntoGroup(sourceNode, targetGroup, targetIndex);
-         this.removeNodeFromGroup(sourceNode, sourceGroup);
-      } else {
-         //The node is either:
-         //(1) leaving its current branch, so we can do the insert and delete in any order; or
-         //(2) moving up its current branch, so we have to delete first before inserting.
-         this.removeNodeFromGroup(sourceNode, sourceGroup);
-         this.insertNodeIntoGroup(sourceNode, targetGroup, targetIndex);
+      this.changes$ = new BehaviorSubject(null);
+      this.treeModel = new Branch(null);
+   }
+
+   public init(
+      host: ViewContainerRef,
+      data: LimbleTreeData,
+      options?: LimbleTreeOptions
+   ) {
+      this.host = host;
+      this.treeData = data;
+      this.treeModel = new Branch(null);
+      this.treeOptions = this.processOptions(options);
+      this.dropZoneService.clearDropZones();
+      for (const node of this.treeData) {
+         const branch = new Branch(node);
+         this.treeModel.appendChild(branch);
       }
-      this.treeRendererService.renderRoot();
+      this.render();
+   }
+
+   public render() {
+      if (this.host === undefined || this.treeModel === undefined) {
+         throw new Error("TreeModel not initialized");
+      }
+      this.host.clear();
+      for (const branch of this.treeModel.getChildren()) {
+         const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
+            LimbleTreeNodeComponent,
+            this.host
+         );
+         componentRef.instance.branch = branch;
+      }
+      this.changes$.next(null);
+   }
+
+   public renderBranch(host: ViewContainerRef, branch: Branch<any>) {
+      if (this.treeModel === undefined) {
+         throw new Error("TreeModel not initialized");
+      }
+      host.clear();
+      for (const node of branch.data.nodes ?? []) {
+         const newBranch = new Branch(node);
+         branch.appendChild(newBranch);
+         const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
+            LimbleTreeNodeComponent,
+            host
+         );
+         componentRef.instance.branch = newBranch;
+      }
+   }
+
+   private processOptions(options: LimbleTreeOptions = {}): ProcessedOptions {
+      return {
+         defaultComponent: options.defaultComponent,
+         indent: options.indent ?? INDENT,
+         allowNesting: options.allowNesting ?? true,
+         allowDragging: options.allowDragging ?? true
+      };
+   }
+
+   public move(source: Branch<any>, targetCoordinates: Array<number>) {
+      const targetParentCoordinates = [...targetCoordinates];
+      const index = targetParentCoordinates.pop();
+      if (index === undefined) {
+         throw new Error("target coordinates are empty");
+      }
+      const targetParent = this.treeModel.getDescendant(
+         targetParentCoordinates
+      );
+      if (targetParent === undefined) {
+         throw new Error("could not get to target");
+      }
+      targetParent.insertChild(source, index);
+      this.rebuildTreeData();
+      this.render();
    }
 
    public isLastDropZoneInBranch(coordinates: Array<number>): boolean {
@@ -91,13 +155,6 @@ export class LimbleTreeService {
 
    public isOnRoot(coordinates: Array<number>): boolean {
       return coordinates.length === 1;
-   }
-
-   private removeNodeFromGroup(
-      node: LimbleTreeNode,
-      nodeGroup: Array<LimbleTreeNode>
-   ) {
-      nodeGroup.splice(nodeGroup.indexOf(node), 1);
    }
 
    public showDropZoneFamily(
@@ -159,12 +216,11 @@ export class LimbleTreeService {
             }
          } else if (
             !arraysAreEqual(
-               this.tempService.get() as Array<number>,
+               this.tempService.get()?.getCoordinates() ?? [],
                previousSibling
             )
          ) {
-            const treeData = this.treeRendererService.getTreeData();
-            if (treeData.options?.allowNesting !== false) {
+            if (this.treeOptions?.allowNesting !== false) {
                const secondaryDropZoneCoordinates = [...previousSibling];
                secondaryDropZoneCoordinates.push(0);
                const secondaryDropZone = this.dropZoneService
@@ -212,22 +268,13 @@ export class LimbleTreeService {
       return temp;
    }
 
-   private insertNodeIntoGroup(
-      node: LimbleTreeNode,
-      nodeGroup: Array<LimbleTreeNode>,
-      index: number
-   ) {
-      nodeGroup.splice(index, 0, node);
-   }
-
    private getCoordinatesGroup(
       coordinates: Array<number>
    ): Array<LimbleTreeNode> {
-      const treeData = this.treeRendererService.getTreeData();
-      if (treeData === undefined) {
+      if (this.treeData === undefined) {
          throw new Error("treeData is not defined");
       }
-      let group = treeData.nodes;
+      let group = this.treeData;
       let allowSingleUndefined = true;
       for (const [index, key] of coordinates.entries()) {
          if (index === coordinates.length - 1) {
@@ -252,11 +299,10 @@ export class LimbleTreeService {
    private getCoordinatesChildren(
       coordinates: Array<number>
    ): Array<LimbleTreeNode> | undefined {
-      const treeData = this.treeRendererService.getTreeData();
-      if (treeData === undefined) {
+      if (this.treeData === undefined) {
          throw new Error("treeData is not defined");
       }
-      let cursor = treeData.nodes;
+      let cursor = this.treeData;
       for (const key of coordinates) {
          const newCursor = cursor[key].nodes;
          if (newCursor === undefined) {
@@ -265,5 +311,22 @@ export class LimbleTreeService {
          cursor = newCursor;
       }
       return cursor;
+   }
+
+   private rebuildTreeData(): void {
+      const temp: LimbleTreeData = [];
+      for (const branch of this.treeModel.getChildren()) {
+         temp.push(this.rebuildBranch(branch));
+      }
+      this.treeData = temp;
+   }
+
+   private rebuildBranch(branch: Branch<any>): LimbleTreeNode {
+      const temp: LimbleTreeNode = branch.data;
+      temp.nodes = [];
+      for (const child of branch.getChildren()) {
+         temp.nodes.push(this.rebuildBranch(child));
+      }
+      return temp;
    }
 }

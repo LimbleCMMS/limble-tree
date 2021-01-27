@@ -3,14 +3,13 @@
    <div style="min-width: 40%; padding-right: 5%">
       <h3>Rendered Tree</h3>
       <limble-tree-root
-         [treeData]="limbleTreeData"
+         [data]="treeData"
+         [options]="treeOptions"
          (treeChange)="treeChangeHandler()"
          #tree
       ></limble-tree-root>
       <br />
-      <button (click)="addNode({ data: { value1: 'extra thing' } })">
-         Add Node
-      </button>
+      <button (click)="addNode({ value1: 'extra thing' })">Add Node</button>
    </div>
    <div style="min-width: 50%">
       <h3>
