@@ -12,14 +12,29 @@ Limble is a CMMS SaaS company providing great software to customers around the w
 
 This library is currently in **beta** development. It may not be ready for use in a production environment.
 
-### Versioning
+## Demo
 
-To the best of our ability, this library follows the [Semantic Versioning](https://semver.org/) standard.
+(requires node and npm)
 
-## Installation
+To view the demo:
 
-`npm install @limble/limble-tree`
+1. clone/download this repo
+2. run `npm ci`
+3. run `npm run start`
+4. Open your browser to `localhost:4200`
 
-## Usage
+## Installation and Usage
 
-TODO
+See [the package README](https://github.com/LimbleCMMS/limble-tree/blob/main/projects/limble-tree/README.md) or the [NPM page](https://www.npmjs.com/package/@limble/limble-tree)
+
+## Development
+
+### Requirements
+
+-  node
+-  npm
+-  npx
+
+### Suggested Dev Setup
+
+I find that the best way to develop this library is to run `npx ng build limble-tree --watch` in one terminal and then run `npx ng serve sandbox` on a second terminal. This will rebuild the library on changes, and also serves the demo app, so you can immediately view and experiment on your changes.
