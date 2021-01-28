@@ -1,6 +1,7 @@
 {
    "name": "libs",
    "version": "0.0.0",
+   "license": "MIT",
    "scripts": {
       "ng": "ng",
       "build": "ng build --prod limble-tree",
