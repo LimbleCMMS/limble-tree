@@ -38,3 +38,9 @@ See [the package README](https://github.com/LimbleCMMS/limble-tree/blob/main/pro
 ### Suggested Dev Setup
 
 I find that the best way to develop this library is to run `npx ng build limble-tree --watch` in one terminal and then run `npx ng serve sandbox` on a second terminal. This will rebuild the library on changes, and also serves the demo app, so you can immediately view and experiment on your changes.
+
+## Issues, Feature Requests, Etc
+
+If you find an issue or you would like to see an improvement, you may create an "issue" or start a "discussion" here in github.
+
+We truly appreciate feedback; but keep in mind that we, the Limble team, built this library for our own needs, and requests from outside our organization may not always be a high priority.
