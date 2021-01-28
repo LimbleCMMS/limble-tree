@@ -18,7 +18,7 @@ To the best of our ability, this library follows the [Semantic Versioning](https
 
 ## Installation
 
-TODO
+`npm install @limble/limble-tree`
 
 ## Usage
 

@@ -3,7 +3,7 @@ import {
    LimbleTreeRootComponent,
    LimbleTreeData,
    LimbleTreeNode
-} from "projects/limble-tree/src/public-api";
+} from "@limble/limble-tree";
 import { TreeItemAltComponent } from "./tree-item-alt/tree-item-alt.component";
 import { TreeItemComponent } from "./tree-item/tree-item.component";
 
