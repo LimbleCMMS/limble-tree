@@ -67,8 +67,6 @@ module.exports = {
             project: [
                "./projects/limble-tree/tsconfig.lib.json",
                "./projects/limble-tree/tsconfig.spec.json",
-               "./projects/branches/tsconfig.lib.json",
-               "./projects/branches/tsconfig.spec.json",
                "./projects/sandbox/tsconfig.app.json",
                "./projects/sandbox/tsconfig.spec.json"
             ]

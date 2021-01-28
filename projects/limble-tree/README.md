@@ -1,25 +1,25 @@
-# LimbleTree
+# Limble Tree
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.9.
+An Angular library for creating highly dynamic drag-and-drop tree structures
 
-## Code scaffolding
+## About
 
-Run `ng generate component component-name --project limble-tree` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project limble-tree`.
+### Limble
 
-> Note: Don't forget to add `--project limble-tree` or else it will be added to the default project in your `angular.json` file.
+Limble is a CMMS SaaS company providing great software to customers around the world. The `limble-tree` library is built by the Limble team and used in Limble's web applications.
 
-## Build
+### Status
 
-Run `ng build limble-tree` to build the project. The build artifacts will be stored in the `dist/` directory.
+This library is currently in **beta** development. It may not be ready for use in a production environment.
 
-## Publishing
+### Versioning
 
-After building your library with `ng build limble-tree`, go to the dist folder `cd dist/limble-tree` and run `npm publish`.
+To the best of our ability, this library follows the [Semantic Versioning](https://semver.org/) standard.
 
-## Running unit tests
+## Installation
 
-Run `ng test limble-tree` to execute the unit tests via [Karma](https://karma-runner.github.io).
+TODO
 
-## Further help
+## Usage
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+TODO

@@ -1,5 +1,5 @@
 {
-   "name": "limble-tree",
+   "name": "@limble/limble-tree",
    "version": "0.1.0",
    "peerDependencies": {
       "@angular/common": "^11.0.9",
