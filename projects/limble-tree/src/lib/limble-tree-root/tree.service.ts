@@ -2,7 +2,7 @@ import { Injectable, Type, ViewContainerRef } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
 import { DropZoneService } from "../singletons/drop-zone.service";
-import { Branch } from "branches";
+import { Branch } from "../branch";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 
 /** An object describing a node of the tree */

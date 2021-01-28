@@ -3,14 +3,11 @@
    "version": "0.0.0",
    "scripts": {
       "ng": "ng",
-      "buildLibs": "ng build --prod branches && ng build --prod limble-tree",
-      "start": "ng serve sandbox",
-      "buildAndStart": "npm run buildLibs && npm run start",
+      "build": "ng build --prod limble-tree",
+      "start": "npm run build && ng serve sandbox",
       "test": "ng test",
       "lintCheck": "eslint projects/limble-tree/src/lib projects/sandbox/src/app --cache --ext .js --ext .ts --ext .html",
       "lintWatch": "esw projects/limble-tree/src/lib projects/sandbox/src/app --cache --watch --ext .js --ext .ts --ext .html",
-      "lint": "ng lint",
-      "e2e": "ng e2e",
       "deepUpdate": "npm update && rm -rf node_modules/ && rm package-lock.json && npm install"
    },
    "private": true,

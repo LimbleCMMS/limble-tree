@@ -12,7 +12,7 @@ import { DropZoneService } from "../singletons/drop-zone.service";
 import { LimbleTreeBranchComponent } from "../limble-tree-branch/limble-tree-branch.component";
 import { TempService } from "../singletons/temp.service";
 import { TreeService } from "../limble-tree-root/tree.service";
-import { Branch } from "branches";
+import { Branch } from "../branch";
 
 @Component({
    selector: "limble-tree-node",
