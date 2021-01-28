@@ -2,6 +2,7 @@ import { Component, DoCheck, ViewChild } from "@angular/core";
 import {
    LimbleTreeRootComponent,
    LimbleTreeData,
+   LimbleTreeOptions,
    LimbleTreeNode
 } from "@limble/limble-tree";
 import { TreeItemAltComponent } from "./tree-item-alt/tree-item-alt.component";
@@ -47,7 +48,8 @@ export class AppComponent implements DoCheck {
          value1: "those things"
       }
    ];
-   public treeOptions = {
+
+   public treeOptions: LimbleTreeOptions = {
       defaultComponent: { class: TreeItemComponent },
       indent: 60
    };
