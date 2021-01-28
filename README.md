@@ -1,3 +1,3 @@
-# Libs
+# Limble Tree
 
-Contains custom Angular libraries for Limble.
+An Angular library for creating highly dynamic drag-and-drop tree structures
