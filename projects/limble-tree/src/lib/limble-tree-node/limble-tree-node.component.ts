@@ -12,7 +12,8 @@ import { DropZoneService } from "../singletons/drop-zone.service";
 import { LimbleTreeBranchComponent } from "../limble-tree-branch/limble-tree-branch.component";
 import { TempService } from "../singletons/temp.service";
 import { TreeService } from "../limble-tree-root/tree.service";
-import { Branch } from "../branch";
+import type { Branch } from "../branch";
+import { isDraggingAllowed, isNestingAllowed } from "../util";
 
 @Component({
    selector: "limble-tree-node",
@@ -174,7 +175,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             this.children
          );
          newBranchComponent.instance.branch = this.branch;
-         if (this.treeService.treeOptions?.allowNesting !== false) {
+         if (isNestingAllowed(this.treeService.treeOptions, this.branch.data)) {
             newBranchComponent.instance.dropZoneInside$.subscribe(
                (dropZone) => {
                   if (
@@ -229,7 +230,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       }
       const element = this.draggableDiv.nativeElement;
       const handle = element.querySelector(".limble-tree-handle");
-      if (this.treeService.treeOptions?.allowDragging === false) {
+      if (!isDraggingAllowed(this.treeService.treeOptions, this.branch?.data)) {
          element.setAttribute("draggable", "false");
       } else if (handle === null) {
          element.setAttribute("draggable", "true");

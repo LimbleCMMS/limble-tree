@@ -1,17 +1,18 @@
 import { Injectable, ViewContainerRef } from "@angular/core";
 import { ComponentCreatorService } from "./component-creator.service";
 import { DropZoneComponent } from "../drop-zone/drop-zone.component";
-import { arraysAreEqual } from "../util";
-import {
+import { arraysAreEqual, isNestingAllowed } from "../util";
+import type {
    LimbleTreeData,
    LimbleTreeNode,
-   LimbleTreeOptions
+   ProcessedOptions
 } from "../limble-tree-root/tree.service";
 import { TempService } from "./temp.service";
+import type { BranchCoordinates } from "../branch";
 
 export interface DropZoneInfo {
    container: ViewContainerRef;
-   coordinates: Array<number>;
+   coordinates: BranchCoordinates;
 }
 
 @Injectable()
@@ -20,7 +21,7 @@ export class DropZoneService {
    private secondaryDropZones: Array<DropZoneInfo>;
    private dropZones: Array<DropZoneInfo>;
    private treeData: LimbleTreeData | undefined;
-   private treeOptions: LimbleTreeOptions | undefined;
+   private treeOptions: ProcessedOptions | undefined;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
@@ -31,7 +32,7 @@ export class DropZoneService {
       this.dropZones = [];
    }
 
-   public init(treeData: LimbleTreeData, treeOptions: LimbleTreeOptions) {
+   public init(treeData: LimbleTreeData, treeOptions: ProcessedOptions) {
       this.treeData = treeData;
       this.treeOptions = treeOptions;
    }
@@ -89,7 +90,7 @@ export class DropZoneService {
       this.dropZones = [];
    }
 
-   private isLastDropZoneInBranch(coordinates: Array<number>): boolean {
+   private isLastDropZoneInBranch(coordinates: BranchCoordinates): boolean {
       const group = this.getCoordinatesGroup(coordinates);
       if (group.length - 1 < coordinates[coordinates.length - 1]) {
          return true;
@@ -97,7 +98,7 @@ export class DropZoneService {
       return false;
    }
 
-   private isOnRoot(coordinates: Array<number>): boolean {
+   private isOnRoot(coordinates: BranchCoordinates): boolean {
       return coordinates.length === 1;
    }
 
@@ -139,7 +140,7 @@ export class DropZoneService {
          if (hasChildren) {
             const previousSiblingFirstChild = [...previousSibling];
             previousSiblingFirstChild.push(0);
-            let secondaryDropZoneCoordinates: Array<number> = previousSiblingFirstChild;
+            let secondaryDropZoneCoordinates: BranchCoordinates = previousSiblingFirstChild;
             let next = this.getNextSibling(secondaryDropZoneCoordinates);
             while (next !== null) {
                secondaryDropZoneCoordinates = next;
@@ -162,7 +163,10 @@ export class DropZoneService {
                previousSibling
             )
          ) {
-            if (this.treeOptions?.allowNesting !== false) {
+            const previousSiblingNode = this.getCoordinatesGroup(
+               previousSibling
+            )[previousSibling[previousSibling.length - 1]];
+            if (isNestingAllowed(this.treeOptions, previousSiblingNode)) {
                const secondaryDropZoneCoordinates = [...previousSibling];
                secondaryDropZoneCoordinates.push(0);
                const secondaryDropZone = this.getDropZones().find(
@@ -181,7 +185,7 @@ export class DropZoneService {
       }
    }
 
-   private coordinatesHasChildren(coordinates: Array<number>): boolean {
+   private coordinatesHasChildren(coordinates: BranchCoordinates): boolean {
       const children = this.getCoordinatesChildren(coordinates);
       return children !== undefined && children.length > 0;
    }
@@ -200,7 +204,9 @@ export class DropZoneService {
       this.showDropZoneFamily(dropZoneInfo);
    }
 
-   private getNextSibling(coordinates: Array<number>): Array<number> | null {
+   private getNextSibling(
+      coordinates: BranchCoordinates
+   ): BranchCoordinates | null {
       const temp = [...coordinates];
       const group = this.getCoordinatesGroup(temp);
       const nextPosition = temp[temp.length - 1]++;
@@ -211,7 +217,7 @@ export class DropZoneService {
    }
 
    private getCoordinatesGroup(
-      coordinates: Array<number>
+      coordinates: BranchCoordinates
    ): Array<LimbleTreeNode> {
       if (this.treeData === undefined) {
          throw new Error("treeData is not defined");
@@ -239,7 +245,7 @@ export class DropZoneService {
    }
 
    private getCoordinatesChildren(
-      coordinates: Array<number>
+      coordinates: BranchCoordinates
    ): Array<LimbleTreeNode> | undefined {
       if (this.treeData === undefined) {
          throw new Error("treeData is not defined");

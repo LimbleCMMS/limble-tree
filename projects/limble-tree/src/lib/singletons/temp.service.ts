@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Branch } from "../branch";
+import type { Branch } from "../branch";
 
 @Injectable()
 export class TempService {

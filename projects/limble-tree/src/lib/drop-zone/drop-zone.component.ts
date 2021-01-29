@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
-import { DropZoneInfo, DropZoneService } from "../singletons/drop-zone.service";
+import type { DropZoneInfo } from "../singletons/drop-zone.service";
+import { DropZoneService } from "../singletons/drop-zone.service";
 
 @Component({
    selector: "drop-zone",

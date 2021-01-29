@@ -1,3 +1,8 @@
+import type {
+   LimbleTreeNode,
+   ProcessedOptions
+} from "./limble-tree-root/tree.service";
+
 export function arraysAreEqual(
    array1: Array<unknown>,
    array2: Array<unknown>
@@ -37,4 +42,30 @@ export function isElementDescendant(
       cursor = cursor.parentNode;
    }
    return false;
+}
+
+export function isNestingAllowed(
+   options?: ProcessedOptions,
+   nodeData?: LimbleTreeNode
+) {
+   return (
+      options !== undefined &&
+      (options.allowNesting === true ||
+         (typeof options.allowNesting === "function" &&
+            nodeData !== undefined &&
+            options.allowNesting(nodeData) === true))
+   );
+}
+
+export function isDraggingAllowed(
+   options?: ProcessedOptions,
+   nodeData?: LimbleTreeNode
+) {
+   return (
+      options !== undefined &&
+      (options.allowDragging === true ||
+         (typeof options.allowDragging === "function" &&
+            nodeData !== undefined &&
+            options.allowDragging(nodeData) === true))
+   );
 }

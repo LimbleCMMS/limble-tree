@@ -12,7 +12,7 @@ import {
 } from "@angular/core";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { DropZoneService } from "../singletons/drop-zone.service";
-import {
+import type {
    LimbleTreeData,
    LimbleTreeOptions
 } from "../limble-tree-root/tree.service";

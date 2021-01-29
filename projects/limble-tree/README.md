@@ -82,8 +82,8 @@ The LimbleTreeOptions object is used to configure the tree's general settings. O
 
 -  `defaultComponent`: This property is an object in the form of `{class: <ComponentClass>, bindings: {bindingName: bindingValue, ...}}`. For each node in the data array, the component described by this object will be rendered. The tree node object will be passed in to the component as an input called `nodeData`. The component's inputs and outputs will be initialized using the bindings object. If a tree node contains a `component` property, that component information will be used instead of the `defaultComponent`. An error will be thrown if (1) the `defaultComponent` is not defined; and (2) the library encounters a tree node that does not have a `component` property.
 -  `indent`: The number of pixels to indent for each level of the tree. Defaults to 45.
--  `allowNesting`: Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch) when dragging a node. Defaults to true.
--  `allowDragging`: Whether to allow drag-and-drop functionality. Defaults to true.
+-  `allowNesting`: Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch) when dragging a node. May be a boolean or a callback function that returns a boolean. If it is a callback, the callback will be called for each node and the node will be passed in to the callback. Defaults to true.
+-  `allowDragging`: Whether to allow drag-and-drop functionality. May be a boolean or a callback function that returns a boolean. If it is a callback, the callback will be called for each node and the node will be passed in to the callback. Defaults to true.
 
 ### The LimbleTreeRoot Component
 

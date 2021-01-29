@@ -2,7 +2,7 @@ import { Injectable, Type, ViewContainerRef } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
 import { DropZoneService } from "../singletons/drop-zone.service";
-import { Branch } from "../branch";
+import { Branch, BranchCoordinates } from "../branch";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 
 /** An object describing a node of the tree */
@@ -28,9 +28,9 @@ export interface LimbleTreeOptions {
    /** Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch)
     * when dragging a node. Defaults to true.
     */
-   allowNesting?: boolean;
+   allowNesting?: boolean | ((nodeData: LimbleTreeNode) => boolean);
    /** Whether to allow drag-and-drop functionality. Defaults to true.*/
-   allowDragging?: boolean;
+   allowDragging?: boolean | ((nodeData: LimbleTreeNode) => boolean);
 }
 
 /** An object that references the component to be rendered and its bindings */
@@ -48,8 +48,8 @@ export const INDENT = 45;
 export interface ProcessedOptions {
    defaultComponent?: ComponentObj;
    indent: number;
-   allowNesting: boolean;
-   allowDragging: boolean;
+   allowNesting: boolean | ((nodeData: LimbleTreeNode) => boolean);
+   allowDragging: boolean | ((nodeData: LimbleTreeNode) => boolean);
 }
 
 @Injectable()
@@ -130,7 +130,7 @@ export class TreeService {
       };
    }
 
-   public move(source: Branch<any>, targetCoordinates: Array<number>) {
+   public move(source: Branch<any>, targetCoordinates: BranchCoordinates) {
       const targetParentCoordinates = [...targetCoordinates];
       const index = targetParentCoordinates.pop();
       if (index === undefined) {
