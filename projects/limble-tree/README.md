@@ -61,7 +61,7 @@ const treeOptions: LimbleTreeOptions = {
 };
 ```
 
-4. Add a `<limble-tree>` component to one of your components' templates and pass it the data array and the options object:
+4. Add a `<limble-tree-root>` component to one of your components' templates and pass it the data array and the options object:
 
 ```html
 <limble-tree-root [data]="treeData" [options]="treeOptions"></limble-tree-root>
