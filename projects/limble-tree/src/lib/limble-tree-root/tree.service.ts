@@ -148,11 +148,13 @@ export class TreeService {
    }
 
    private rebuildTreeData(): void {
-      const temp: LimbleTreeData = [];
-      for (const branch of this.treeModel.getChildren()) {
-         temp.push(this.rebuildBranch(branch));
+      if (this.treeData == undefined) {
+         throw new Error("Tree data not initialized");
       }
-      this.treeData = temp;
+      this.treeData.length = 0;
+      for (const branch of this.treeModel.getChildren()) {
+         this.treeData.push(this.rebuildBranch(branch));
+      }
    }
 
    private rebuildBranch(branch: Branch<any>): LimbleTreeNode {
