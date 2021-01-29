@@ -64,7 +64,7 @@ const treeOptions: LimbleTreeOptions = {
 4. Add a `<limble-tree>` component to one of your components' templates and pass it the data array and the options object:
 
 ```html
-<limble-tree [data]="treeData" [options]="treeOptions"></limble-tree>
+<limble-tree-root [data]="treeData" [options]="treeOptions"></limble-tree-root>
 ```
 
 This should render the tree, producing an instance of `MyComponentClass` for each node in the tree data.
