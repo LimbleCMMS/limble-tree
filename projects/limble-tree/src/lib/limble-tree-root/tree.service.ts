@@ -43,9 +43,11 @@ export interface ComponentObj {
    };
 }
 
+/** The default value for the `indent` option */
 export const INDENT = 45;
 
-export interface ProcessedOptions {
+/** An options object with default values loaded where applicable */
+export interface ProcessedOptions extends LimbleTreeOptions {
    defaultComponent?: ComponentObj;
    indent: number;
    allowNesting: boolean | ((nodeData: LimbleTreeNode) => boolean);
@@ -68,17 +70,24 @@ export class TreeService {
       this.treeModel = new Branch(null);
    }
 
+   /** Initializes the service and renders the tree.
+    * @param host - The ViewContainerRef into which the tree will be rendered.
+    * @param data - The data array that was passed in to LimbleTreeRoot, which is
+    * the users' representation of the tree
+    * @param options - The options object that was passed in to LimbleTreeRoot
+    */
    public init(
       host: ViewContainerRef,
       data: LimbleTreeData,
       options?: LimbleTreeOptions
-   ) {
+   ): void {
       this.host = host;
       this.treeData = data;
       this.treeOptions = this.processOptions(options);
       this.render();
    }
 
+   /** Renders the entire tree from root to leaves */
    private render() {
       if (
          this.host === undefined ||
@@ -101,10 +110,13 @@ export class TreeService {
             this.host
          );
          componentRef.instance.branch = branch;
+         //The LimbleTreeNodeComponent will (indirectly) call the `renderBranch` method of this service to render
+         //its own children
       }
       this.changes$.next(null);
    }
 
+   /** Renders a branch of the tree and all of its descendants */
    public renderBranch(host: ViewContainerRef, branch: Branch<any>) {
       if (this.treeModel === undefined) {
          throw new Error("TreeModel not initialized");
@@ -118,6 +130,8 @@ export class TreeService {
             host
          );
          componentRef.instance.branch = newBranch;
+         //The LimbleTreeNodeComponent will (indirectly) call the `renderBranch` method of this service to render
+         //its own children
       }
    }
 
