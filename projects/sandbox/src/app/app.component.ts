@@ -19,6 +19,7 @@ export class AppComponent {
    public treeData: LimbleTreeData = [
       {
          value1: "this thing",
+         collapsed: false,
          nodes: [
             { value1: "other thing" },
             {
@@ -73,5 +74,9 @@ export class AppComponent {
       if (this.limbleTree !== undefined) {
          this.limbleTree.update();
       }
+   }
+
+   public toggleChildNodes() {
+      this.treeData[0].collapsed = !this.treeData[0].collapsed;
    }
 }

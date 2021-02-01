@@ -2,6 +2,9 @@
 <div class="container">
    <div style="min-width: 40%; padding-right: 5%">
       <h3>Rendered Tree</h3>
+      <button (click)="toggleChildNodes()">
+         toggle first element's child Nodes
+      </button>
       <limble-tree-root
          [data]="treeData"
          [options]="treeOptions"

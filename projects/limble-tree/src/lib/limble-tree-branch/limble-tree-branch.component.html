@@ -1,4 +1,6 @@
 <div [style.marginLeft.px]="indent">
    <ng-template #dropZoneInside></ng-template>
-   <ng-template #host></ng-template>
+   <span [hidden]="branch.data.collapsed" class="limble-child-nodes">
+      <ng-template #host></ng-template>
+   </span>
 </div>
