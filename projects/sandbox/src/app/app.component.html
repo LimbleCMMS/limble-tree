@@ -6,6 +6,7 @@
          [data]="treeData"
          [options]="treeOptions"
          (treeChange)="treeChangeHandler()"
+         (treeDrop)="treeDropHandler($event)"
          #tree
       ></limble-tree-root>
       <br />

@@ -6,7 +6,8 @@ export {
    LimbleTreeNode,
    LimbleTreeData,
    LimbleTreeOptions,
-   ComponentObj
+   ComponentObj,
+   TreeDrop
 } from "./lib/limble-tree-root/tree.service";
 export { LimbleTreeRootComponent } from "./lib/limble-tree-root/limble-tree-root.component";
 export { LimbleTreeModule } from "./lib/limble-tree.module";

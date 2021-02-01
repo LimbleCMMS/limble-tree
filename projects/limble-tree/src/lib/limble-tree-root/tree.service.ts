@@ -1,5 +1,5 @@
 import { Injectable, Type, ViewContainerRef } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { ReplaySubject } from "rxjs";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
 import { DropZoneService } from "../singletons/drop-zone.service";
 import { Branch, BranchCoordinates } from "../branch";
@@ -55,9 +55,24 @@ export interface ProcessedOptions extends LimbleTreeOptions {
    allowDragging: boolean | ((nodeData: LimbleTreeNode) => boolean);
 }
 
+/** the value emitted from the root component after a node is dropped */
+export interface TreeDrop {
+   /** The node that was dropped */
+   target: LimbleTreeNode;
+   /** the target's parent before the drag and drop, or null if it was a top-level node */
+   oldParent: LimbleTreeNode | null;
+   /** the index of the node before the drag and drop relative to its old siblings */
+   oldIndex: number;
+   /** the target's parent after the drag and drop, or null if it is now a top-level node */
+   newParent: LimbleTreeNode | null;
+   /** the index of the node after the drag and drop relative to its new siblings */
+   newIndex: number;
+}
+
 @Injectable()
 export class TreeService {
-   public changes$: BehaviorSubject<null>;
+   public changes$: ReplaySubject<null>;
+   public drops$: ReplaySubject<TreeDrop>;
    private host: ViewContainerRef | undefined;
    public treeData: LimbleTreeData | undefined;
    public treeOptions: ProcessedOptions | undefined;
@@ -67,7 +82,8 @@ export class TreeService {
       private readonly componentCreatorService: ComponentCreatorService,
       private readonly dropZoneService: DropZoneService
    ) {
-      this.changes$ = new BehaviorSubject(null);
+      this.changes$ = new ReplaySubject(1);
+      this.drops$ = new ReplaySubject(1);
       this.treeModel = new Branch(null);
    }
 
@@ -146,6 +162,11 @@ export class TreeService {
    }
 
    public move(source: Branch<any>, targetCoordinates: BranchCoordinates) {
+      const sourceParent = source.getParent();
+      const sourceIndex = source.getIndex();
+      if (sourceIndex === undefined) {
+         throw new Error("Cannot move the hidden root node");
+      }
       const targetParentCoordinates = [...targetCoordinates];
       const index = targetParentCoordinates.pop();
       if (index === undefined) {
@@ -159,6 +180,14 @@ export class TreeService {
       }
       targetParent.insertChild(source, index);
       this.rebuildTreeData();
+      console.log(sourceParent);
+      this.drops$.next({
+         target: source.data,
+         oldParent: sourceParent?.data as LimbleTreeNode,
+         oldIndex: sourceIndex,
+         newParent: targetParent.data,
+         newIndex: index
+      });
       this.render();
    }
 

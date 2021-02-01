@@ -12,9 +12,10 @@ import {
 } from "@angular/core";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { DropZoneService } from "../singletons/drop-zone.service";
-import type {
+import {
    LimbleTreeData,
-   LimbleTreeOptions
+   LimbleTreeOptions,
+   TreeDrop
 } from "../limble-tree-root/tree.service";
 import { TreeService } from "./tree.service";
 import { isElementDescendant } from "../util";
@@ -40,9 +41,12 @@ export class LimbleTreeRootComponent
    @Output()
    readonly dropZoneInside$: BehaviorSubject<ViewContainerRef | undefined>;
 
-   @Output() readonly treeChange = new EventEmitter();
+   @Output() readonly treeChange = new EventEmitter<null>();
+
+   @Output() readonly treeDrop = new EventEmitter<TreeDrop>();
 
    private readonly changesSubscription: Subscription;
+   private readonly dropSubscription: Subscription;
 
    constructor(
       private readonly treeService: TreeService,
@@ -52,6 +56,9 @@ export class LimbleTreeRootComponent
       this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
       this.changesSubscription = this.treeService.changes$.subscribe(() => {
          this.treeChange.emit();
+      });
+      this.dropSubscription = this.treeService.drops$.subscribe((drop) => {
+         this.treeDrop.emit(drop);
       });
    }
 

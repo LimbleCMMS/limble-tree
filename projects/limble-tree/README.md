@@ -91,7 +91,23 @@ Here are the inputs and outputs of the `<limble-tree-root>` component:
 
 -  input `data` -- a LimbleTreeData array.
 -  input `options` -- a LimbleTreeOptions object.
--  output `treeChange` -- an event that fires whenever the tree changes, such as after a node is dragged and dropped to a new location.
+-  output `treeChange` -- an event that fires whenever the tree is rendered or re-rendered.
+-  output `treeDrop` -- an event that fires after a node is dropped in the tree. The event contains data described by the TreeDrop interface, given here:
+
+```typescript
+export interface TreeDrop {
+   /** The node that was dropped */
+   target: LimbleTreeNode;
+   /** the target's parent before the drag and drop, or null if it was a top-level node */
+   oldParent: LimbleTreeNode | null;
+   /** the index of the node before the drag and drop relative to its old siblings */
+   oldIndex: number;
+   /** the target's parent after the drag and drop, or null if it is now a top-level node */
+   newParent: LimbleTreeNode | null;
+   /** the index of the node after the drag and drop relative to its new siblings */
+   newIndex: number;
+}
+```
 
 ### Demo App
 

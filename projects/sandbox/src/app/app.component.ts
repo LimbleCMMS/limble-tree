@@ -3,7 +3,8 @@ import {
    LimbleTreeRootComponent,
    LimbleTreeData,
    LimbleTreeOptions,
-   LimbleTreeNode
+   LimbleTreeNode,
+   TreeDrop
 } from "@limble/limble-tree";
 import { TreeItemAltComponent } from "./tree-item-alt/tree-item-alt.component";
 import { TreeItemComponent } from "./tree-item/tree-item.component";
@@ -72,6 +73,10 @@ export class AppComponent {
 
    public treeChangeHandler() {
       this.limbleTreeDataString = JSON.stringify(this.treeData, null, 2);
+   }
+
+   public treeDropHandler(drop: TreeDrop) {
+      console.log(drop);
    }
 
    private reRenderTree() {
