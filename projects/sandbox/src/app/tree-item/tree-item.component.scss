@@ -7,4 +7,17 @@
    border-radius: 5px;
    box-shadow: 0 0 4px 0 #888;
    margin: 10px 0;
+   position: relative;
+}
+
+.collapseButton {
+   padding: 0 5px;
+   margin: 0 5px;
+   border: 1px solid lightgrey;
+   cursor: pointer;
+   position: absolute;
+   right: 0;
+   top: 10px;
+   border-radius: 5px;
+   box-shadow: 0 0 1px 0 #888;
 }

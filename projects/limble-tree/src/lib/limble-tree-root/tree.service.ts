@@ -13,6 +13,7 @@ export interface LimbleTreeNode {
    // data: unknown;
    /** An object that describes the component which will represent this node in the visual tree */
    component?: ComponentObj;
+   collapsed?: boolean;
    [index: string]: unknown;
 }
 

@@ -20,6 +20,10 @@ export class AppComponent {
       {
          value1: "this thing",
          collapsed: false,
+         component: {
+            class: TreeItemComponent,
+            bindings: { collapsible: true }
+         },
          nodes: [
             { value1: "other thing" },
             {
@@ -74,9 +78,5 @@ export class AppComponent {
       if (this.limbleTree !== undefined) {
          this.limbleTree.update();
       }
-   }
-
-   public toggleChildNodes() {
-      this.treeData[0].collapsed = !this.treeData[0].collapsed;
    }
 }

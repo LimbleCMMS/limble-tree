@@ -7,4 +7,9 @@ import { Component, Input } from "@angular/core";
 })
 export class TreeItemComponent {
    @Input() nodeData: any;
+   @Input() collapsible: boolean | undefined;
+
+   public collapse() {
+      this.nodeData.collapsed = !this.nodeData.collapsed;
+   }
 }

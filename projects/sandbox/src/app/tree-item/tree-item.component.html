@@ -1,2 +1,8 @@
-<div class="treeItem">{{ nodeData.value1 }}</div>
+<div class="treeItem">
+   <span>{{ nodeData.value1 }}</span>
+   <span class="collapseButton" *ngIf="collapsible" (click)="collapse()">
+      <span *ngIf="nodeData.collapsed === true"> ⏵ </span>
+      <span *ngIf="nodeData.collapsed === false"> ⏷ </span>
+   </span>
+</div>
 <br />
