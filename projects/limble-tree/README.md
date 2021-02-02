@@ -111,7 +111,7 @@ export interface TreeDrop {
 
 ### Drag Handles
 
-Adding the `LimbleTreeHandle` css class to an element in a node component will designate that element as the drag handle, making it so the node can only be dragged by clicking on that element.
+Adding the `limble-tree-handle` css class to an element in a node component will designate that element as the drag handle, making it so the node can only be dragged by clicking on that element.
 
 ### Demo App
 
