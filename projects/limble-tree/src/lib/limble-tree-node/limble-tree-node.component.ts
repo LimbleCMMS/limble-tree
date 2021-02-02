@@ -103,8 +103,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          return;
       }
       const target = event.currentTarget as HTMLElement;
-      const topLine = target.offsetHeight / 4; //an imaginary line 25% of the way down from the top of the element;
-      const bottomLine = topLine * 3; //an imaginary line 25% of the way up from the bottom of the element;
+      const topLine = target.offsetHeight / 3; //an imaginary line 1/3 of the way down from the top of the element;
+      const bottomLine = topLine * 2; //an imaginary line 1/3 of the way up from the bottom of the element;
       if (
          event.offsetY < topLine &&
          this.dropZoneAbove !== undefined &&
@@ -133,7 +133,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dropZoneBelow !== undefined &&
          this.dropZoneService.getActiveDropZoneInfo()?.container !==
             this.dropZoneBelow &&
-         this.branch.getChildren().length !== 0
+         this.branch.getChildren().length === 0
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates[dropCoordinates.length - 1]++;
