@@ -11,7 +11,7 @@ import {
    ViewContainerRef
 } from "@angular/core";
 import { BehaviorSubject, Subscription } from "rxjs";
-import { DropZoneService } from "../singletons/drop-zone.service";
+import { DropZoneService } from "./drop-zone.service";
 import {
    LimbleTreeData,
    LimbleTreeOptions,
@@ -19,12 +19,13 @@ import {
 } from "../limble-tree-root/tree.service";
 import { TreeService } from "./tree.service";
 import { isElementDescendant } from "../util";
+import { DragStateService } from "../singletons/drag-state.service";
 
 @Component({
    selector: "limble-tree-root",
    templateUrl: "./limble-tree-root.component.html",
    styleUrls: ["./limble-tree-root.component.scss"],
-   providers: [TreeService]
+   providers: [TreeService, DropZoneService]
 })
 export class LimbleTreeRootComponent
    implements AfterViewInit, OnChanges, OnDestroy {
@@ -51,7 +52,8 @@ export class LimbleTreeRootComponent
    constructor(
       private readonly treeService: TreeService,
       private readonly changeDetectorRef: ChangeDetectorRef,
-      private readonly dropZoneService: DropZoneService
+      private readonly dropZoneService: DropZoneService,
+      private readonly dragStateService: DragStateService
    ) {
       this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
       this.changesSubscription = this.treeService.changes$.subscribe(() => {
@@ -109,7 +111,25 @@ export class LimbleTreeRootComponent
       this.dropZoneService.removeActiveAndSecondaryZones();
    }
 
+   public dropHandler(event: DragEvent) {
+      event.stopPropagation();
+      const dropZoneInfo = this.dropZoneService.getActiveDropZoneInfo();
+      if (this.dragStateService.getState() !== "droppable") {
+         return;
+      }
+      if (dropZoneInfo === null) {
+         throw new Error("failed to get active drop zone at drop handler");
+      }
+      const sourceBranch = this.dragStateService.capture();
+      if (sourceBranch === undefined) {
+         throw new Error("failed to get current branch in dragendHandler");
+      }
+      this.dropZoneService.removeActiveAndSecondaryZones();
+      this.treeService.drop(sourceBranch, dropZoneInfo.coordinates);
+   }
+
    ngOnDestroy() {
       this.changesSubscription.unsubscribe();
+      this.dropSubscription.unsubscribe();
    }
 }

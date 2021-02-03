@@ -1,7 +1,7 @@
 import { Injectable, Type, ViewContainerRef } from "@angular/core";
 import { ReplaySubject } from "rxjs";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
-import { DropZoneService } from "../singletons/drop-zone.service";
+import { DropZoneService } from "./drop-zone.service";
 import { Branch, BranchCoordinates } from "../branch";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 
@@ -26,11 +26,12 @@ export interface LimbleTreeOptions {
    defaultComponent?: ComponentObj;
    /** The number of pixels to indent each level of the tree. Defaults to 45 */
    indent?: number;
-   /** Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch)
+   /**
+    * Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch)
     * when dragging a node. Defaults to true.
     */
    allowNesting?: boolean | ((nodeData: LimbleTreeNode) => boolean);
-   /** Whether to allow drag-and-drop functionality. Defaults to true.*/
+   /** Whether to allow drag-and-drop functionality. Defaults to true. */
    allowDragging?: boolean | ((nodeData: LimbleTreeNode) => boolean);
 }
 
@@ -161,7 +162,7 @@ export class TreeService {
       };
    }
 
-   public move(source: Branch<any>, targetCoordinates: BranchCoordinates) {
+   public drop(source: Branch<any>, targetCoordinates: BranchCoordinates) {
       const sourceParent = source.getParent();
       const sourceIndex = source.getIndex();
       if (sourceIndex === undefined) {
@@ -180,7 +181,6 @@ export class TreeService {
       }
       targetParent.insertChild(source, index);
       this.rebuildTreeData();
-      console.log(sourceParent);
       this.drops$.next({
          target: source.data,
          oldParent: sourceParent?.data as LimbleTreeNode,
@@ -188,6 +188,12 @@ export class TreeService {
          newParent: targetParent.data,
          newIndex: index
       });
+      this.render();
+   }
+
+   public remove(target: Branch<any>) {
+      target.remove();
+      this.rebuildTreeData();
       this.render();
    }
 

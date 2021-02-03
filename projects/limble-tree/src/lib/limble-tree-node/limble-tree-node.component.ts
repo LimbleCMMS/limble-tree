@@ -8,12 +8,13 @@ import {
    ViewContainerRef
 } from "@angular/core";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
-import { DropZoneService } from "../singletons/drop-zone.service";
+import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 import { LimbleTreeBranchComponent } from "../limble-tree-branch/limble-tree-branch.component";
-import { TempService } from "../singletons/temp.service";
+import { DragStateService } from "../singletons/drag-state.service";
 import { TreeService } from "../limble-tree-root/tree.service";
-import type { Branch } from "../branch";
+import { Branch } from "../branch";
 import { isDraggingAllowed, isNestingAllowed } from "../util";
+import { take } from "rxjs/operators";
 
 @Component({
    selector: "limble-tree-node",
@@ -40,7 +41,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
       private readonly changeDetectorRef: ChangeDetectorRef,
-      private readonly tempService: TempService,
+      private readonly dragStateService: DragStateService,
       private readonly dropZoneService: DropZoneService,
       private readonly treeService: TreeService
    ) {}
@@ -56,44 +57,43 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    public dragstartHandler(event: DragEvent): void {
       event.stopPropagation();
       if (event.dataTransfer === null || this.branch === undefined) {
-         return;
+         throw new Error("failed to run dragstartHandler");
       }
       const draggedElement = event.target as HTMLElement;
       if (draggedElement.parentElement?.tagName !== "LIMBLE-TREE-NODE") {
+         //Don't drag stuff that isn't part of the tree
          return;
       }
       event.dataTransfer.effectAllowed = "move";
       draggedElement.classList.add("dragging");
-      this.tempService.set(this.branch);
+      this.dragStateService.dragging(this.branch);
    }
 
    public dragendHandler(event: DragEvent): void {
       event.stopPropagation();
       const draggedElement = event.target as HTMLElement;
-      const sourceBranch = this.tempService.get();
-      if (sourceBranch === undefined) {
-         return;
-      }
-      this.tempService.delete();
       draggedElement.classList.remove("dragging");
-      const dropZoneInfo = this.dropZoneService.getActiveDropZoneInfo();
-      if (dropZoneInfo === null) {
+      if (this.branch === undefined) {
+         throw new Error("failed to get current branch in dragendHandler");
+      }
+      if (this.dragStateService.getState() !== "captured") {
          return;
       }
-      this.dropZoneService.removeActiveAndSecondaryZones();
-      if (dropZoneInfo.coordinates === undefined) {
-         throw new Error("could not determine drop zone location");
-      }
-      this.treeService.move(sourceBranch, dropZoneInfo.coordinates);
+      this.dragStateService.state$.pipe(take(2)).subscribe((state) => {
+         if (state === "captured" && this.branch !== undefined) {
+            this.treeService.remove(this.branch);
+            this.dragStateService.release();
+         }
+      });
    }
 
    public dragoverHandler(event: DragEvent) {
-      if (this.tempService.get() === undefined || this.branch === undefined) {
-         return;
+      if (this.branch === undefined) {
+         throw new Error("Can't get current branch during dragover event");
       }
-      const sourceBranch = this.tempService.get();
+      const sourceBranch = this.dragStateService.getData();
       if (sourceBranch === undefined) {
-         return;
+         throw new Error("Can't get source branch during dragover event");
       }
       //If trying to drop on self, remove any remaining drop zones and return.
       if (sourceBranch === this.branch) {

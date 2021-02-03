@@ -4,8 +4,7 @@ import { DropZoneComponent } from "./drop-zone/drop-zone.component";
 import { LimbleTreeBranchComponent } from "./limble-tree-branch/limble-tree-branch.component";
 import { CommonModule } from "@angular/common";
 import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
-import { TempService } from "./singletons/temp.service";
-import { DropZoneService } from "./singletons/drop-zone.service";
+import { DragStateService } from "./singletons/drag-state.service";
 import { LimbleTreeRootComponent } from "./limble-tree-root/limble-tree-root.component";
 
 @NgModule({
@@ -17,6 +16,6 @@ import { LimbleTreeRootComponent } from "./limble-tree-root/limble-tree-root.com
    ],
    imports: [CommonModule],
    exports: [LimbleTreeRootComponent],
-   providers: [ComponentCreatorService, TempService, DropZoneService]
+   providers: [ComponentCreatorService, DragStateService]
 })
 export class LimbleTreeModule {}

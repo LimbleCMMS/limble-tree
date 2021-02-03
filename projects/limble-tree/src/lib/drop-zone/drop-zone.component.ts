@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
-import type { DropZoneInfo } from "../singletons/drop-zone.service";
-import { DropZoneService } from "../singletons/drop-zone.service";
+import type { DropZoneInfo } from "../limble-tree-root/drop-zone.service";
+import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 
 @Component({
    selector: "drop-zone",

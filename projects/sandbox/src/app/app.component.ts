@@ -17,7 +17,7 @@ import { TreeItemComponent } from "./tree-item/tree-item.component";
 export class AppComponent {
    @ViewChild("tree") limbleTree: LimbleTreeRootComponent | undefined;
 
-   public treeData: LimbleTreeData = [
+   public treeData1: LimbleTreeData = [
       {
          value1: "this thing",
          collapsed: false,
@@ -55,6 +55,17 @@ export class AppComponent {
       }
    ];
 
+   public treeData2: LimbleTreeData = [
+      {
+         value1: "Test1",
+         nodes: [{ value1: "Test2" }]
+      },
+      {
+         value1: "Test3",
+         nodes: [{ value1: "Test4" }, { value1: "Test5" }]
+      }
+   ];
+
    public treeOptions: LimbleTreeOptions = {
       defaultComponent: { class: TreeItemComponent },
       indent: 60
@@ -63,20 +74,20 @@ export class AppComponent {
    public limbleTreeDataString: string;
 
    constructor() {
-      this.limbleTreeDataString = JSON.stringify(this.treeData, null, 2);
+      this.limbleTreeDataString = JSON.stringify(this.treeData1, null, 2);
    }
 
    public addNode(node: LimbleTreeNode) {
-      this.treeData.push(node);
+      this.treeData1.push(node);
       this.reRenderTree();
    }
 
    public treeChangeHandler() {
-      this.limbleTreeDataString = JSON.stringify(this.treeData, null, 2);
+      this.limbleTreeDataString = JSON.stringify(this.treeData1, null, 2);
    }
 
    public treeDropHandler(drop: TreeDrop) {
-      console.log(drop);
+      console.log("dropped!", drop);
    }
 
    private reRenderTree() {

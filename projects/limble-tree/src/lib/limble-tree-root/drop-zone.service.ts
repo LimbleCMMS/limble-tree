@@ -1,13 +1,13 @@
 import { Injectable, ViewContainerRef } from "@angular/core";
-import { ComponentCreatorService } from "./component-creator.service";
+import { ComponentCreatorService } from "../singletons/component-creator.service";
 import { DropZoneComponent } from "../drop-zone/drop-zone.component";
 import { arraysAreEqual, isNestingAllowed } from "../util";
 import type {
    LimbleTreeData,
    LimbleTreeNode,
    ProcessedOptions
-} from "../limble-tree-root/tree.service";
-import { TempService } from "./temp.service";
+} from "./tree.service";
+import { DragStateService } from "../singletons/drag-state.service";
 import type { BranchCoordinates } from "../branch";
 
 export interface DropZoneInfo {
@@ -17,7 +17,7 @@ export interface DropZoneInfo {
 
 @Injectable()
 export class DropZoneService {
-   private activeDropZoneInfo: DropZoneInfo | null;
+   private activeDropZoneInfo: DropZoneInfo | null = null;
    private secondaryDropZones: Array<DropZoneInfo>;
    private dropZones: Array<DropZoneInfo>;
    private treeData: LimbleTreeData | undefined;
@@ -25,9 +25,9 @@ export class DropZoneService {
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
-      private readonly tempService: TempService
+      private readonly dragStateService: DragStateService
    ) {
-      this.activeDropZoneInfo = null;
+      this.setActiveDropZoneInfo(null);
       this.secondaryDropZones = [];
       this.dropZones = [];
    }
@@ -48,7 +48,7 @@ export class DropZoneService {
       componentRef.instance.active = active;
       componentRef.instance.dropZoneInfo = dropZone;
       if (active === true) {
-         this.activeDropZoneInfo = dropZone;
+         this.setActiveDropZoneInfo(dropZone);
       } else {
          this.secondaryDropZones.push(dropZone);
       }
@@ -56,7 +56,7 @@ export class DropZoneService {
 
    public removeActiveAndSecondaryZones() {
       this.activeDropZoneInfo?.container.clear();
-      this.activeDropZoneInfo = null;
+      this.setActiveDropZoneInfo(null);
       for (const secondaryZone of this.secondaryDropZones) {
          secondaryZone.container.clear();
       }
@@ -65,6 +65,15 @@ export class DropZoneService {
 
    public getActiveDropZoneInfo() {
       return this.activeDropZoneInfo;
+   }
+
+   private setActiveDropZoneInfo(dropZoneInfo: DropZoneInfo | null) {
+      this.activeDropZoneInfo = dropZoneInfo;
+      if (this.activeDropZoneInfo !== null) {
+         this.dragStateService.droppable();
+      } else if (this.dragStateService.getState() === "droppable") {
+         this.dragStateService.notDroppable();
+      }
    }
 
    public getDropZones() {
@@ -159,7 +168,7 @@ export class DropZoneService {
             }
          } else if (
             !arraysAreEqual(
-               this.tempService.get()?.getCoordinates() ?? [],
+               this.dragStateService.getData()?.getCoordinates() ?? [],
                previousSibling
             )
          ) {
