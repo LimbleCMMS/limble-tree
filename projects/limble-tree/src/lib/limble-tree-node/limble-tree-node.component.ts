@@ -11,7 +11,7 @@ import { ComponentCreatorService } from "../singletons/component-creator.service
 import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 import { LimbleTreeBranchComponent } from "../limble-tree-branch/limble-tree-branch.component";
 import { DragStateService } from "../singletons/drag-state.service";
-import { TreeService } from "../limble-tree-root/tree.service";
+import { LimbleTreeNode, TreeService } from "../limble-tree-root/tree.service";
 import { Branch } from "../branch";
 import { isDraggingAllowed, isNestingAllowed } from "../util";
 import { take } from "rxjs/operators";
@@ -108,11 +108,17 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       const target = event.currentTarget as HTMLElement;
       const topLine = target.offsetHeight / 3; //an imaginary line 1/3 of the way down from the top of the element;
       const bottomLine = topLine * 2; //an imaginary line 1/3 of the way up from the bottom of the element;
+      const parent = this.branch.getParent();
+      let parentData;
+      if (parent !== null) {
+         parentData = parent.data as LimbleTreeNode;
+      }
       if (
          event.offsetY < topLine &&
          this.dropZoneAbove !== undefined &&
          this.dropZoneService.getActiveDropZoneInfo()?.container !==
-            this.dropZoneAbove
+            this.dropZoneAbove &&
+         isNestingAllowed(this.treeService.treeOptions, parentData)
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          this.dropZoneService.showDropZoneFamily({
@@ -136,7 +142,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dropZoneBelow !== undefined &&
          this.dropZoneService.getActiveDropZoneInfo()?.container !==
             this.dropZoneBelow &&
-         this.branch.getChildren().length === 0
+         this.branch.getChildren().length === 0 &&
+         isNestingAllowed(this.treeService.treeOptions, parentData)
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates[dropCoordinates.length - 1]++;
@@ -212,6 +219,14 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.branch === undefined
       ) {
          throw new Error("failed to register drop zones");
+      }
+      const parent = this.branch.getParent();
+      let parentData;
+      if (parent !== null) {
+         parentData = parent.data as LimbleTreeNode;
+      }
+      if (!isNestingAllowed(this.treeService.treeOptions, parentData)) {
+         return;
       }
       const currentCoordinates = this.branch.getCoordinates();
       const dropCoordinatesAbove = [...currentCoordinates];
