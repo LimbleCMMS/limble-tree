@@ -105,6 +105,19 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          }
          return;
       }
+      if (
+         this.treeService.getPlaceholder() === true &&
+         this.dropZoneAbove !== undefined
+      ) {
+         //If placeholder system is active, then activate the only existing drop zone
+         //and skip the rest of the logic in this function
+         const dropCoordinates = [...this.branch.getCoordinates()];
+         this.dropZoneService.showDropZoneFamily({
+            container: this.dropZoneAbove,
+            coordinates: dropCoordinates
+         });
+         return;
+      }
       const target = event.currentTarget as HTMLElement;
       const topLine = target.offsetHeight / 3; //an imaginary line 1/3 of the way down from the top of the element;
       const bottomLine = topLine * 2; //an imaginary line 1/3 of the way up from the bottom of the element;
@@ -185,7 +198,10 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             this.children
          );
          newBranchComponent.instance.branch = this.branch;
-         if (isNestingAllowed(this.treeService.treeOptions, this.branch.data)) {
+         if (
+            isNestingAllowed(this.treeService.treeOptions, this.branch.data) &&
+            !this.treeService.getPlaceholder() === true
+         ) {
             newBranchComponent.instance.dropZoneInside$.subscribe(
                (dropZone) => {
                   if (
@@ -234,6 +250,10 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          container: this.dropZoneAbove,
          coordinates: dropCoordinatesAbove
       });
+      if (this.treeService.getPlaceholder() === true) {
+         //Only register one drop zone if the placeholder system is active
+         return;
+      }
       const dropCoordinatesBelow = [...currentCoordinates];
       dropCoordinatesBelow[dropCoordinatesBelow.length - 1]++;
       this.dropZoneService.addDropZone({

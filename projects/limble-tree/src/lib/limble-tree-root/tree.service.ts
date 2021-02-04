@@ -4,6 +4,7 @@ import { ComponentCreatorService } from "../singletons/component-creator.service
 import { DropZoneService } from "./drop-zone.service";
 import { Branch, BranchCoordinates } from "../branch";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
+import { LimbleTreePlaceholderComponent } from "../limble-tree-placeholder/limble-tree-placeholder.component";
 
 /** An object describing a node of the tree */
 export interface LimbleTreeNode {
@@ -78,6 +79,7 @@ export class TreeService {
    public treeData: LimbleTreeData | undefined;
    public treeOptions: ProcessedOptions | undefined;
    public treeModel: Branch<any>;
+   private placeholder: boolean;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
@@ -86,6 +88,7 @@ export class TreeService {
       this.changes$ = new ReplaySubject(1);
       this.drops$ = new ReplaySubject(1);
       this.treeModel = new Branch(null);
+      this.placeholder = false;
    }
 
    /** Initializes the service and renders the tree.
@@ -118,18 +121,33 @@ export class TreeService {
       this.treeModel = new Branch(null);
       this.dropZoneService.clearDropZones();
       this.dropZoneService.init(this.treeData, this.treeOptions);
-      for (const node of this.treeData) {
-         const branch = new Branch(node);
+      if (this.treeData.length === 0) {
+         //Tree is empty, but we have to to have something there so other trees' items can be dropped into it
+         this.placeholder = true;
+         const placeholderNode: LimbleTreeNode = {
+            component: { class: LimbleTreePlaceholderComponent }
+         };
+         const branch = new Branch(placeholderNode);
          this.treeModel.appendChild(branch);
-      }
-      for (const branch of this.treeModel.getChildren()) {
          const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
             LimbleTreeNodeComponent,
             this.host
          );
          componentRef.instance.branch = branch;
-         //The LimbleTreeNodeComponent will (indirectly) call the `renderBranch` method of this service to render
-         //its own children
+      } else {
+         for (const node of this.treeData) {
+            const branch = new Branch(node);
+            this.treeModel.appendChild(branch);
+         }
+         for (const branch of this.treeModel.getChildren()) {
+            const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
+               LimbleTreeNodeComponent,
+               this.host
+            );
+            componentRef.instance.branch = branch;
+            //The LimbleTreeNodeComponent will (indirectly) call the `renderBranch` method of this service to render
+            //its own children
+         }
       }
       this.changes$.next(null);
    }
@@ -168,8 +186,17 @@ export class TreeService {
       if (sourceIndex === undefined) {
          throw new Error("Cannot move the hidden root node");
       }
-      const targetParentCoordinates = [...targetCoordinates];
-      const index = targetParentCoordinates.pop();
+      let targetParentCoordinates: BranchCoordinates;
+      let index: number | undefined;
+      if (this.placeholder === true) {
+         targetParentCoordinates = [];
+         index = 0;
+         this.treeModel.removeChild(0); //remove the placeholder
+         this.placeholder = false;
+      } else {
+         targetParentCoordinates = [...targetCoordinates];
+         index = targetParentCoordinates.pop();
+      }
       if (index === undefined) {
          throw new Error("target coordinates are empty");
       }
@@ -214,5 +241,9 @@ export class TreeService {
          temp.nodes.push(this.rebuildBranch(child));
       }
       return temp;
+   }
+
+   public getPlaceholder() {
+      return this.placeholder;
    }
 }

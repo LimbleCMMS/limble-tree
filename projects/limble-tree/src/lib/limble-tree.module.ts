@@ -6,13 +6,15 @@ import { CommonModule } from "@angular/common";
 import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
 import { DragStateService } from "./singletons/drag-state.service";
 import { LimbleTreeRootComponent } from "./limble-tree-root/limble-tree-root.component";
+import { LimbleTreePlaceholderComponent } from './limble-tree-placeholder/limble-tree-placeholder.component';
 
 @NgModule({
    declarations: [
       LimbleTreeBranchComponent,
       DropZoneComponent,
       LimbleTreeNodeComponent,
-      LimbleTreeRootComponent
+      LimbleTreeRootComponent,
+      LimbleTreePlaceholderComponent
    ],
    imports: [CommonModule],
    exports: [LimbleTreeRootComponent],
