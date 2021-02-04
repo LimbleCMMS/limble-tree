@@ -14,7 +14,7 @@ import { DragStateService } from "../singletons/drag-state.service";
 import { LimbleTreeNode, TreeService } from "../limble-tree-root/tree.service";
 import { Branch } from "../branch";
 import { isDraggingAllowed, isNestingAllowed } from "../util";
-import { take } from "rxjs/operators";
+import { filter, first, skipUntil, take } from "rxjs/operators";
 
 @Component({
    selector: "limble-tree-node",
@@ -77,6 +77,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          throw new Error("failed to get current branch in dragendHandler");
       }
       if (this.dragStateService.getState() !== "captured") {
+         //Wasn't dropped into a valid tree, so reset for next drag and
+         //don't do anything else.
+         this.dragStateService.release();
          return;
       }
       this.dragStateService.state$.pipe(take(2)).subscribe((state) => {
@@ -93,7 +96,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       }
       const sourceBranch = this.dragStateService.getData();
       if (sourceBranch === undefined) {
-         throw new Error("Can't get source branch during dragover event");
+         //They might be dragging something that isn't a node. Just ignore it.
+         return;
       }
       //If trying to drop on self, remove any existing drop zones and return.
       if (
@@ -283,9 +287,20 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       } else {
          handle.addEventListener("mousedown", () => {
             element.setAttribute("draggable", "true");
-         });
-         handle.addEventListener("mouseup", () => {
-            element.setAttribute("draggable", "false");
+            //For some reason mouseup doesn't fire after a drag, so we use this observable sequence instead.
+            const dragging = this.dragStateService.state$.pipe(
+               filter((state) => state === "dragging"),
+               first()
+            );
+            this.dragStateService.state$
+               .pipe(
+                  skipUntil(dragging),
+                  filter((state) => state === "idle"),
+                  first()
+               )
+               .subscribe(() => {
+                  element.setAttribute("draggable", "false");
+               });
          });
       }
    }
