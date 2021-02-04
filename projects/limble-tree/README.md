@@ -12,6 +12,18 @@ Limble is a CMMS SaaS company providing great software to customers around the w
 
 This library is currently in **beta** development. It may not be ready for use in a production environment.
 
+### Features
+
+-  Unlimited tree depth
+-  Can have a different component rendered for each node in the tree
+-  Can drag nodes from one location in the tree to other locations
+-  Dragging can be turned off for all or some of the nodes
+-  Easy nesting of nodes
+-  Nesting can be turned off for all or some of the nodes
+-  Nodes can be dropped into other limble trees
+-  Supports drag handles
+-  Catchable events are fired when the tree renders and when a drop occurs
+
 ### Versioning
 
 To the best of our ability, this library follows the [Semantic Versioning](https://semver.org/) standard.
