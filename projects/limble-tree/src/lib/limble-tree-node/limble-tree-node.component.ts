@@ -122,16 +122,21 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       const topLine = target.offsetHeight / 3; //an imaginary line 1/3 of the way down from the top of the element;
       const bottomLine = topLine * 2; //an imaginary line 1/3 of the way up from the bottom of the element;
       const parent = this.branch.getParent();
-      let parentData;
-      if (parent !== null) {
-         parentData = parent.data as LimbleTreeNode;
+      let parentData: LimbleTreeNode;
+      let parentNestingAllowed = true;
+      if (parent?.data !== null) {
+         parentData = parent?.data as LimbleTreeNode;
+         parentNestingAllowed = isNestingAllowed(
+            this.treeService.treeOptions,
+            parentData
+         );
       }
       if (
          event.offsetY < topLine &&
          this.dropZoneAbove !== undefined &&
          this.dropZoneService.getActiveDropZoneInfo()?.container !==
             this.dropZoneAbove &&
-         isNestingAllowed(this.treeService.treeOptions, parentData)
+         parentNestingAllowed
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          this.dropZoneService.showDropZoneFamily({
@@ -156,7 +161,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dropZoneService.getActiveDropZoneInfo()?.container !==
             this.dropZoneBelow &&
          this.branch.getChildren().length === 0 &&
-         isNestingAllowed(this.treeService.treeOptions, parentData)
+         parentNestingAllowed
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates[dropCoordinates.length - 1]++;
@@ -189,7 +194,10 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    }
 
    private renderChildren() {
-      if (this.children !== undefined) {
+      if (
+         this.children !== undefined &&
+         this.treeService.treeOptions?.listMode !== true
+      ) {
          if (this.branch === undefined) {
             throw new Error("branch is undefined");
          }
@@ -237,12 +245,12 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          throw new Error("failed to register drop zones");
       }
       const parent = this.branch.getParent();
-      let parentData;
-      if (parent !== null) {
-         parentData = parent.data as LimbleTreeNode;
-      }
-      if (!isNestingAllowed(this.treeService.treeOptions, parentData)) {
-         return;
+      let parentData: LimbleTreeNode;
+      if (parent?.data !== null) {
+         parentData = parent?.data as LimbleTreeNode;
+         if (!isNestingAllowed(this.treeService.treeOptions, parentData)) {
+            return;
+         }
       }
       const currentCoordinates = this.branch.getCoordinates();
       const dropCoordinatesAbove = [...currentCoordinates];

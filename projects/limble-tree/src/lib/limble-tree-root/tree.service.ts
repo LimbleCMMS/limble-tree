@@ -34,6 +34,16 @@ export interface LimbleTreeOptions {
    allowNesting?: boolean | ((nodeData: LimbleTreeNode) => boolean);
    /** Whether to allow drag-and-drop functionality. Defaults to true. */
    allowDragging?: boolean | ((nodeData: LimbleTreeNode) => boolean);
+   /** When set to true, list mode will enforce a flat tree structure, meaning there
+    * can only be one level of the tree. `allowNesting` is automatically set to `false`
+    * and any children will be deleted.
+    *
+    * This mode can be used when the same dynamic drag and drop functionality of
+    * the tree is desired, but the tree structure itself is not necessary. This
+    * also opens up the pagination API on the limble-tree-root component. See the
+    * README for details on pagination.
+    */
+   listMode?: boolean;
 }
 
 /** An object that references the component to be rendered and its bindings */
@@ -50,12 +60,32 @@ export interface ComponentObj {
 export const INDENT = 45;
 
 /** An options object with default values loaded where applicable */
-export interface ProcessedOptions extends LimbleTreeOptions {
+export interface ProcessedOptionsBase extends LimbleTreeOptions {
    defaultComponent?: ComponentObj;
    indent: number;
    allowNesting: boolean | ((nodeData: LimbleTreeNode) => boolean);
    allowDragging: boolean | ((nodeData: LimbleTreeNode) => boolean);
+   listMode: boolean;
+   itemsPerPage: number | undefined;
+   page: number | undefined;
 }
+
+export interface ProcessedOptionsWithPagination extends ProcessedOptionsBase {
+   listMode: true;
+   itemsPerPage: number;
+   page: number;
+}
+
+export interface ProcessedOptionsWithoutPagination
+   extends ProcessedOptionsBase {
+   listMode: false;
+   itemsPerPage: undefined;
+   page: undefined;
+}
+
+export type ProcessedOptions =
+   | ProcessedOptionsWithPagination
+   | ProcessedOptionsWithoutPagination;
 
 /** the value emitted from the root component after a node is dropped */
 export interface TreeDrop {
@@ -77,6 +107,7 @@ export class TreeService {
    public drops$: ReplaySubject<TreeDrop>;
    private host: ViewContainerRef | undefined;
    public treeData: LimbleTreeData | undefined;
+   private uncutData: LimbleTreeData | undefined;
    public treeOptions: ProcessedOptions | undefined;
    public treeModel: Branch<any>;
    private placeholder: boolean;
@@ -100,11 +131,26 @@ export class TreeService {
    public init(
       host: ViewContainerRef,
       data: LimbleTreeData,
-      options?: LimbleTreeOptions
+      options?: LimbleTreeOptions,
+      itemsPerPage?: number,
+      page?: number
    ): void {
       this.host = host;
-      this.treeData = data;
-      this.treeOptions = this.processOptions(options);
+      this.uncutData = data;
+      this.treeOptions = this.processOptions(options, itemsPerPage, page);
+      if (this.treeOptions.listMode === true) {
+         let start =
+            this.treeOptions.itemsPerPage * (this.treeOptions.page - 1);
+         if (isNaN(start)) {
+            //This catches the case where itemsPerPage was not passed by the user,
+            //causing `start` to equal infinity*0, which is NaN.
+            start = 0;
+         }
+         const end = start + this.treeOptions.itemsPerPage;
+         this.treeData = this.uncutData.slice(start, end);
+      } else {
+         this.treeData = this.uncutData;
+      }
       this.render();
    }
 
@@ -120,6 +166,17 @@ export class TreeService {
       this.host.clear();
       this.treeModel = new Branch(null);
       this.dropZoneService.clearDropZones();
+      // if (
+      //    this.treeOptions.listMode === true &&
+      //    this.treeOptions.itemsPerPage !== Infinity &&
+      //    this.treeData.length < this.treeOptions.itemsPerPage &&
+      //    this.uncutData !== undefined
+      // ) {
+      //    const start =
+      //       this.treeOptions.itemsPerPage * (this.treeOptions.page - 1);
+      //    const end = start + this.treeOptions.itemsPerPage;
+      //    this.treeData = this.uncutData.slice(start, end);
+      // }
       this.dropZoneService.init(this.treeData, this.treeOptions);
       if (this.treeData.length === 0) {
          //Tree is empty, but we have to to have something there so other trees' items can be dropped into it
@@ -171,13 +228,31 @@ export class TreeService {
       }
    }
 
-   private processOptions(options: LimbleTreeOptions = {}): ProcessedOptions {
-      return {
+   private processOptions(
+      options: LimbleTreeOptions = {},
+      itemsPerPage: number = Infinity,
+      page: number = 1
+   ): ProcessedOptions {
+      if (
+         options.listMode === true &&
+         options.allowNesting !== undefined &&
+         options.allowNesting !== false
+      ) {
+         console.warn(
+            "The value of `allowNesting` will be ignored; it must be false when `listMode` is true"
+         );
+      }
+      const result: ProcessedOptionsBase = {
          defaultComponent: options.defaultComponent,
          indent: options.indent ?? INDENT,
-         allowNesting: options.allowNesting ?? true,
-         allowDragging: options.allowDragging ?? true
+         allowNesting:
+            options.listMode !== true && (options.allowNesting ?? true),
+         allowDragging: options.allowDragging ?? true,
+         listMode: options.listMode ?? false,
+         itemsPerPage: options.listMode ? itemsPerPage : undefined,
+         page: options.listMode ? page : undefined
       };
+      return result as ProcessedOptions;
    }
 
    public drop(source: Branch<any>, targetCoordinates: BranchCoordinates) {
@@ -225,12 +300,34 @@ export class TreeService {
    }
 
    private rebuildTreeData(): void {
-      if (this.treeData == undefined) {
+      if (
+         this.uncutData === undefined ||
+         this.treeData === undefined ||
+         this.treeOptions === undefined
+      ) {
          throw new Error("Tree data not initialized");
       }
       this.treeData.length = 0;
       for (const branch of this.treeModel.getChildren()) {
          this.treeData.push(this.rebuildBranch(branch));
+      }
+      if (this.treeOptions.listMode === true) {
+         let start =
+            this.treeOptions.itemsPerPage * (this.treeOptions.page - 1);
+         if (isNaN(start)) {
+            //This catches the case where itemsPerPage was not passed by the user,
+            //causing `start` to equal infinity*0, which is NaN.
+            start = 0;
+         }
+         const end = start + this.treeOptions.itemsPerPage;
+         this.uncutData.splice(
+            start,
+            this.treeOptions.itemsPerPage,
+            ...this.treeData
+         );
+         this.treeData = this.uncutData.slice(start, end);
+      } else {
+         this.uncutData = this.treeData;
       }
    }
 

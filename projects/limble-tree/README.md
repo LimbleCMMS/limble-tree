@@ -23,6 +23,7 @@ This library is currently in **beta** development. It may not be ready for use i
 -  Nodes can be dropped into other limble trees
 -  Supports drag handles
 -  Catchable events are fired when the tree renders and when a drop occurs
+-  Pagination available for flat trees
 
 ### Versioning
 
@@ -96,13 +97,16 @@ The LimbleTreeOptions object is used to configure the tree's general settings. O
 -  `indent`: The number of pixels to indent for each level of the tree. Defaults to 45.
 -  `allowNesting`: Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch) under a node. May be a boolean or a callback function that returns a boolean. If it is a callback, the callback will be called for each node when another node is attempting to nest under it. The parent node (the one which is potentially being nested under) will be passed in to the callback. Defaults to true.
 -  `allowDragging`: Whether to allow drag-and-drop functionality. May be a boolean or a callback function that returns a boolean. If it is a callback, the callback will be called for each node when a drag is attempted on it, and that node will be passed in to the callback. Defaults to true.
+-  `listMode`: When set to true, list mode will enforce a flat tree structure, meaning there can only be one level of the tree. `allowNesting` is automatically set to `false` and any children will be deleted. This mode can be used when the same dynamic drag and drop functionality of the tree is desired, but the tree structure itself is not necessary. This also opens up the pagination API on the limble-tree-root component. See the pagination section below for details about pagination.
 
 ### The LimbleTreeRoot Component
 
 Here are the inputs and outputs of the `<limble-tree-root>` component:
 
--  input `data` -- a LimbleTreeData array.
+-  input `data` -- a LimbleTreeData array. Required.
 -  input `options` -- a LimbleTreeOptions object.
+-  input `itemsPerPage` -- A number indicating how many many items to display at a time. See the "Pagination" section below.
+-  input `page` -- A number indicating the current page og items. See the "Pagination" section below.
 -  output `treeChange` -- an event that fires whenever the tree is rendered or re-rendered.
 -  output `treeDrop` -- an event that fires after a node is dropped in the tree. The event contains data described by the TreeDrop interface, given here:
 
@@ -124,6 +128,10 @@ export interface TreeDrop {
 ### Drag Handles
 
 Adding the `limble-tree-handle` css class to an element in a node component will designate that element as the drag handle, making it so the node can only be dragged by clicking on that element.
+
+### Pagination
+
+When the `listMode` option is set to true, the pagination API is made available. Pagination is accomplished using two of the inputs of the `limble-tree-root` component: the `itemsPerPage` input and the `page` input. These inputs will not do anything unless `listMode` is turned on. When in `listMode`, the list will split into pages, where each page contains `itemsPerPage` number of items. (Note that the last page may have fewer items than the `itemsPerPage` number.) Only one page will be displayed at a time. The `page` input indicates which page to show: When `page` is 1, the first page will display, and so on.
 
 ### Demo App
 

@@ -31,6 +31,8 @@ export class LimbleTreeRootComponent
    implements AfterViewInit, OnChanges, OnDestroy {
    @Input() data: LimbleTreeData | undefined;
    @Input() options: LimbleTreeOptions | undefined;
+   @Input() itemsPerPage: number | undefined;
+   @Input() page: number | undefined;
 
    @ViewChild("host", { read: ViewContainerRef }) private host:
       | ViewContainerRef
@@ -67,6 +69,14 @@ export class LimbleTreeRootComponent
    ngAfterViewInit() {
       this.dropZoneInside$.next(this.dropZoneInside);
       this.dropZoneInside$.complete();
+      if (
+         this.options?.listMode !== true &&
+         (this.itemsPerPage !== undefined || this.page !== undefined)
+      ) {
+         console.warn(
+            "pagination is only allowed in listMode; `itemsPerPage` and `page` inputs will be ignored"
+         );
+      }
       this.update();
       this.changeDetectorRef.detectChanges();
    }
@@ -86,7 +96,13 @@ export class LimbleTreeRootComponent
       if (this.data === undefined) {
          throw new Error(`limbleTree requires a data object`);
       }
-      this.treeService.init(this.host, this.data, this.options);
+      this.treeService.init(
+         this.host,
+         this.data,
+         this.options,
+         this.itemsPerPage,
+         this.page
+      );
    }
 
    public dragoverHandler(event: DragEvent) {
