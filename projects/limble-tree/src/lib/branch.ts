@@ -83,6 +83,16 @@ export class Branch<T> {
       return undefined;
    }
 
+   public getAncestors(): Array<Branch<unknown>> {
+      const result: Array<Branch<unknown>> = [];
+      let cursor: Branch<unknown> = this;
+      while (cursor.parent !== null) {
+         result.push(cursor.parent);
+         cursor = cursor.parent;
+      }
+      return result;
+   }
+
    public appendChild(child: Branch<T>): Branch<T> {
       if (child.getParent() !== null) {
          child.remove();

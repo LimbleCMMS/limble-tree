@@ -95,8 +95,11 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       if (sourceBranch === undefined) {
          throw new Error("Can't get source branch during dragover event");
       }
-      //If trying to drop on self, remove any remaining drop zones and return.
-      if (sourceBranch === this.branch) {
+      //If trying to drop on self, remove any existing drop zones and return.
+      if (
+         sourceBranch === this.branch ||
+         this.branch.getAncestors().includes(sourceBranch)
+      ) {
          if (this.dropZoneService.getActiveDropZoneInfo() !== null) {
             this.dropZoneService.removeActiveAndSecondaryZones();
          }

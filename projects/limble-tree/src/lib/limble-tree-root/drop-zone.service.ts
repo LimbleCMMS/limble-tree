@@ -145,6 +145,11 @@ export class DropZoneService {
          }
          const previousSibling = [...dropZone.coordinates];
          previousSibling[previousSibling.length - 1]--;
+         const currentNode =
+            this.dragStateService.getData()?.getCoordinates() ?? [];
+         if (arraysAreEqual(currentNode, previousSibling)) {
+            return;
+         }
          const hasChildren = this.coordinatesHasChildren(previousSibling);
          if (hasChildren) {
             const previousSiblingFirstChild = [...previousSibling];
@@ -166,12 +171,7 @@ export class DropZoneService {
             if (secondaryDropZone !== undefined) {
                this.showDropZoneFamily(secondaryDropZone, false, "below");
             }
-         } else if (
-            !arraysAreEqual(
-               this.dragStateService.getData()?.getCoordinates() ?? [],
-               previousSibling
-            )
-         ) {
+         } else {
             const previousSiblingNode = this.getCoordinatesGroup(
                previousSibling
             )[previousSibling[previousSibling.length - 1]];
