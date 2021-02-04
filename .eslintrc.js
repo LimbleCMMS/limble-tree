@@ -42,11 +42,6 @@ module.exports = {
    },
    /** Files that eslint should ignore */
    ignorePatterns: ["node_modules", ".eslintrc.js"],
-   /** Eslint will ignore the fact that these appear to be undefined in some files.
-    * We should avoid adding to this list as much as possible, and in fact we should
-    * work to eliminate this list altogether.
-    */
-   globals: {},
    overrides: [
       {
          files: ["*.ts", "*.js"],
