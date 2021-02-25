@@ -2,7 +2,7 @@ import { Injectable, Type, ViewContainerRef } from "@angular/core";
 import { ReplaySubject } from "rxjs";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
 import { DropZoneService } from "./drop-zone.service";
-import { Branch, BranchCoordinates } from "../branch";
+import { Branch, BranchCoordinates } from "../Branch";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 import { LimbleTreePlaceholderComponent } from "../limble-tree-placeholder/limble-tree-placeholder.component";
 
@@ -28,12 +28,22 @@ export interface LimbleTreeOptions {
    /** The number of pixels to indent each level of the tree. Defaults to 45 */
    indent?: number;
    /**
-    * Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch)
-    * when dragging a node. Defaults to true.
+    * Whether to allow "nesting" (placing a node one level deeper than currently exists on the branch).
+    * When this is a boolean, it applies to all nodes. When this is a function, the node in question
+    * is passed in. Defaults to true.
     */
    allowNesting?: boolean | ((nodeData: LimbleTreeNode) => boolean);
-   /** Whether to allow drag-and-drop functionality. Defaults to true. */
+   /**
+    * Whether to allow a node to be dragged. When this is a boolean, it applies to all nodes. When this
+    * is a function, the node in question is passed in. Defaults to true.
+    */
    allowDragging?: boolean | ((nodeData: LimbleTreeNode) => boolean);
+   /** A callback to determine whether a sourceNode can be dropped at a particular location. */
+   allowDrop?: (
+      sourceNode: LimbleTreeNode,
+      proposedParent: LimbleTreeNode | null,
+      proposedIndex: number
+   ) => boolean;
    /** When set to true, list mode will enforce a flat tree structure, meaning there
     * can only be one level of the tree. `allowNesting` is automatically set to `false`
     * and any children will be deleted.
@@ -65,6 +75,11 @@ export interface ProcessedOptionsBase extends LimbleTreeOptions {
    indent: number;
    allowNesting: boolean | ((nodeData: LimbleTreeNode) => boolean);
    allowDragging: boolean | ((nodeData: LimbleTreeNode) => boolean);
+   allowDrop: (
+      sourceNode: LimbleTreeNode,
+      proposedParent: LimbleTreeNode | null,
+      proposedIndex: number
+   ) => boolean;
    listMode: boolean;
    itemsPerPage: number | undefined;
    page: number | undefined;
@@ -165,19 +180,7 @@ export class TreeService {
       }
       this.host.clear();
       this.treeModel = new Branch(null);
-      this.dropZoneService.clearDropZones();
-      // if (
-      //    this.treeOptions.listMode === true &&
-      //    this.treeOptions.itemsPerPage !== Infinity &&
-      //    this.treeData.length < this.treeOptions.itemsPerPage &&
-      //    this.uncutData !== undefined
-      // ) {
-      //    const start =
-      //       this.treeOptions.itemsPerPage * (this.treeOptions.page - 1);
-      //    const end = start + this.treeOptions.itemsPerPage;
-      //    this.treeData = this.uncutData.slice(start, end);
-      // }
-      this.dropZoneService.init(this.treeData, this.treeOptions);
+      this.dropZoneService.reset();
       if (this.treeData.length === 0) {
          //Tree is empty, but we have to to have something there so other trees' items can be dropped into it
          this.placeholder = true;
@@ -206,7 +209,13 @@ export class TreeService {
             //its own children
          }
       }
-      this.changes$.next(null);
+      setTimeout(() => {
+         if (this.treeOptions === undefined) {
+            throw new Error("TreeModel not initialized");
+         }
+         this.dropZoneService.init(this.treeModel, this.treeOptions);
+         this.changes$.next(null);
+      });
    }
 
    /** Renders a branch of the tree and all of its descendants */
@@ -248,6 +257,7 @@ export class TreeService {
          allowNesting:
             options.listMode !== true && (options.allowNesting ?? true),
          allowDragging: options.allowDragging ?? true,
+         allowDrop: options.allowDrop ?? (() => true),
          listMode: options.listMode ?? false,
          itemsPerPage: options.listMode ? itemsPerPage : undefined,
          page: options.listMode ? page : undefined

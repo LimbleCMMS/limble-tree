@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { DropZoneInfo } from "../limble-tree-root/drop-zone.service";
+import { BranchCoordinates } from "../Branch";
 import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 
 @Component({
@@ -9,14 +9,14 @@ import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 })
 export class DropZoneComponent {
    @Input() active: boolean = false;
-   @Input() dropZoneInfo: DropZoneInfo | undefined;
+   @Input() coordinates: BranchCoordinates | undefined;
 
    constructor(private readonly dropZoneService: DropZoneService) {}
 
    public dragenterHandler() {
-      if (this.active === true || this.dropZoneInfo === undefined) {
+      if (this.active === true || this.coordinates === undefined) {
          return;
       }
-      this.dropZoneService.swapActiveDropZone(this.dropZoneInfo);
+      this.dropZoneService.swapActiveDropZone(this.coordinates);
    }
 }

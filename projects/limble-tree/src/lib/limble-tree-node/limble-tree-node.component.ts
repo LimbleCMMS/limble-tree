@@ -12,7 +12,7 @@ import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 import { LimbleTreeBranchComponent } from "../limble-tree-branch/limble-tree-branch.component";
 import { DragStateService } from "../singletons/drag-state.service";
 import { LimbleTreeNode, TreeService } from "../limble-tree-root/tree.service";
-import { Branch } from "../branch";
+import { Branch } from "../Branch";
 import { isDraggingAllowed, isNestingAllowed } from "../util";
 import { filter, first, skipUntil, take } from "rxjs/operators";
 
@@ -80,6 +80,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          //Wasn't dropped into a valid tree, so reset for next drag and
          //don't do anything else.
          this.dragStateService.release();
+         this.dropZoneService.clear();
          return;
       }
       this.dragStateService.state$.pipe(take(2)).subscribe((state) => {
@@ -104,8 +105,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          sourceBranch === this.branch ||
          this.branch.getAncestors().includes(sourceBranch)
       ) {
-         if (this.dropZoneService.getActiveDropZoneInfo() !== null) {
-            this.dropZoneService.removeActiveAndSecondaryZones();
+         if (this.dropZoneService.getActiveDropZone() !== null) {
+            this.dropZoneService.clear();
          }
          return;
       }
@@ -116,10 +117,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          //If placeholder system is active, then activate the only existing drop zone
          //and skip the rest of the logic in this function
          const dropCoordinates = [...this.branch.getCoordinates()];
-         this.dropZoneService.showDropZoneFamily({
-            container: this.dropZoneAbove,
-            coordinates: dropCoordinates
-         });
+         this.dropZoneService.showDropZoneAndFamily(dropCoordinates);
          return;
       }
       const target = event.currentTarget as HTMLElement;
@@ -138,41 +136,32 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       if (
          event.offsetY < topLine &&
          this.dropZoneAbove !== undefined &&
-         this.dropZoneService.getActiveDropZoneInfo()?.container !==
+         this.dropZoneService.getActiveDropZone()?.data.container !==
             this.dropZoneAbove &&
          parentNestingAllowed
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
-         this.dropZoneService.showDropZoneFamily({
-            container: this.dropZoneAbove,
-            coordinates: dropCoordinates
-         });
+         this.dropZoneService.showDropZoneAndFamily(dropCoordinates);
       } else if (
          event.offsetY < bottomLine &&
          this.dropZoneInside !== undefined &&
-         this.dropZoneService.getActiveDropZoneInfo()?.container !==
+         this.dropZoneService.getActiveDropZone()?.data.container !==
             this.dropZoneInside
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates.push(0);
-         this.dropZoneService.showDropZoneFamily({
-            container: this.dropZoneInside,
-            coordinates: dropCoordinates
-         });
+         this.dropZoneService.showDropZoneAndFamily(dropCoordinates);
       } else if (
          event.offsetY >= bottomLine &&
          this.dropZoneBelow !== undefined &&
-         this.dropZoneService.getActiveDropZoneInfo()?.container !==
+         this.dropZoneService.getActiveDropZone()?.data.container !==
             this.dropZoneBelow &&
          this.branch.getChildren().length === 0 &&
          parentNestingAllowed
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates[dropCoordinates.length - 1]++;
-         this.dropZoneService.showDropZoneFamily({
-            container: this.dropZoneBelow,
-            coordinates: dropCoordinates
-         });
+         this.dropZoneService.showDropZoneAndFamily(dropCoordinates);
       }
    }
 
@@ -226,10 +215,10 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
                      }
                      const dropCoordinatesInside = this.branch.getCoordinates();
                      dropCoordinatesInside.push(0);
-                     this.dropZoneService.addDropZone({
-                        container: this.dropZoneInside,
-                        coordinates: dropCoordinatesInside
-                     });
+                     this.dropZoneService.addDropZone(
+                        dropCoordinatesInside,
+                        this.dropZoneInside
+                     );
                   }
                }
             );
@@ -258,20 +247,20 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       }
       const currentCoordinates = this.branch.getCoordinates();
       const dropCoordinatesAbove = [...currentCoordinates];
-      this.dropZoneService.addDropZone({
-         container: this.dropZoneAbove,
-         coordinates: dropCoordinatesAbove
-      });
+      this.dropZoneService.addDropZone(
+         dropCoordinatesAbove,
+         this.dropZoneAbove
+      );
       if (this.treeService.getPlaceholder() === true) {
          //Only register one drop zone if the placeholder system is active
          return;
       }
       const dropCoordinatesBelow = [...currentCoordinates];
       dropCoordinatesBelow[dropCoordinatesBelow.length - 1]++;
-      this.dropZoneService.addDropZone({
-         container: this.dropZoneBelow,
-         coordinates: dropCoordinatesBelow
-      });
+      this.dropZoneService.addDropZone(
+         dropCoordinatesBelow,
+         this.dropZoneBelow
+      );
    }
 
    private checkForHandle(): void {

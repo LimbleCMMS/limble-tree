@@ -3,8 +3,8 @@ export type BranchCoordinates = Array<number>;
 
 export class Branch<T> {
    public data: T;
-   private children: Array<Branch<T>>;
-   private parent: Branch<unknown> | null;
+   protected children: Array<Branch<T>>;
+   protected parent: Branch<unknown> | null;
 
    public constructor(data: T) {
       this.data = data;
@@ -12,16 +12,29 @@ export class Branch<T> {
       this.parent = null;
    }
 
-   public isRoot() {
+   public isRoot(): boolean {
       return this.parent === null;
    }
 
-   public getParent() {
+   public getParent(): Branch<unknown> | null {
       return this.parent;
    }
 
    public setParent<U>(parent: Branch<U> | null) {
       this.parent = parent;
+   }
+
+   public findByCoordinates(
+      relativeCoordinates: BranchCoordinates
+   ): Branch<unknown> {
+      let cursor: Branch<T> | undefined = this;
+      for (const index of relativeCoordinates.values()) {
+         cursor = cursor.getChild(index);
+         if (cursor === undefined) {
+            throw new Error("Failed to get child. Coordinates are bad.");
+         }
+      }
+      return cursor;
    }
 
    public getCoordinates() {
@@ -30,7 +43,7 @@ export class Branch<T> {
       while (cursor.parent !== null) {
          const cursorIndex = cursor.getIndex();
          if (cursorIndex === undefined) {
-            throw new Error("Unreachable error"); //This should be impossible to hit
+            throw new Error("Could not get cursor index");
          }
          coordinates.unshift(cursorIndex);
          cursor = cursor.parent;
@@ -47,10 +60,14 @@ export class Branch<T> {
    }
 
    public getIndex(): number | undefined {
-      return (
-         this.parent?.children.findIndex((branch) => branch === this) ??
-         undefined
-      );
+      if (this.parent === null) {
+         return undefined;
+      }
+      const index = this.parent.children.findIndex((branch) => branch === this);
+      if (index === -1) {
+         return undefined;
+      }
+      return index;
    }
 
    public getDescendant(
@@ -138,5 +155,20 @@ export class Branch<T> {
          throw new Error("can't remove root");
       }
       return this.parent.removeChild(index) as Branch<T>;
+   }
+
+   public copy(): Branch<T> {
+      const copy = this.copyHelper();
+      copy.setParent(null);
+      return copy;
+   }
+
+   protected copyHelper(): Branch<T> {
+      const copy = new Branch(this.data);
+      for (const child of this.children) {
+         const newChild = copy.appendChild(child.copyHelper());
+         newChild.parent = copy;
+      }
+      return copy;
    }
 }

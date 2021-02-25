@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import type { Branch } from "../branch";
+import type { Branch } from "../Branch";
 
 export type DragState = "idle" | "dragging" | "droppable" | "captured";
 

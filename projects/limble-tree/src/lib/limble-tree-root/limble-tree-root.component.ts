@@ -124,24 +124,24 @@ export class LimbleTreeRootComponent
       ) {
          return;
       }
-      this.dropZoneService.removeActiveAndSecondaryZones();
+      this.dropZoneService.clear();
    }
 
    public dropHandler(event: DragEvent) {
       event.stopPropagation();
-      const dropZoneInfo = this.dropZoneService.getActiveDropZoneInfo();
+      const dropZone = this.dropZoneService.getActiveDropZone();
       if (this.dragStateService.getState() !== "droppable") {
          return;
       }
-      if (dropZoneInfo === null) {
+      if (dropZone === null) {
          throw new Error("failed to get active drop zone at drop handler");
       }
       const sourceBranch = this.dragStateService.capture();
       if (sourceBranch === undefined) {
          throw new Error("failed to get current branch in dragendHandler");
       }
-      this.dropZoneService.removeActiveAndSecondaryZones();
-      this.treeService.drop(sourceBranch, dropZoneInfo.coordinates);
+      this.dropZoneService.clear();
+      this.treeService.drop(sourceBranch, dropZone.getCoordinates());
    }
 
    ngOnDestroy() {

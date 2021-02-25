@@ -9,7 +9,7 @@ import {
 } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { TreeService } from "../limble-tree-root/tree.service";
-import type { Branch } from "../branch";
+import type { Branch } from "../Branch";
 
 @Component({
    selector: "limble-tree-branch",
