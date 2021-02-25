@@ -180,7 +180,10 @@ export class DropZoneService {
       const deepestMembers = orphanZones
          .filter((zone) => {
             const coordinates = zone.getCoordinates();
-            return coordinates[coordinates.length - 1] === 0;
+            return (
+               coordinates[coordinates.length - 1] === 0 ||
+               coordinates.length === 1
+            );
          })
          .sort((memberA, memberB) => {
             const aCoordinates = memberA.getCoordinates();
@@ -202,6 +205,9 @@ export class DropZoneService {
             return 0;
          });
       for (const dropZone of deepestMembers) {
+         if (!orphanZones.includes(dropZone)) {
+            continue;
+         }
          const family: DropZoneFamily = {
             founder: dropZone,
             members: []
@@ -224,7 +230,14 @@ export class DropZoneService {
          this.dropZoneFamilies.push(family);
       }
       if (orphanZones.length !== 0) {
-         throw new Error("Some zones were not assigned to a family");
+         let orphans = "";
+         for (const zone of orphanZones) {
+            orphans += `${JSON.stringify(zone.getCoordinates())}, `;
+         }
+         orphans = orphans.slice(0, orphans.length - 2);
+         throw new Error(
+            `Some zones were not assigned to a family. The orphan zones have the following coordinates: ${orphans}`
+         );
       }
    }
 
