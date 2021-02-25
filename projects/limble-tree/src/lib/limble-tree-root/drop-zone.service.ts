@@ -260,6 +260,7 @@ export class DropZoneService {
       );
       componentRef.instance.active = active;
       componentRef.instance.coordinates = dropZone.getCoordinates();
+      componentRef.changeDetectorRef.detectChanges();
       if (active === true) {
          this.setActiveDropZone(dropZone);
       }

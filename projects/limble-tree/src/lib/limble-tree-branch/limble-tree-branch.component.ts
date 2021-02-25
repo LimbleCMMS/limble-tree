@@ -1,5 +1,6 @@
 import {
    AfterViewInit,
+   ChangeDetectionStrategy,
    ChangeDetectorRef,
    Component,
    Input,
@@ -14,7 +15,8 @@ import type { Branch } from "../Branch";
 @Component({
    selector: "limble-tree-branch",
    templateUrl: "./limble-tree-branch.component.html",
-   styles: ["./limble-tree-branch.component.scss"]
+   styles: ["./limble-tree-branch.component.scss"],
+   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LimbleTreeBranchComponent implements AfterViewInit {
    @Input() branch: Branch<any> | undefined;
