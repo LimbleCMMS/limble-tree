@@ -6,7 +6,7 @@ An Angular library for creating highly dynamic drag-and-drop tree structures
 
 ### Limble
 
-Limble is a CMMS SaaS company providing great software to customers around the world. The `limble-tree` library is built by the Limble team and used in Limble's web applications.
+Limble is a CMMS SaaS company providing great software to customers around the world. See [limblecmms.com](https://limblecmms.com) for more information. The `limble-tree` library is built by the Limble team and used in Limble's web applications.
 
 ### Status
 
