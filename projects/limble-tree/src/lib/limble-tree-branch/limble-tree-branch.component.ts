@@ -3,6 +3,7 @@ import {
    ChangeDetectionStrategy,
    ChangeDetectorRef,
    Component,
+   DoCheck,
    Input,
    Output,
    ViewChild,
@@ -18,7 +19,7 @@ import type { Branch } from "../Branch";
    styles: ["./limble-tree-branch.component.scss"],
    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LimbleTreeBranchComponent implements AfterViewInit {
+export class LimbleTreeBranchComponent implements AfterViewInit, DoCheck {
    @Input() branch: Branch<any> | undefined;
 
    @ViewChild("host", { read: ViewContainerRef }) private host:
@@ -33,19 +34,30 @@ export class LimbleTreeBranchComponent implements AfterViewInit {
 
    public readonly indent;
 
+   private readonly oldData: Map<string, unknown>;
+
    constructor(
       private readonly treeService: TreeService,
       private readonly changeDetectorRef: ChangeDetectorRef
    ) {
       this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
       this.indent = this.treeService.treeOptions?.indent;
+      this.oldData = new Map();
    }
 
    ngAfterViewInit() {
       this.dropZoneInside$.next(this.dropZoneInside);
       this.dropZoneInside$.complete();
+      this.oldData.set("collapsed", this.branch?.data.collapsed);
       this.reRender();
       this.changeDetectorRef.detectChanges();
+   }
+
+   ngDoCheck() {
+      if (this.branch?.data.collapsed !== this.oldData.get("collapsed")) {
+         this.changeDetectorRef.detectChanges();
+         this.oldData.set("collapsed", this.branch?.data.collapsed);
+      }
    }
 
    public reRender() {

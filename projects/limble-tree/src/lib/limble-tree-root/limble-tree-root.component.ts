@@ -80,7 +80,6 @@ export class LimbleTreeRootComponent
          );
       }
       this.update();
-      this.changeDetectorRef.detectChanges();
    }
 
    ngOnChanges() {
@@ -89,6 +88,7 @@ export class LimbleTreeRootComponent
       }
    }
 
+   /** Rebuild the tree */
    public update() {
       if (this.host === undefined) {
          throw new Error(
@@ -105,6 +105,7 @@ export class LimbleTreeRootComponent
          this.itemsPerPage,
          this.page
       );
+      this.changeDetectorRef.detectChanges();
    }
 
    public dragoverHandler(event: DragEvent) {
