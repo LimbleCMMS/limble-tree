@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { BranchCoordinates } from "../Branch";
 import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 
 @Component({
    selector: "drop-zone",
    templateUrl: "./drop-zone.component.html",
-   styleUrls: ["./drop-zone.component.scss"],
-   changeDetection: ChangeDetectionStrategy.OnPush
+   styleUrls: ["./drop-zone.component.scss"]
 })
 export class DropZoneComponent {
    @Input() active: boolean = false;

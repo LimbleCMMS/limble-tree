@@ -1,6 +1,5 @@
 import {
    AfterViewInit,
-   ChangeDetectionStrategy,
    ChangeDetectorRef,
    Component,
    ElementRef,
@@ -20,8 +19,7 @@ import { filter, first, skipUntil, take } from "rxjs/operators";
 @Component({
    selector: "limble-tree-node",
    templateUrl: "./limble-tree-node.component.html",
-   styleUrls: ["./limble-tree-node.component.scss"],
-   changeDetection: ChangeDetectionStrategy.OnPush
+   styleUrls: ["./limble-tree-node.component.scss"]
 })
 export class LimbleTreeNodeComponent implements AfterViewInit {
    @Input() branch: Branch<any> | undefined;

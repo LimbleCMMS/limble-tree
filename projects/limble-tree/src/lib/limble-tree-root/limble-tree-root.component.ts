@@ -1,7 +1,5 @@
 import {
    AfterViewInit,
-   ChangeDetectionStrategy,
-   ChangeDetectorRef,
    Component,
    EventEmitter,
    Input,
@@ -26,8 +24,7 @@ import { DragStateService } from "../singletons/drag-state.service";
    selector: "limble-tree-root",
    templateUrl: "./limble-tree-root.component.html",
    styleUrls: ["./limble-tree-root.component.scss"],
-   providers: [TreeService, DropZoneService],
-   changeDetection: ChangeDetectionStrategy.OnPush
+   providers: [TreeService, DropZoneService]
 })
 export class LimbleTreeRootComponent
    implements AfterViewInit, OnChanges, OnDestroy {
@@ -55,7 +52,6 @@ export class LimbleTreeRootComponent
 
    constructor(
       private readonly treeService: TreeService,
-      private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly dropZoneService: DropZoneService,
       private readonly dragStateService: DragStateService
    ) {
@@ -105,7 +101,6 @@ export class LimbleTreeRootComponent
          this.itemsPerPage,
          this.page
       );
-      this.changeDetectorRef.detectChanges();
    }
 
    public dragoverHandler(event: DragEvent) {
