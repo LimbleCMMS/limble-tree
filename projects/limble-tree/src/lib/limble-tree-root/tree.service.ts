@@ -195,6 +195,7 @@ export class TreeService {
          );
          componentRef.instance.branch = branch;
       } else {
+         this.placeholder = false;
          for (const node of this.treeData) {
             const branch = new Branch(node);
             this.treeModel.appendChild(branch);
