@@ -1,7 +1,5 @@
 .dragging {
+   position: absolute;
    transition: transform 0.01s;
    transform: translateX(-9999px);
-   height: 0;
-   margin: 0;
-   border: 0;
 }
