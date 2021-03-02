@@ -207,7 +207,6 @@ export class TreeService {
             componentRef.instance.branch = branch;
             //The LimbleTreeNodeComponent will (indirectly) call the `renderBranch` method of this service to render
             //its own children
-            componentRef.changeDetectorRef.detectChanges();
          }
       }
       setTimeout(() => {

@@ -30,9 +30,7 @@ export class DragStateService {
    /** Called to indicate that there is a valid active drop zone. Drop is now possible. */
    public droppable() {
       if (this.state !== "dragging") {
-         throw new Error(
-            "Can only move to `droppable` state from `dragging` state"
-         );
+         throw new Error("Can only call `droppable` when state is `dragging`");
       }
       this.state = "droppable";
       this.state$.next(this.state);
