@@ -65,8 +65,18 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          return;
       }
       event.dataTransfer.effectAllowed = "move";
-      draggedElement.classList.add("dragging");
       this.dragStateService.dragging(this.branch);
+      //We have to use a setTimeout due to a bug in chrome: https://stackoverflow.com/a/20733870/8796651
+      setTimeout(() => {
+         draggedElement.classList.add("dragging");
+         if (this.branch === undefined) {
+            throw new Error("Could not show surrounding drop zones");
+         }
+         this.dropZoneService.showDropZoneAndFamily(
+            this.branch.getCoordinates(),
+            true
+         );
+      });
    }
 
    public dragendHandler(event: DragEvent): void {
@@ -81,6 +91,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          //don't do anything else.
          this.dragStateService.release();
          this.dropZoneService.clear();
+         this.dropZoneService.restoreFamilies();
          return;
       }
       this.dragStateService.state$.pipe(take(2)).subscribe((state) => {
@@ -100,14 +111,11 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          //They might be dragging something that isn't a node. Just ignore it.
          return;
       }
-      //If trying to drop on self, remove any existing drop zones and return.
+      //If trying to drop on self, return.
       if (
          sourceBranch === this.branch ||
          this.branch.getAncestors().includes(sourceBranch)
       ) {
-         if (this.dropZoneService.getActiveDropZone() !== null) {
-            this.dropZoneService.clear();
-         }
          return;
       }
       if (
