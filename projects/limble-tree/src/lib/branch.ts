@@ -26,12 +26,12 @@ export class Branch<T> {
 
    public findByCoordinates(
       relativeCoordinates: BranchCoordinates
-   ): Branch<unknown> {
+   ): Branch<unknown> | undefined {
       let cursor: Branch<T> | undefined = this;
       for (const index of relativeCoordinates.values()) {
          cursor = cursor.getChild(index);
          if (cursor === undefined) {
-            throw new Error("Failed to get child. Coordinates are bad.");
+            return undefined;
          }
       }
       return cursor;

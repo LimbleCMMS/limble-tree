@@ -50,7 +50,7 @@ export class HiddenBranch<T> extends Branch<T> {
    public findByCoordinates(
       relativeCoordinates: BranchCoordinates,
       hidden = false
-   ): HiddenBranch<T> {
+   ): HiddenBranch<T> | undefined {
       let cursor: HiddenBranch<T> = this;
       for (const [key, index] of relativeCoordinates.entries()) {
          let temp: HiddenBranch<T> | undefined;
@@ -60,7 +60,7 @@ export class HiddenBranch<T> extends Branch<T> {
             temp = cursor.getChild(index);
          }
          if (temp === undefined) {
-            throw new Error("Failed to get child. Coordinates are bad.");
+            return undefined;
          }
          cursor = temp;
       }

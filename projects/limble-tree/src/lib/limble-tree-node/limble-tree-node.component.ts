@@ -74,9 +74,24 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          if (this.branch === undefined) {
             throw new Error("Could not show surrounding drop zones");
          }
-         this.dropZoneService.showDropZoneFamily(this.branch.getCoordinates(), {
-            joinFamilies: true
-         });
+         const parent = this.branch.getParent();
+         let parentData: LimbleTreeNode;
+         let parentNestingAllowed = true;
+         if (parent?.data !== null) {
+            parentData = parent?.data as LimbleTreeNode;
+            parentNestingAllowed = isNestingAllowed(
+               this.treeService.treeOptions,
+               parentData
+            );
+         }
+         if (this.dropZoneAbove !== undefined && parentNestingAllowed) {
+            this.dropZoneService.showDropZoneFamily(
+               this.branch.getCoordinates(),
+               {
+                  joinFamilies: true
+               }
+            );
+         }
       });
    }
 
