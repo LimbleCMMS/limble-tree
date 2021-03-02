@@ -72,10 +72,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          if (this.branch === undefined) {
             throw new Error("Could not show surrounding drop zones");
          }
-         this.dropZoneService.showDropZoneAndFamily(
-            this.branch.getCoordinates(),
-            true
-         );
+         this.dropZoneService.showDropZoneFamily(this.branch.getCoordinates(), {
+            joinFamilies: true
+         });
       });
    }
 
@@ -125,7 +124,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          //If placeholder system is active, then activate the only existing drop zone
          //and skip the rest of the logic in this function
          const dropCoordinates = [...this.branch.getCoordinates()];
-         this.dropZoneService.showDropZoneAndFamily(dropCoordinates);
+         this.dropZoneService.showDropZoneFamily(dropCoordinates);
          return;
       }
       const target = event.currentTarget as HTMLElement;
@@ -149,7 +148,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          parentNestingAllowed
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
-         this.dropZoneService.showDropZoneAndFamily(dropCoordinates);
+         this.dropZoneService.showDropZoneFamily(dropCoordinates, {
+            activateLowestInsteadOfFounder: true
+         });
       } else if (
          event.offsetY < bottomLine &&
          this.dropZoneInside !== undefined &&
@@ -158,7 +159,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates.push(0);
-         this.dropZoneService.showDropZoneAndFamily(dropCoordinates);
+         this.dropZoneService.showDropZoneFamily(dropCoordinates);
       } else if (
          event.offsetY >= bottomLine &&
          this.dropZoneBelow !== undefined &&
@@ -169,7 +170,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       ) {
          const dropCoordinates = [...this.branch.getCoordinates()];
          dropCoordinates[dropCoordinates.length - 1]++;
-         this.dropZoneService.showDropZoneAndFamily(dropCoordinates);
+         this.dropZoneService.showDropZoneFamily(dropCoordinates);
       }
    }
 
