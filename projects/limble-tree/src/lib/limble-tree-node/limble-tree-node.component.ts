@@ -15,6 +15,7 @@ import { LimbleTreeNode, TreeService } from "../limble-tree-root/tree.service";
 import { Branch } from "../Branch";
 import { isDraggingAllowed, isNestingAllowed } from "../util";
 import { filter, first, skipUntil, take } from "rxjs/operators";
+import { GlobalEventsService } from "../singletons/global-events.service";
 
 @Component({
    selector: "limble-tree-node",
@@ -43,7 +44,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly dragStateService: DragStateService,
       private readonly dropZoneService: DropZoneService,
-      private readonly treeService: TreeService
+      private readonly treeService: TreeService,
+      private readonly globalEventsService: GlobalEventsService
    ) {}
 
    ngAfterViewInit() {
@@ -102,6 +104,9 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    }
 
    public dragoverHandler(event: DragEvent) {
+      if (this.globalEventsService.scrolling === true) {
+         return;
+      }
       if (this.branch === undefined) {
          throw new Error("Can't get current branch during dragover event");
       }

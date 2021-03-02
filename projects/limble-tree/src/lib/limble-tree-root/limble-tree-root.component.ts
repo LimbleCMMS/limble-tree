@@ -19,6 +19,7 @@ import {
 import { TreeService } from "./tree.service";
 import { isElementDescendant } from "../util";
 import { DragStateService } from "../singletons/drag-state.service";
+import { GlobalEventsService } from "../singletons/global-events.service";
 
 @Component({
    selector: "limble-tree-root",
@@ -53,7 +54,8 @@ export class LimbleTreeRootComponent
    constructor(
       private readonly treeService: TreeService,
       private readonly dropZoneService: DropZoneService,
-      private readonly dragStateService: DragStateService
+      private readonly dragStateService: DragStateService,
+      private readonly globalEventsService: GlobalEventsService
    ) {
       this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
       this.changesSubscription = this.treeService.changes$.subscribe(() => {
@@ -101,6 +103,7 @@ export class LimbleTreeRootComponent
          this.itemsPerPage,
          this.page
       );
+      this.globalEventsService.addScrolling();
    }
 
    public dragoverHandler(event: DragEvent) {
@@ -145,5 +148,6 @@ export class LimbleTreeRootComponent
    ngOnDestroy() {
       this.changesSubscription.unsubscribe();
       this.dropSubscription.unsubscribe();
+      this.globalEventsService.removeScrolling();
    }
 }

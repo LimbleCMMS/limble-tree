@@ -6,7 +6,8 @@ import { CommonModule } from "@angular/common";
 import { LimbleTreeNodeComponent } from "./limble-tree-node/limble-tree-node.component";
 import { DragStateService } from "./singletons/drag-state.service";
 import { LimbleTreeRootComponent } from "./limble-tree-root/limble-tree-root.component";
-import { LimbleTreePlaceholderComponent } from './limble-tree-placeholder/limble-tree-placeholder.component';
+import { LimbleTreePlaceholderComponent } from "./limble-tree-placeholder/limble-tree-placeholder.component";
+import { GlobalEventsService } from "./singletons/global-events.service";
 
 @NgModule({
    declarations: [
@@ -18,6 +19,6 @@ import { LimbleTreePlaceholderComponent } from './limble-tree-placeholder/limble
    ],
    imports: [CommonModule],
    exports: [LimbleTreeRootComponent],
-   providers: [ComponentCreatorService, DragStateService]
+   providers: [ComponentCreatorService, DragStateService, GlobalEventsService]
 })
 export class LimbleTreeModule {}
