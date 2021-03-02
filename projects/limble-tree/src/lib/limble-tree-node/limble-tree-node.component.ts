@@ -91,6 +91,13 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
                   joinFamilies: true
                }
             );
+            if (
+               this.treeService.treeData?.length === 1 &&
+               this.branch.getCoordinates().length === 1
+            ) {
+               //We are dragging the only element in the tree, so we have to use the placeholder system
+               this.treeService.usePlaceholder();
+            }
          }
       });
    }
@@ -108,6 +115,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
          this.dragStateService.release();
          this.dropZoneService.clear();
          this.dropZoneService.restoreFamilies();
+         this.treeService.removePlaceholder();
          return;
       }
       this.dragStateService.state$.pipe(take(2)).subscribe((state) => {
@@ -218,7 +226,8 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
    private renderChildren() {
       if (
          this.children !== undefined &&
-         this.treeService.treeOptions?.listMode !== true
+         this.treeService.treeOptions?.listMode !== true &&
+         this.treeService.getPlaceholder() !== true
       ) {
          if (this.branch === undefined) {
             throw new Error("branch is undefined");
@@ -228,10 +237,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
             this.children
          );
          newBranchComponent.instance.branch = this.branch;
-         if (
-            isNestingAllowed(this.treeService.treeOptions, this.branch.data) &&
-            !this.treeService.getPlaceholder() === true
-         ) {
+         if (isNestingAllowed(this.treeService.treeOptions, this.branch.data)) {
             newBranchComponent.instance.dropZoneInside$.subscribe(
                (dropZone) => {
                   if (

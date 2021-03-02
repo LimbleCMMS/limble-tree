@@ -169,6 +169,37 @@ export class TreeService {
       this.render();
    }
 
+   public usePlaceholder() {
+      if (this.placeholder === true) {
+         return;
+      }
+      if (this.host === undefined) {
+         throw new Error("TreeModel not initialized");
+      }
+      this.placeholder = true;
+      const placeholderNode: LimbleTreeNode = {
+         component: { class: LimbleTreePlaceholderComponent }
+      };
+      const branch = new Branch(placeholderNode);
+      this.treeModel.appendChild(branch);
+      const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
+         LimbleTreeNodeComponent,
+         this.host
+      );
+      componentRef.instance.branch = branch;
+   }
+
+   public removePlaceholder() {
+      if (this.placeholder === false) {
+         return;
+      }
+      const placeholderIndex = this.treeModel.getChildren().length - 1;
+      if (placeholderIndex !== -1) {
+         this.treeModel.removeChild(placeholderIndex); //remove the placeholder
+      }
+      this.placeholder = false;
+   }
+
    /** Renders the entire tree from root to leaves */
    private render() {
       if (
@@ -179,23 +210,15 @@ export class TreeService {
          throw new Error("TreeModel not initialized");
       }
       this.host.clear();
-      this.treeModel = new Branch(null);
       this.dropZoneService.reset();
       if (this.treeData.length === 0) {
          //Tree is empty, but we have to to have something there so other trees' items can be dropped into it
-         this.placeholder = true;
-         const placeholderNode: LimbleTreeNode = {
-            component: { class: LimbleTreePlaceholderComponent }
-         };
-         const branch = new Branch(placeholderNode);
-         this.treeModel.appendChild(branch);
-         const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
-            LimbleTreeNodeComponent,
-            this.host
-         );
-         componentRef.instance.branch = branch;
+         this.usePlaceholder();
+         this.treeModel = new Branch(null);
       } else {
-         this.placeholder = false;
+         //If a placeholder was being used previously, remove it.
+         this.removePlaceholder();
+         this.treeModel = new Branch(null);
          for (const node of this.treeData) {
             const branch = new Branch(node);
             this.treeModel.appendChild(branch);
@@ -277,8 +300,7 @@ export class TreeService {
       if (this.placeholder === true) {
          targetParentCoordinates = [];
          index = 0;
-         this.treeModel.removeChild(0); //remove the placeholder
-         this.placeholder = false;
+         this.removePlaceholder();
       } else {
          targetParentCoordinates = [...targetCoordinates];
          index = targetParentCoordinates.pop();
@@ -306,6 +328,7 @@ export class TreeService {
 
    public remove(target: Branch<any>) {
       target.remove();
+      this.removePlaceholder();
       this.rebuildTreeData();
       this.render();
    }
