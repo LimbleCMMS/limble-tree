@@ -73,7 +73,6 @@ export class GlobalEventsService {
             })
          )
          .subscribe(() => {
-            console.log(isInTopScrollArea, isInBottomScrollArea);
             if (scrollableDiv === null) {
                return;
             }

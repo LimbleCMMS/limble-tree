@@ -211,14 +211,13 @@ export class TreeService {
       }
       this.host.clear();
       this.dropZoneService.reset();
+      this.treeModel = new Branch(null);
       if (this.treeData.length === 0) {
          //Tree is empty, but we have to to have something there so other trees' items can be dropped into it
          this.usePlaceholder();
-         this.treeModel = new Branch(null);
       } else {
          //If a placeholder was being used previously, remove it.
          this.removePlaceholder();
-         this.treeModel = new Branch(null);
          for (const node of this.treeData) {
             const branch = new Branch(node);
             this.treeModel.appendChild(branch);
