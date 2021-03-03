@@ -148,6 +148,5 @@ export class LimbleTreeRootComponent
    ngOnDestroy() {
       this.changesSubscription.unsubscribe();
       this.dropSubscription.unsubscribe();
-      this.globalEventsService.removeScrolling();
    }
 }

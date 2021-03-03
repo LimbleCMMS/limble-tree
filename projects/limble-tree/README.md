@@ -25,6 +25,10 @@ This library is currently in **beta** development. It may not be ready for use i
 -  Catchable events are fired when the tree renders and when a drop occurs
 -  Pagination available for flat trees
 
+### Warning
+
+This library is compiled using Angular IVY, and therefore will not work in applications that do not also use IVY. IVY has been the default compiler for Angular since Angular 9.
+
 ### Versioning
 
 To the best of our ability, this library follows the [Semantic Versioning](https://semver.org/) standard.
