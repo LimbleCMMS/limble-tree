@@ -10,7 +10,7 @@
       "lintCheck": "eslint projects/limble-tree/src/lib projects/sandbox/src/app --cache --ext .js --ext .ts --ext .html",
       "lintWatch": "esw projects/limble-tree/src/lib projects/sandbox/src/app --cache --watch --ext .js --ext .ts --ext .html",
       "deepUpdate": "npm update && rm -rf node_modules/ && rm package-lock.json && npm install",
-      "publishPackage": "npm run build && cd dist/limble-tree && npm publish"
+      "publishPackage": "npm run build && cd dist/limble-tree && npm publish --ignore-scripts"
    },
    "private": true,
    "dependencies": {
