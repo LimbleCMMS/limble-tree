@@ -211,13 +211,13 @@ export class TreeService {
       }
       this.host.clear();
       this.dropZoneService.reset();
+      //We don't need to call removePlaceholder here because we already cleared it away in the preceding lines. We just have to tell the service that it is done.
+      this.placeholder = false;
       this.treeModel = new Branch(null);
       if (this.treeData.length === 0) {
          //Tree is empty, but we have to to have something there so other trees' items can be dropped into it
          this.usePlaceholder();
       } else {
-         //If a placeholder was being used previously, remove it.
-         this.removePlaceholder();
          for (const node of this.treeData) {
             const branch = new Branch(node);
             this.treeModel.appendChild(branch);
