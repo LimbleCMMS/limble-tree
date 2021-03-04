@@ -103,14 +103,8 @@ export class DropZoneService {
       this.treeOptions = treeOptions;
       this.reset();
       for (const dropZoneInfo of this.dropZoneStack) {
-         if (
-            !this.dropZoneInventory.find((zone) =>
-               arraysAreEqual(zone.getCoordinates(), dropZoneInfo.coordinates)
-            )
-         ) {
-            this.dropZoneInventory.push(dropZoneInfo.dropZone);
-            this.addToTree(dropZoneInfo.dropZone, dropZoneInfo.coordinates);
-         }
+         this.dropZoneInventory.push(dropZoneInfo.dropZone);
+         this.addToTree(dropZoneInfo.dropZone, dropZoneInfo.coordinates);
       }
       this.dropZoneStack.length = 0;
       this.assignFamilies();
