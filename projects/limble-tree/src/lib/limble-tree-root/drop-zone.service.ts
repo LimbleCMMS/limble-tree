@@ -185,12 +185,16 @@ export class DropZoneService {
             founder: family.founder,
             members: [...family.members]
          };
-         for (const member of family.members) {
+         this.showDropZone(family.founder, true);
+         for (const member of family.members.sort(sortFamily)) {
             member.data.family = newFamily;
-            if (member === family.founder) {
-               this.showDropZone(member, true);
-            } else {
-               this.showDropZone(member);
+            if (member !== family.founder) {
+               if (this.activeDropZone === null) {
+                  //Failed to activate a zone so far, so activate this one instead
+                  this.showDropZone(member, true);
+               } else {
+                  this.showDropZone(member);
+               }
             }
          }
          for (const member of family2.members) {
@@ -217,11 +221,15 @@ export class DropZoneService {
             throw new Error("No family");
          }
          this.visibleFamily = family;
-         for (const member of family.members) {
-            if (member === family.founder) {
-               this.showDropZone(member, true);
-            } else {
-               this.showDropZone(member);
+         this.showDropZone(family.founder, true);
+         for (const member of family.members.sort(sortFamily)) {
+            if (member !== family.founder) {
+               if (this.activeDropZone === null) {
+                  //Failed to activate a zone so far, so activate this one instead
+                  this.showDropZone(member, true);
+               } else {
+                  this.showDropZone(member);
+               }
             }
          }
       }
@@ -239,10 +247,6 @@ export class DropZoneService {
    public swapActiveDropZone(
       newActiveDropZoneCoordinates: BranchCoordinates
    ): void {
-      const activeDropZone = this.getActiveDropZone();
-      if (activeDropZone === null) {
-         throw new Error("could not get active drop zone");
-      }
       if (this.visibleFamily === null) {
          throw new Error("No visible family available for swapping");
       }

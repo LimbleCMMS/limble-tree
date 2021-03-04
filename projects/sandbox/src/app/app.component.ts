@@ -68,13 +68,22 @@ export class AppComponent {
 
    public treeOptions: LimbleTreeOptions = {
       defaultComponent: { class: TreeItemComponent },
-      indent: 60
+      indent: 60,
+      allowDrop: (sourceNode, proposedParent) => {
+         if (sourceNode.value1 === "my thing" && proposedParent !== null) {
+            return false;
+         }
+         return true;
+      }
    };
 
    public limbleTreeDataString: string;
 
    constructor() {
       this.limbleTreeDataString = JSON.stringify(this.treeData1, null, 2);
+      for (let index = 0; index < 100; index++) {
+         this.treeData1.push({ value1: "my thing" });
+      }
    }
 
    public addNode(node: LimbleTreeNode) {
