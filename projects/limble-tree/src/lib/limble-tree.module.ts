@@ -8,6 +8,8 @@ import { DragStateService } from "./singletons/drag-state.service";
 import { LimbleTreeRootComponent } from "./limble-tree-root/limble-tree-root.component";
 import { LimbleTreePlaceholderComponent } from "./limble-tree-placeholder/limble-tree-placeholder.component";
 import { GlobalEventsService } from "./singletons/global-events.service";
+import { DragoverNoChangeDetectDirective } from "./custom-event-bindings/dragover-no-change-detect.directive";
+import { DragleaveNoChangeDetectDirective } from "./custom-event-bindings/dragleave-no-change-detect.directive";
 
 @NgModule({
    declarations: [
@@ -15,7 +17,9 @@ import { GlobalEventsService } from "./singletons/global-events.service";
       DropZoneComponent,
       LimbleTreeNodeComponent,
       LimbleTreeRootComponent,
-      LimbleTreePlaceholderComponent
+      LimbleTreePlaceholderComponent,
+      DragoverNoChangeDetectDirective,
+      DragleaveNoChangeDetectDirective
    ],
    imports: [CommonModule],
    exports: [LimbleTreeRootComponent],

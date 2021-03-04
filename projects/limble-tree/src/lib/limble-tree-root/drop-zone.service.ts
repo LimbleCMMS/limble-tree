@@ -1,4 +1,9 @@
-import { ComponentRef, Injectable, ViewContainerRef } from "@angular/core";
+import {
+   ComponentRef,
+   Injectable,
+   NgZone,
+   ViewContainerRef
+} from "@angular/core";
 import { Branch, BranchCoordinates } from "../Branch";
 import { DragStateService } from "../singletons/drag-state.service";
 import type { LimbleTreeNode, ProcessedOptions } from "./tree.service";
@@ -259,9 +264,6 @@ export class DropZoneService {
       if (index === -1) {
          throw new Error("failed to swap active drop zone");
       }
-      if (activeDropZone.data.componentRef) {
-         activeDropZone.data.componentRef.instance.active = false;
-      }
       const newActiveDropZone = this.treeWithDropZones.findByCoordinates(
          newActiveDropZoneCoordinates,
          true
@@ -361,6 +363,12 @@ export class DropZoneService {
    }
 
    private setActiveDropZone(dropZone: DropZone | null): void {
+      if (this.activeDropZone?.data.componentRef) {
+         this.activeDropZone.data.componentRef.instance.active = false;
+         if (!NgZone.isInAngularZone()) {
+            this.activeDropZone.data.componentRef.changeDetectorRef.detectChanges();
+         }
+      }
       this.activeDropZone = dropZone;
       if (
          this.activeDropZone !== null &&
@@ -375,6 +383,9 @@ export class DropZoneService {
       }
       if (this.activeDropZone?.data.componentRef) {
          this.activeDropZone.data.componentRef.instance.active = true;
+         if (!NgZone.isInAngularZone()) {
+            this.activeDropZone.data.componentRef.changeDetectorRef.detectChanges();
+         }
       }
    }
 
@@ -397,6 +408,12 @@ export class DropZoneService {
          this.setActiveDropZone(dropZone);
       }
       dropZone.data.componentRef = componentRef;
+      //We use this zone check in case we are running outside of angular, which happens
+      //often due to the way we catch dragover events using the DragoverNoChangeDetect
+      //directive
+      if (!NgZone.isInAngularZone()) {
+         componentRef.changeDetectorRef.detectChanges();
+      }
       return true;
    }
 

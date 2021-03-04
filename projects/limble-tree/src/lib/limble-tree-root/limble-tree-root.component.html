@@ -1,6 +1,6 @@
 <div
-   (dragover)="dragoverHandler($event)"
-   (dragleave)="dragleaveHandler($event)"
+   (dragoverNoChangeDetect)="dragoverHandler($event)"
+   (dragleaveNoChangeDetect)="dragleaveHandler($event)"
    (drop)="dropHandler($event)"
 >
    <ng-template #dropZoneInside></ng-template>

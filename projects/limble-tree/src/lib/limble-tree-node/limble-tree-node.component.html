@@ -5,7 +5,10 @@
    class="limble-parent-container"
    #draggableDiv
 >
-   <div (dragover)="dragoverHandler($event)">
+   <div
+      (dragoverNoChangeDetect)="dragoverHandler($event)"
+      [dragoverEventThrottle]="10"
+   >
       <ng-template #nodeHost></ng-template>
    </div>
    <ng-template #children></ng-template>

@@ -1,5 +1,6 @@
 import {
    AfterViewInit,
+   ChangeDetectorRef,
    Component,
    EventEmitter,
    Input,
@@ -55,7 +56,8 @@ export class LimbleTreeRootComponent
       private readonly treeService: TreeService,
       private readonly dropZoneService: DropZoneService,
       private readonly dragStateService: DragStateService,
-      private readonly globalEventsService: GlobalEventsService
+      private readonly globalEventsService: GlobalEventsService,
+      private readonly changeDetectorRef: ChangeDetectorRef
    ) {
       this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
       this.changesSubscription = this.treeService.changes$.subscribe(() => {
@@ -78,6 +80,7 @@ export class LimbleTreeRootComponent
          );
       }
       this.update();
+      this.changeDetectorRef.detectChanges();
    }
 
    ngOnChanges() {
@@ -123,9 +126,12 @@ export class LimbleTreeRootComponent
          !(relatedTarget instanceof Node) ||
          isElementDescendant(currentTarget, relatedTarget) !== false
       ) {
+         //event came from deeper in the tree. Ignore it.
          return;
       }
+      //Mouse has left the tree, so clear the drop zones
       this.dropZoneService.clear();
+      this.changeDetectorRef.detectChanges();
    }
 
    public dropHandler(event: DragEvent) {
