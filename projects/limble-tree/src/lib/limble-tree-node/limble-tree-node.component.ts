@@ -151,8 +151,7 @@ export class LimbleTreeNodeComponent implements AfterViewInit {
       ) {
          //If placeholder system is active, then activate the only existing drop zone
          //and skip the rest of the logic in this function
-         const dropCoordinates = [...this.branch.getCoordinates()];
-         this.dropZoneService.showDropZoneFamily(dropCoordinates);
+         this.dropZoneService.showDropZoneFamily([0]);
          return;
       }
       const target = event.currentTarget as HTMLElement;
