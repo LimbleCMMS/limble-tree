@@ -83,6 +83,7 @@ export class DropZoneService {
       this.dropZoneStack.push({ dropZone: dropZone, coordinates: coordinates });
    }
 
+   /** Clears the view of drop zones, but keeps all the drop zone information */
    public clear(): void {
       if (this.visibleFamily !== null) {
          for (const member of this.visibleFamily.members) {
@@ -102,6 +103,10 @@ export class DropZoneService {
       this.tree = tree;
       this.treeOptions = treeOptions;
       this.reset();
+      if (this.dropZoneStack.length === 0) {
+         //No need to continue
+         return;
+      }
       for (const dropZoneInfo of this.dropZoneStack) {
          this.dropZoneInventory.push(dropZoneInfo.dropZone);
          this.addToTree(dropZoneInfo.dropZone, dropZoneInfo.coordinates);
@@ -110,6 +115,8 @@ export class DropZoneService {
       this.assignFamilies();
    }
 
+   /** clears the view of drop zones and deletes all the drop zone information
+    * EXCEPT for the dropZoneStack */
    public reset(): void {
       this.clear();
       this.dropZoneFamilies.length = 0;
@@ -117,6 +124,14 @@ export class DropZoneService {
       if (this.tree) {
          this.treeWithDropZones = HiddenBranch.fromBranch(this.tree);
       }
+   }
+
+   /** Sets the service back to the initial state: clears the view of drop zones,
+    * deletes all the drop zone information, and empties the dropZoneStack.
+    */
+   public restart(): void {
+      this.reset();
+      this.dropZoneStack.length = 0;
    }
 
    public restoreFamilies(): void {

@@ -210,7 +210,7 @@ export class TreeService {
          throw new Error("TreeModel not initialized");
       }
       this.host.clear();
-      this.dropZoneService.reset();
+      this.dropZoneService.restart();
       //We don't need to call removePlaceholder here because we already cleared it away in the preceding lines. We just have to tell the service that it is done.
       this.placeholder = false;
       this.treeModel = new Branch(null);
