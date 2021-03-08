@@ -179,7 +179,11 @@ export class DropZoneService {
          true
       );
       if (target === undefined) {
-         throw new Error("Could not find drop zone to show");
+         throw new Error(
+            `Could not find drop zone to show. Coordinates: ${JSON.stringify(
+               coordinates
+            )}`
+         );
       }
       const family = (target.data as DropZoneData).family;
       if (options.joinFamilies === true) {

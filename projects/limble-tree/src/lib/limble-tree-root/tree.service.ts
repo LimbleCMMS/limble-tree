@@ -232,12 +232,20 @@ export class TreeService {
             //its own children
          }
       }
+      const treeData = this.treeData;
       setTimeout(() => {
          if (this.treeOptions === undefined) {
             throw new Error("TreeModel not initialized");
          }
-         this.dropZoneService.init(this.treeModel, this.treeOptions);
          this.changes$.next(null);
+         if (this.treeData !== treeData) {
+            //The tree service has been reinitialized since this timeout was called.
+            //To avoid race conditions, we should skip initializing the dropZoneService.
+            //Even without a race condition, the new tree data will just overwrite the
+            //drop zone data anyway, so pulling out early will also be more efficient.
+            return;
+         }
+         this.dropZoneService.init(this.treeModel, this.treeOptions);
       });
    }
 
