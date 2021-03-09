@@ -2,7 +2,7 @@ import { Injectable, Type, ViewContainerRef } from "@angular/core";
 import { ReplaySubject } from "rxjs";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
 import { DropZoneService } from "./drop-zone.service";
-import { Branch, BranchCoordinates } from "../Branch";
+import { Branch, BranchCoordinates } from "../classes/Branch";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 import { LimbleTreePlaceholderComponent } from "../limble-tree-placeholder/limble-tree-placeholder.component";
 
@@ -255,7 +255,8 @@ export class TreeService {
          throw new Error("TreeModel not initialized");
       }
       host.clear();
-      for (const node of branch.data.nodes ?? []) {
+      branch.clearChildren();
+      for (const node of branch.data?.nodes ?? []) {
          const newBranch = new Branch(node);
          branch.appendChild(newBranch);
          const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(

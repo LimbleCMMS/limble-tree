@@ -4,13 +4,13 @@ import {
    NgZone,
    ViewContainerRef
 } from "@angular/core";
-import { Branch, BranchCoordinates } from "../Branch";
+import { Branch, BranchCoordinates } from "../classes/Branch";
 import { DragStateService } from "../singletons/drag-state.service";
 import type { LimbleTreeNode, ProcessedOptions } from "./tree.service";
 import { ComponentCreatorService } from "../singletons/component-creator.service";
 import { DropZoneComponent } from "../drop-zone/drop-zone.component";
 import { arraysAreEqual } from "../util";
-import { HiddenBranch } from "../HiddenBranch";
+import { HiddenBranch } from "../classes/HiddenBranch";
 
 interface DropZoneData {
    container: ViewContainerRef;

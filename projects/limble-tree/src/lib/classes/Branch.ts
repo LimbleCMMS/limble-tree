@@ -37,7 +37,7 @@ export class Branch<T> {
       return cursor;
    }
 
-   public getCoordinates() {
+   public getCoordinates(): BranchCoordinates {
       const coordinates: BranchCoordinates = [];
       let cursor: Branch<unknown> = this;
       while (cursor.parent !== null) {
@@ -55,8 +55,15 @@ export class Branch<T> {
       return this.children[index];
    }
 
-   public getChildren() {
+   public getChildren(): Array<Branch<T>> {
       return this.children;
+   }
+
+   public clearChildren(): void {
+      for (const child of this.children) {
+         child.setParent(null);
+      }
+      this.children.length = 0;
    }
 
    public getIndex(): number | undefined {

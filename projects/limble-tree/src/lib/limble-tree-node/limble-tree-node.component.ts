@@ -12,7 +12,7 @@ import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 import { LimbleTreeBranchComponent } from "../limble-tree-branch/limble-tree-branch.component";
 import { DragStateService } from "../singletons/drag-state.service";
 import { LimbleTreeNode, TreeService } from "../limble-tree-root/tree.service";
-import { Branch } from "../Branch";
+import { Branch } from "../classes/Branch";
 import { isDraggingAllowed, isNestingAllowed } from "../util";
 import { filter, first, skipUntil, take } from "rxjs/operators";
 import { GlobalEventsService } from "../singletons/global-events.service";

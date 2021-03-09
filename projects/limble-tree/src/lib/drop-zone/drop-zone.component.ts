@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { BranchCoordinates } from "../Branch";
+import { BranchCoordinates } from "../classes/Branch";
 import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 
 @Component({

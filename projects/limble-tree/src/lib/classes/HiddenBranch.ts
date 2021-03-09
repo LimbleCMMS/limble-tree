@@ -71,6 +71,11 @@ export class HiddenBranch<T> extends Branch<T> {
       return this.children[index];
    }
 
+   public clearChildren(): void {
+      super.clearChildren();
+      this.hiddenChildren.clear();
+   }
+
    public getIndex(): number | undefined {
       if (this.parent === null) {
          return undefined;
