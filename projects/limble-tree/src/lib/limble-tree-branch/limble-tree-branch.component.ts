@@ -3,13 +3,12 @@ import {
    ChangeDetectorRef,
    Component,
    Input,
-   Output,
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
 import { TreeService } from "../limble-tree-root/tree.service";
 import type { Branch } from "../classes/Branch";
+import { DropZone } from "../classes/DropZone";
 
 @Component({
    selector: "limble-tree-branch",
@@ -23,11 +22,8 @@ export class LimbleTreeBranchComponent implements AfterViewInit {
       | ViewContainerRef
       | undefined;
 
-   @ViewChild("dropZoneInside", { read: ViewContainerRef })
-   dropZoneInside: ViewContainerRef | undefined;
-
-   @Output()
-   readonly dropZoneInside$: BehaviorSubject<ViewContainerRef | undefined>;
+   @Input() dropZoneInside: DropZone | undefined;
+   @Input() renderDropZoneInside: boolean;
 
    public readonly indent;
 
@@ -35,13 +31,11 @@ export class LimbleTreeBranchComponent implements AfterViewInit {
       private readonly treeService: TreeService,
       private readonly changeDetectorRef: ChangeDetectorRef
    ) {
-      this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
       this.indent = this.treeService.treeOptions?.indent;
+      this.renderDropZoneInside = false;
    }
 
    ngAfterViewInit() {
-      this.dropZoneInside$.next(this.dropZoneInside);
-      this.dropZoneInside$.complete();
       this.reRender();
       this.changeDetectorRef.detectChanges();
    }

@@ -1,4 +1,7 @@
-<ng-template #dropZoneAbove></ng-template>
+<drop-zone
+   *ngIf="renderDropZoneAbove === true"
+   [dropZone]="dropZoneAbove"
+></drop-zone>
 <div
    (dragstart)="dragstartHandler($event)"
    (dragend)="dragendHandler($event)"
@@ -11,6 +14,14 @@
    >
       <ng-template #nodeHost></ng-template>
    </div>
-   <ng-template #children></ng-template>
+   <limble-tree-branch
+      *ngIf="branch !== undefined && renderInnerBranch === true"
+      [branch]="branch"
+      [dropZoneInside]="dropZoneInside"
+      [renderDropZoneInside]="renderDropZoneInside"
+   ></limble-tree-branch>
 </div>
-<ng-template #dropZoneBelow></ng-template>
+<drop-zone
+   *ngIf="renderDropZoneBelow === true"
+   [dropZone]="dropZoneBelow"
+></drop-zone>

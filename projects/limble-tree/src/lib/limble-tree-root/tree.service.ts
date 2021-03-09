@@ -240,9 +240,9 @@ export class TreeService {
          this.changes$.next(null);
          if (this.treeData !== treeData) {
             //The tree service has been reinitialized since this timeout was called.
-            //To avoid race conditions, we should skip initializing the dropZoneService.
-            //Even without a race condition, the new tree data will just overwrite the
-            //drop zone data anyway, so pulling out early will also be more efficient.
+            //The new tree data will just overwrite the drop zone data anyway, so
+            //we can skip the drop zone initialization on this round for efficiency
+            //and also to avoid some possible (?) race conditions
             return;
          }
          this.dropZoneService.init(this.treeModel, this.treeOptions);
@@ -300,7 +300,7 @@ export class TreeService {
    public drop(source: Branch<any>, targetCoordinates: BranchCoordinates) {
       const sourceParent = source.getParent();
       const sourceIndex = source.getIndex();
-      if (sourceIndex === undefined) {
+      if (sourceIndex === undefined || sourceIndex === null) {
          throw new Error("Cannot move the hidden root node");
       }
       let targetParentCoordinates: BranchCoordinates;

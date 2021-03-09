@@ -148,7 +148,7 @@ export class LimbleTreeRootComponent
          throw new Error("failed to get current branch in dragendHandler");
       }
       this.dropZoneService.clear();
-      this.treeService.drop(sourceBranch, dropZone.getCoordinates());
+      this.treeService.drop(sourceBranch, dropZone.getFullInsertCoordinates());
    }
 
    ngOnDestroy() {

@@ -42,7 +42,7 @@ export class Branch<T> {
       let cursor: Branch<unknown> = this;
       while (cursor.parent !== null) {
          const cursorIndex = cursor.getIndex();
-         if (cursorIndex === undefined) {
+         if (cursorIndex === undefined || cursorIndex === null) {
             throw new Error("Could not get cursor index");
          }
          coordinates.unshift(cursorIndex);
@@ -66,9 +66,9 @@ export class Branch<T> {
       this.children.length = 0;
    }
 
-   public getIndex(): number | undefined {
+   public getIndex(): number | null | undefined {
       if (this.parent === null) {
-         return undefined;
+         return null;
       }
       const index = this.parent.children.findIndex((branch) => branch === this);
       if (index === -1) {
@@ -158,7 +158,7 @@ export class Branch<T> {
 
    public remove(): Branch<T> {
       const index = this.getIndex();
-      if (this.parent === null || index === undefined) {
+      if (this.parent === null || index === undefined || index === null) {
          throw new Error("can't remove root");
       }
       return this.parent.removeChild(index) as Branch<T>;

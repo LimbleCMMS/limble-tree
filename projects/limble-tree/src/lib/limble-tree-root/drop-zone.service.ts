@@ -1,34 +1,20 @@
-import {
-   ComponentRef,
-   Injectable,
-   NgZone,
-   ViewContainerRef
-} from "@angular/core";
-import { Branch, BranchCoordinates } from "../classes/Branch";
+import { Injectable } from "@angular/core";
+import { Branch } from "../classes/Branch";
 import { DragStateService } from "../singletons/drag-state.service";
 import type { LimbleTreeNode, ProcessedOptions } from "./tree.service";
-import { ComponentCreatorService } from "../singletons/component-creator.service";
-import { DropZoneComponent } from "../drop-zone/drop-zone.component";
 import { arraysAreEqual } from "../util";
-import { HiddenBranch } from "../classes/HiddenBranch";
+import { DropZone } from "../classes/DropZone";
+import { DropZoneLocation } from "../classes/DropZoneLocation";
 
-interface DropZoneData {
-   container: ViewContainerRef;
-   family?: DropZoneFamily;
-   componentRef?: ComponentRef<DropZoneComponent>;
-}
-
-type DropZone = HiddenBranch<DropZoneData>;
-
-interface DropZoneFamily {
+export interface DropZoneFamily {
    /** The deepest member of the family */
    founder: DropZone;
    members: Array<DropZone>;
 }
 
 function sortFamily(memberA: DropZone, memberB: DropZone) {
-   const aCoordinates = memberA.getCoordinates();
-   const bCoordinates = memberB.getCoordinates();
+   const aCoordinates = memberA.getFullInsertCoordinates();
+   const bCoordinates = memberB.getFullInsertCoordinates();
    if (aCoordinates.length > bCoordinates.length) {
       return -1;
    }
@@ -40,26 +26,17 @@ function sortFamily(memberA: DropZone, memberB: DropZone) {
 
 @Injectable()
 export class DropZoneService {
-   private readonly dropZoneStack: Array<{
-      dropZone: DropZone;
-      coordinates: BranchCoordinates;
-   }>;
    private readonly dropZoneInventory: Array<DropZone>;
    private readonly dropZoneFamilies: Array<DropZoneFamily>;
    private visibleFamily: DropZoneFamily | null;
    private activeDropZone: DropZone | null;
    private tree: Branch<any> | undefined;
-   private treeWithDropZones: HiddenBranch<any> | undefined;
    private treeOptions: ProcessedOptions | undefined;
    private tempFamilies:
       | readonly [DropZoneFamily, DropZoneFamily | null]
       | readonly [];
 
-   constructor(
-      private readonly dragStateService: DragStateService,
-      private readonly componentCreatorService: ComponentCreatorService
-   ) {
-      this.dropZoneStack = [];
+   constructor(private readonly dragStateService: DragStateService) {
       this.dropZoneInventory = [];
       this.dropZoneFamilies = [];
       this.visibleFamily = null;
@@ -68,26 +45,23 @@ export class DropZoneService {
       this.setActiveDropZone(null);
    }
 
-   public addDropZone(
-      coordinates: BranchCoordinates,
-      container: ViewContainerRef
-   ): void {
+   public addDropZone(newDropZone: DropZone): boolean {
       if (
-         this.dropZoneStack.find((registeredZone) =>
-            arraysAreEqual(registeredZone.coordinates, coordinates)
+         this.dropZoneInventory.find((registeredZone) =>
+            DropZone.dropZoneLocationsAreEqual(registeredZone, newDropZone)
          ) !== undefined
       ) {
-         return;
+         return false;
       }
-      const dropZone = new HiddenBranch({ container: container });
-      this.dropZoneStack.push({ dropZone: dropZone, coordinates: coordinates });
+      this.dropZoneInventory.push(newDropZone);
+      return true;
    }
 
-   /** Clears the view of drop zones, but keeps all the drop zone information */
+   /** hides all drop zones */
    public clear(): void {
       if (this.visibleFamily !== null) {
          for (const member of this.visibleFamily.members) {
-            member.data.container.clear();
+            member.isVisible(false);
          }
          this.visibleFamily = null;
       }
@@ -103,35 +77,22 @@ export class DropZoneService {
       this.tree = tree;
       this.treeOptions = treeOptions;
       this.reset();
-      if (this.dropZoneStack.length === 0) {
-         //No need to continue
-         return;
-      }
-      for (const dropZoneInfo of this.dropZoneStack) {
-         this.dropZoneInventory.push(dropZoneInfo.dropZone);
-         this.addToTree(dropZoneInfo.dropZone, dropZoneInfo.coordinates);
-      }
-      this.dropZoneStack.length = 0;
       this.assignFamilies();
    }
 
-   /** clears the view of drop zones and deletes all the drop zone information
-    * EXCEPT for the dropZoneStack */
+   /** hides all drop zones and deletes all the family assignments */
    public reset(): void {
       this.clear();
       this.dropZoneFamilies.length = 0;
-      this.dropZoneInventory.length = 0;
-      if (this.tree) {
-         this.treeWithDropZones = HiddenBranch.fromBranch(this.tree);
-      }
    }
 
-   /** Sets the service back to the initial state: clears the view of drop zones,
-    * deletes all the drop zone information, and empties the dropZoneStack.
+   /**
+    * Restores the service to its initial state: hides all drop zones,
+    * deletes all the family assignments, and empties the dropZoneInventory.
     */
    public restart(): void {
       this.reset();
-      this.dropZoneStack.length = 0;
+      this.dropZoneInventory.length = 0;
    }
 
    public restoreFamilies(): void {
@@ -139,12 +100,12 @@ export class DropZoneService {
          this.dropZoneFamilies.pop();
          this.dropZoneFamilies.push(this.tempFamilies[0]);
          for (const member of this.tempFamilies[0].members) {
-            member.data.family = this.tempFamilies[0];
+            member.setFamily(this.tempFamilies[0]);
          }
          if (this.tempFamilies[1] !== null) {
             this.dropZoneFamilies.push(this.tempFamilies[1]);
             for (const member of this.tempFamilies[1].members) {
-               member.data.family = this.tempFamilies[1];
+               member.setFamily(this.tempFamilies[1]);
             }
          }
          this.tempFamilies = [];
@@ -155,7 +116,8 @@ export class DropZoneService {
     * Shows the drop zone family of the drop zone indicated by `coordinates`.
     */
    public showDropZoneFamily(
-      coordinates: BranchCoordinates,
+      /** Note: this drop zone may not exist in the dropZoneInventory; we have to search the inventory based on its location */
+      dropZone: DropZone,
       options: {
          joinFamilies?: boolean;
          activateLowestInsteadOfFounder?: boolean;
@@ -163,7 +125,7 @@ export class DropZoneService {
    ): void {
       if (
          this.activeDropZone !== null &&
-         arraysAreEqual(this.activeDropZone.getCoordinates(), coordinates)
+         DropZone.dropZoneLocationsAreEqual(this.activeDropZone, dropZone)
       ) {
          //Already showing the family with the appropriate active drop zone
          return;
@@ -171,32 +133,30 @@ export class DropZoneService {
       if (this.visibleFamily !== null || this.activeDropZone !== null) {
          this.clear();
       }
-      if (this.treeWithDropZones === undefined) {
-         throw new Error("dropZoneService not initialized");
-      }
-      const target = this.treeWithDropZones.findByCoordinates(
-         coordinates,
-         true
+      const target = this.dropZoneInventory.find((zone) =>
+         DropZone.dropZoneLocationsAreEqual(zone, dropZone)
       );
       if (target === undefined) {
          throw new Error(
-            `Could not find drop zone to show. Coordinates: ${JSON.stringify(
-               coordinates
+            `Could not find drop zone to show. location: ${JSON.stringify(
+               dropZone.getLocation()
             )}`
          );
       }
-      const family = (target.data as DropZoneData).family;
+      const family = target.getFamily();
       if (options.joinFamilies === true) {
-         const coordinates2 = [...coordinates];
-         coordinates2[coordinates2.length - 1]++;
-         const target2 = this.treeWithDropZones.findByCoordinates(
-            coordinates2,
-            true
+         const location1 = dropZone.getLocation();
+         const location2 = new DropZoneLocation(
+            [...location1.parentCoordinates],
+            location1.insertIndex + 1
+         );
+         const target2 = this.dropZoneInventory.find((zone) =>
+            DropZone.dropZoneLocationsAreEqual(zone, location2)
          );
          if (target2 === undefined) {
             throw new Error("Could not find drop zone to show");
          }
-         const family2 = (target2.data as DropZoneData).family;
+         const family2 = target2.getFamily();
          if (family === undefined || family2 === undefined) {
             throw new Error("No family");
          }
@@ -206,7 +166,7 @@ export class DropZoneService {
          };
          this.showDropZone(family.founder, true);
          for (const member of family.members.sort(sortFamily)) {
-            member.data.family = newFamily;
+            member.setFamily(newFamily);
             if (member !== family.founder) {
                if (this.activeDropZone === null) {
                   //Failed to activate a zone so far, so activate this one instead
@@ -217,9 +177,10 @@ export class DropZoneService {
             }
          }
          for (const member of family2.members) {
-            member.data.family = newFamily;
+            member.setFamily(newFamily);
             if (
-               member.getCoordinates().length < target2.getCoordinates().length
+               member.getLocation().parentCoordinates.length <
+               target2.getLocation().parentCoordinates.length
             ) {
                newFamily.members.push(member);
                this.showDropZone(member);
@@ -259,66 +220,36 @@ export class DropZoneService {
          if (lowestMember === undefined) {
             throw new Error("Could not get lowest member");
          }
-         this.swapActiveDropZone(lowestMember.getCoordinates());
+         this.swapActiveDropZone(lowestMember);
       }
    }
 
-   public swapActiveDropZone(
-      newActiveDropZoneCoordinates: BranchCoordinates
-   ): void {
+   public swapActiveDropZone(newActiveDropZone: DropZone): void {
       if (this.visibleFamily === null) {
          throw new Error("No visible family available for swapping");
       }
-      if (this.treeWithDropZones === undefined) {
-         throw new Error("dropZoneService not initialized");
-      }
-      const index = this.visibleFamily.members.findIndex((dropZone) => {
-         return arraysAreEqual(
-            dropZone.getCoordinates(),
-            newActiveDropZoneCoordinates
-         );
-      });
+      const index = this.visibleFamily.members.findIndex(
+         (dropZone) => dropZone === newActiveDropZone
+      );
       if (index === -1) {
          throw new Error("failed to swap active drop zone");
-      }
-      const newActiveDropZone = this.treeWithDropZones.findByCoordinates(
-         newActiveDropZoneCoordinates,
-         true
-      );
-      if (newActiveDropZone === undefined) {
-         throw new Error("Failed to get new drop zone");
       }
       this.setActiveDropZone(newActiveDropZone);
    }
 
-   private addToTree(dropZone: DropZone, coordinates: BranchCoordinates): void {
-      if (this.treeWithDropZones === undefined) {
-         throw new Error("dropZoneService not initialized");
-      }
-      const parentCoordinates = [...coordinates];
-      parentCoordinates.pop();
-      const parent = this.treeWithDropZones.findByCoordinates(
-         parentCoordinates
-      );
-      if (parent === undefined) {
-         throw new Error("could not get parent");
-      }
-      parent.addHiddenChild(dropZone, coordinates[coordinates.length - 1]);
-   }
-
-   private assignFamilies(): void {
+   public assignFamilies(): void {
       const orphanZones = [...this.dropZoneInventory];
       const deepestMembers = orphanZones
          .filter((zone) => {
-            const coordinates = zone.getCoordinates();
+            const location = zone.getLocation();
             return (
-               coordinates[coordinates.length - 1] === 0 &&
-               coordinates.length > 1
+               location.insertIndex === 0 &&
+               location.parentCoordinates.length > 0
             );
          })
          .sort((valueA, valueB) => {
-            const aCoordinates = valueA.getCoordinates();
-            const bCoordinates = valueB.getCoordinates();
+            const aCoordinates = valueA.getFullInsertCoordinates();
+            const bCoordinates = valueB.getFullInsertCoordinates();
             const length = Math.max(aCoordinates.length, bCoordinates.length);
             for (let index = 0; index < length; index++) {
                if ((aCoordinates[index] ?? -1) > (bCoordinates[index] ?? -1)) {
@@ -339,17 +270,17 @@ export class DropZoneService {
             founder: dropZone,
             members: []
          };
-         dropZone.data.family = family;
+         dropZone.setFamily(family);
          //See if there are any orphans that belong to this family and claim them.
-         const cursor = [...dropZone.getCoordinates()];
+         const cursor = [...dropZone.getFullInsertCoordinates()];
          while (cursor.length > 0) {
             const familyMemberIndex = orphanZones.findIndex((zone) =>
-               arraysAreEqual(zone.getCoordinates(), cursor)
+               arraysAreEqual(zone.getFullInsertCoordinates(), cursor)
             );
             if (familyMemberIndex !== -1) {
                const familyMember = orphanZones.splice(familyMemberIndex, 1)[0];
                family.members.push(familyMember);
-               familyMember.data.family = family;
+               familyMember.setFamily(family);
             }
             cursor.pop();
             cursor[cursor.length - 1]++;
@@ -357,34 +288,31 @@ export class DropZoneService {
          this.dropZoneFamilies.push(family);
       }
       for (const dropZone of orphanZones.filter(
-         (zone) => zone.getCoordinates().length === 1
+         (zone) => zone.getFullInsertCoordinates().length === 1
       )) {
          const family: DropZoneFamily = {
             founder: dropZone,
             members: [dropZone]
          };
-         dropZone.data.family = family;
+         dropZone.setFamily(family);
          this.dropZoneFamilies.push(family);
          orphanZones.splice(orphanZones.indexOf(dropZone), 1);
       }
       if (orphanZones.length !== 0) {
          let orphans = "";
          for (const zone of orphanZones) {
-            orphans += `${JSON.stringify(zone.getCoordinates())}, `;
+            orphans += `${JSON.stringify(zone.getLocation())}, `;
          }
          orphans = orphans.slice(0, orphans.length - 2);
          throw new Error(
-            `Some zones were not assigned to a family. The orphan zones have the following coordinates: ${orphans}`
+            `Some zones were not assigned to a family. The orphan zones have the following locations: ${orphans}`
          );
       }
    }
 
    private setActiveDropZone(dropZone: DropZone | null): void {
-      if (this.activeDropZone?.data.componentRef) {
-         this.activeDropZone.data.componentRef.instance.active = false;
-         if (!NgZone.isInAngularZone()) {
-            this.activeDropZone.data.componentRef.changeDetectorRef.detectChanges();
-         }
+      if (this.activeDropZone !== null) {
+         this.activeDropZone.isActive(false);
       }
       this.activeDropZone = dropZone;
       if (
@@ -398,62 +326,54 @@ export class DropZoneService {
       ) {
          this.dragStateService.notDroppable();
       }
-      if (this.activeDropZone?.data.componentRef) {
-         this.activeDropZone.data.componentRef.instance.active = true;
-         if (!NgZone.isInAngularZone()) {
-            this.activeDropZone.data.componentRef.changeDetectorRef.detectChanges();
-         }
+      if (this.activeDropZone !== null) {
+         this.activeDropZone.isActive(true);
       }
    }
 
    private showDropZone(dropZone: DropZone, active = false): boolean {
+      if (this.tree === undefined) {
+         throw new Error("DropZoneService not initialized");
+      }
       if (!this.zoneIsAllowed(dropZone)) {
          //User settings indicate to skip this drop zone
          return false;
       }
-      const parent = dropZone.getParent();
-      if (parent === null) {
+      const parent = this.tree.findByCoordinates(
+         dropZone.getLocation().parentCoordinates
+      );
+      if (parent === undefined) {
          throw new Error("Bad family member");
       }
-      const componentRef = this.componentCreatorService.appendComponent<DropZoneComponent>(
-         DropZoneComponent,
-         dropZone.data.container
-      );
-      componentRef.instance.active = active;
-      componentRef.instance.coordinates = dropZone.getCoordinates();
+      dropZone.isVisible(true);
       if (active === true) {
          this.setActiveDropZone(dropZone);
-      }
-      dropZone.data.componentRef = componentRef;
-      //We use this zone check in case we are running outside of angular, which happens
-      //often due to the way we catch dragover events using the DragoverNoChangeDetect
-      //directive
-      if (!NgZone.isInAngularZone()) {
-         componentRef.changeDetectorRef.detectChanges();
       }
       return true;
    }
 
    private zoneIsAllowed(dropZone: DropZone): boolean {
-      if (this.treeOptions === undefined) {
+      if (this.treeOptions === undefined || this.tree === undefined) {
          throw new Error("dropZoneService not initialized");
       }
       const draggedNode = this.dragStateService.getData();
       if (draggedNode === undefined) {
          throw new Error("Can't get dragged node");
       }
-      const dropZoneParent = dropZone.getParent() as HiddenBranch<LimbleTreeNode>;
-      if (dropZoneParent === null) {
+      const dropZoneParent = this.tree.findByCoordinates(
+         dropZone.getLocation().parentCoordinates
+      );
+      if (dropZoneParent === undefined) {
          throw new Error("Could not get drop zone parent");
       }
-      const dropZoneIndex = dropZone.getIndex();
+      const dropZoneIndex = dropZone.getLocation().insertIndex;
       if (dropZoneIndex === undefined) {
          throw new Error("Could not get drop zone index");
       }
       if (
          this.treeOptions.allowDrop(
             draggedNode.data,
-            dropZoneParent.data,
+            dropZoneParent.data as LimbleTreeNode,
             dropZoneIndex
          )
       ) {
