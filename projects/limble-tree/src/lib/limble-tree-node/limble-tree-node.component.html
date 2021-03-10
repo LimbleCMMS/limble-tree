@@ -11,6 +11,7 @@
    <div
       (dragoverNoChangeDetect)="dragoverHandler($event)"
       [dragoverEventThrottle]="10"
+      #nodeHostContainer
    >
       <ng-template #nodeHost></ng-template>
    </div>

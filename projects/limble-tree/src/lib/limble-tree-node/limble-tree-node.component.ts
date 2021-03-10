@@ -38,6 +38,8 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
    @ViewChild("draggableDiv", { read: ElementRef }) private draggableDiv:
       | ElementRef<HTMLElement>
       | undefined;
+   @ViewChild("nodeHostContainer", { read: ElementRef })
+   private nodeHostContainer: ElementRef<HTMLElement> | undefined;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
@@ -323,18 +325,24 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
    }
 
    private checkForHandle(): void {
-      if (this.draggableDiv === undefined) {
+      if (
+         this.nodeHostContainer === undefined ||
+         this.draggableDiv === undefined
+      ) {
          return;
       }
-      const element = this.draggableDiv.nativeElement;
-      const handle = element.querySelector(".limble-tree-handle");
+      const nodeHostContainerElement = this.nodeHostContainer.nativeElement;
+      const handle = nodeHostContainerElement.querySelector(
+         ".limble-tree-handle"
+      );
+      const draggableDivElement = this.draggableDiv.nativeElement;
       if (!isDraggingAllowed(this.treeService.treeOptions, this.branch?.data)) {
-         element.setAttribute("draggable", "false");
+         draggableDivElement.setAttribute("draggable", "false");
       } else if (handle === null) {
-         element.setAttribute("draggable", "true");
+         draggableDivElement.setAttribute("draggable", "true");
       } else {
          handle.addEventListener("mousedown", () => {
-            element.setAttribute("draggable", "true");
+            draggableDivElement.setAttribute("draggable", "true");
             //For some reason mouseup doesn't fire after a drag, so we use this observable sequence instead.
             const dragging = this.dragStateService.state$.pipe(
                filter((state) => state === "dragging"),
@@ -347,7 +355,7 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
                   first()
                )
                .subscribe(() => {
-                  element.setAttribute("draggable", "false");
+                  draggableDivElement.setAttribute("draggable", "false");
                });
          });
       }
