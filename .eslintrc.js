@@ -1,22 +1,18 @@
 /** Search for "the future" to see areas that we intended to revisit. */
 
-const eslintPossibleErrorRules = require("../webApp/eslint/eslint_possibleErrors");
-const eslintBestPracticeRules = require("../webApp/eslint/eslint_bestPractices");
-const eslintVariableRules = require("../webApp/eslint/eslint_variables");
-const eslintStylePreferenceRules = require("../webApp/eslint/eslint_stylePreferences");
-const eslintES6Rules = require("../webApp/eslint/eslint_ES6");
-const typescriptExtensionRules = require("../webApp/eslint/typescript-eslint_extensions");
-const typescriptRules = require("../webApp/eslint/typescript-eslint_core");
-const eslintCommentRules = require("../webApp/eslint/eslint-comments");
-const angularEslintFunctionalityRules = require("../webApp/eslint/angular-eslint_functionality");
-const angularEslintMaintainabilityRules = require("../webApp/eslint/angular-eslint_maintainability");
-const angularEslintStyleRules = require("../webApp/eslint/angular-eslint_style");
-const angularEslintTemplateRules = require("../webApp/eslint/angular-eslint_template.js");
+const eslintPossibleErrorRules = require("./eslint/eslint_possibleErrors");
+const eslintBestPracticeRules = require("./eslint/eslint_bestPractices");
+const eslintVariableRules = require("./eslint/eslint_variables");
+const eslintStylePreferenceRules = require("./eslint/eslint_stylePreferences");
+const eslintES6Rules = require("./eslint/eslint_ES6");
+const typescriptExtensionRules = require("./eslint/typescript-eslint_extensions");
+const typescriptRules = require("./eslint/typescript-eslint_core");
+const eslintCommentRules = require("./eslint/eslint-comments");
+const angularEslintFunctionalityRules = require("./eslint/angular-eslint_functionality");
+const angularEslintMaintainabilityRules = require("./eslint/angular-eslint_maintainability");
+const angularEslintStyleRules = require("./eslint/angular-eslint_style");
+const angularEslintTemplateRules = require("./eslint/angular-eslint_template.js");
 
-/**
- * This object contains a combination of all the various rules files
- * for javascript and typescript and linting
- */
 const scriptRules = Object.assign(
    {},
    eslintPossibleErrorRules,
@@ -41,24 +37,15 @@ module.exports = {
       jasmine: true
    },
    /** Files that eslint should ignore */
-   ignorePatterns: ["node_modules", ".eslintrc.js"],
+   ignorePatterns: ["node_modules", ".eslintrc.js", "eslint"],
    overrides: [
       {
          files: ["*.ts", "*.js"],
          /** This switches the parser from the default to the typescript parser */
          parser: "@typescript-eslint/parser",
          parserOptions: {
-            /** Tells eslint what kind of module system we are using.
-             * "module" indicates ES6-style imports and exports.
-             */
             sourceType: "module",
             ecmaVersion: 2020,
-            /** Indicates our typescript config.
-             *
-             * Note that the "references" option in tsconfig files are ignored
-             * by the parser: See https://github.com/typescript-eslint/typescript-eslint/issues/2094
-             * -- 8/24/2020
-             */
             project: [
                "./projects/limble-tree/tsconfig.lib.json",
                "./projects/limble-tree/tsconfig.spec.json",
@@ -74,36 +61,9 @@ module.exports = {
             /** This allows us to lint Angular-specific stuff */
             "@angular-eslint/eslint-plugin"
          ],
-         extends: [
-            /** This extra extends is necessary to extract inline templates from within
-             * Component metadata, e.g.:
-             *
-             * @Component({
-             *  template: `<h1>Hello, World!</h1>`
-             * })
-             * ...
-             *
-             * It works by extracting the template part of the file and treating it as
-             * if it were a full .html file, and it will therefore match the configuration
-             * specific for *.html above when it comes to actual rules etc.
-             *
-             * NOTE: This processor will skip a lot of work when it runs if you don't use
-             * inline templates in your projects currently, and when it runs on a non-Component
-             * file so there is no great benefit in removing it, but you can if you want to.
-             */
-            "plugin:@angular-eslint/template/process-inline-templates"
-         ],
-         /**
-          * The rules that eslint will use to determine what should be reported.
-          * Note that each rule is accompanied by a TSDoc comment. The
-          * first part of each comment is eslint's brief description of the rule,
-          * taken from the eslint documentation. Then, following the `@remarks`
-          * tag, are comments about why we have the rule configured the way we do,
-          * along with other notes.
-          */
+         extends: ["plugin:@angular-eslint/template/process-inline-templates"],
          rules: scriptRules
       },
-      /* Config for angular template files */
       {
          files: ["*.html"],
          parser: "@angular-eslint/template-parser",

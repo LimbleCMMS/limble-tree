@@ -18,7 +18,7 @@ import { DropZone } from "../classes/DropZone";
 export class LimbleTreeBranchComponent implements AfterViewInit {
    @Input() branch: Branch<any> | undefined;
 
-   @ViewChild("host", { read: ViewContainerRef }) private host:
+   @ViewChild("children", { read: ViewContainerRef }) children:
       | ViewContainerRef
       | undefined;
 
@@ -28,22 +28,30 @@ export class LimbleTreeBranchComponent implements AfterViewInit {
    public readonly indent;
 
    constructor(
-      private readonly treeService: TreeService,
+      private treeService: TreeService,
       private readonly changeDetectorRef: ChangeDetectorRef
    ) {
       this.indent = this.treeService.treeOptions?.indent;
       this.renderDropZoneInside = false;
    }
 
-   ngAfterViewInit() {
+   public ngAfterViewInit() {
       this.reRender();
+      this.setDropZoneHost();
       this.changeDetectorRef.detectChanges();
    }
 
    public reRender() {
-      if (this.host === undefined || this.branch === undefined) {
+      if (this.children === undefined || this.branch === undefined) {
          throw new Error("Failed to render limble tree branch");
       }
-      this.treeService.renderBranch(this.host, this.branch);
+      this.treeService.renderBranch(this.children, this.branch);
+   }
+
+   private setDropZoneHost() {
+      if (this.children === undefined || this.dropZoneInside === undefined) {
+         throw new Error("Failed to add drop zone host");
+      }
+      this.dropZoneInside.setHost(this.children);
    }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Branch } from "../classes/Branch";
+import { Branch, BranchCoordinates } from "../classes/Branch";
 import { DragStateService } from "../singletons/drag-state.service";
 import type { LimbleTreeNode, ProcessedOptions } from "./tree.service";
 import { arraysAreEqual } from "../util";
@@ -9,6 +9,7 @@ import { DropZoneLocation } from "../classes/DropZoneLocation";
 export interface DropZoneFamily {
    /** The deepest member of the family */
    founder: DropZone;
+   /** All the drop zones that belong to this family */
    members: Array<DropZone>;
 }
 
@@ -26,6 +27,7 @@ function sortFamily(memberA: DropZone, memberB: DropZone) {
 
 @Injectable()
 export class DropZoneService {
+   private readonly dropZoneArchive: Set<DropZone>;
    private readonly dropZoneInventory: Array<DropZone>;
    private readonly dropZoneFamilies: Array<DropZoneFamily>;
    private visibleFamily: DropZoneFamily | null;
@@ -37,6 +39,7 @@ export class DropZoneService {
       | readonly [];
 
    constructor(private readonly dragStateService: DragStateService) {
+      this.dropZoneArchive = new Set();
       this.dropZoneInventory = [];
       this.dropZoneFamilies = [];
       this.visibleFamily = null;
@@ -45,20 +48,12 @@ export class DropZoneService {
       this.setActiveDropZone(null);
    }
 
-   public addDropZone(newDropZone: DropZone): boolean {
-      if (
-         this.dropZoneInventory.find((registeredZone) =>
-            DropZone.dropZoneLocationsAreEqual(registeredZone, newDropZone)
-         ) !== undefined
-      ) {
-         return false;
-      }
-      this.dropZoneInventory.push(newDropZone);
-      return true;
+   public addDropZone(newDropZone: DropZone): void {
+      this.dropZoneArchive.add(newDropZone);
    }
 
    /** hides all drop zones */
-   public clear(): void {
+   public clearVisibleZones(): void {
       if (this.visibleFamily !== null) {
          for (const member of this.visibleFamily.members) {
             member.isVisible(false);
@@ -73,26 +68,43 @@ export class DropZoneService {
       return this.activeDropZone;
    }
 
+   public getDropZone(coordinates: BranchCoordinates): DropZone | undefined {
+      const parent = [...coordinates];
+      parent.pop();
+      const index = coordinates[coordinates.length - 1];
+      const location = new DropZoneLocation(parent, index);
+      return this.dropZoneInventory.find((dropZone) =>
+         DropZone.dropZoneLocationsAreEqual(dropZone, location)
+      );
+   }
+
    public init(tree: Branch<any>, treeOptions: ProcessedOptions): void {
       this.tree = tree;
       this.treeOptions = treeOptions;
-      this.reset();
-      this.assignFamilies();
+      this.update();
    }
 
-   /** hides all drop zones and deletes all the family assignments */
+   public removeDropZone(dropZone: DropZone) {
+      this.dropZoneArchive.delete(dropZone);
+   }
+
+   /** hides all drop zones, deletes all the family assignments,
+    * and empties the dropZoneInventory
+    */
    public reset(): void {
-      this.clear();
+      this.clearVisibleZones();
       this.dropZoneFamilies.length = 0;
+      this.dropZoneInventory.length = 0;
    }
 
    /**
     * Restores the service to its initial state: hides all drop zones,
-    * deletes all the family assignments, and empties the dropZoneInventory.
+    * deletes all the family assignments, and empties the dropZoneInventory
+    * and dropZoneArchive.
     */
    public restart(): void {
       this.reset();
-      this.dropZoneInventory.length = 0;
+      this.dropZoneArchive.clear();
    }
 
    public restoreFamilies(): void {
@@ -131,7 +143,7 @@ export class DropZoneService {
          return;
       }
       if (this.visibleFamily !== null || this.activeDropZone !== null) {
-         this.clear();
+         this.clearVisibleZones();
       }
       const target = this.dropZoneInventory.find((zone) =>
          DropZone.dropZoneLocationsAreEqual(zone, dropZone)
@@ -202,18 +214,23 @@ export class DropZoneService {
          }
          this.visibleFamily = family;
          this.showDropZone(family.founder, true);
-         for (const member of family.members.sort(sortFamily)) {
-            if (member !== family.founder) {
-               if (this.activeDropZone === null) {
-                  //Failed to activate a zone so far, so activate this one instead
-                  this.showDropZone(member, true);
-               } else {
-                  this.showDropZone(member);
+         if (family.members.length > 1) {
+            for (const member of family.members.sort(sortFamily)) {
+               if (member !== family.founder) {
+                  if (this.activeDropZone === null) {
+                     //Failed to activate a zone so far, so activate this one instead
+                     this.showDropZone(member, true);
+                  } else {
+                     this.showDropZone(member);
+                  }
                }
             }
          }
       }
-      if (options.activateLowestInsteadOfFounder === true) {
+      if (
+         options.activateLowestInsteadOfFounder === true &&
+         this.visibleFamily.members.length > 1
+      ) {
          const lowestMember = [...this.visibleFamily.members]
             .sort(sortFamily)
             .pop();
@@ -237,7 +254,13 @@ export class DropZoneService {
       this.setActiveDropZone(newActiveDropZone);
    }
 
-   public assignFamilies(): void {
+   public update(): void {
+      this.reset();
+      this.buildInventory();
+      this.assignFamilies();
+   }
+
+   private assignFamilies(): void {
       const orphanZones = [...this.dropZoneInventory];
       const deepestMembers = orphanZones
          .filter((zone) => {
@@ -310,6 +333,21 @@ export class DropZoneService {
       }
    }
 
+   private buildInventory() {
+      //We do this funky string array because it is faster than doing direct array comparisons
+      const inventoryCoordinates: Array<string> = [];
+      for (const dropZone of this.dropZoneArchive) {
+         const coordinates = dropZone.getFullInsertCoordinates().join(",");
+         if (inventoryCoordinates.includes(coordinates)) {
+            dropZone.isRendered(false);
+         } else {
+            this.dropZoneInventory.push(dropZone);
+            inventoryCoordinates.push(coordinates);
+            dropZone.isRendered(true);
+         }
+      }
+   }
+
    private setActiveDropZone(dropZone: DropZone | null): void {
       if (this.activeDropZone !== null) {
          this.activeDropZone.isActive(false);
@@ -356,8 +394,8 @@ export class DropZoneService {
       if (this.treeOptions === undefined || this.tree === undefined) {
          throw new Error("dropZoneService not initialized");
       }
-      const draggedNode = this.dragStateService.getData();
-      if (draggedNode === undefined) {
+      const data = this.dragStateService.getData();
+      if (data === undefined) {
          throw new Error("Can't get dragged node");
       }
       const dropZoneParent = this.tree.findByCoordinates(
@@ -370,6 +408,7 @@ export class DropZoneService {
       if (dropZoneIndex === undefined) {
          throw new Error("Could not get drop zone index");
       }
+      const draggedNode = data.branch;
       if (
          this.treeOptions.allowDrop(
             draggedNode.data,

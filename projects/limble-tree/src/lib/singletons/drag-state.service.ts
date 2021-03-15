@@ -1,16 +1,21 @@
-import { Injectable } from "@angular/core";
+import { Injectable, ViewContainerRef } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import type { Branch } from "../classes/Branch";
 
 export type DragState = "idle" | "dragging" | "droppable" | "captured";
+
+interface TempData {
+   branch: Branch<any>;
+   parentContainer: ViewContainerRef;
+}
 
 @Injectable()
 export class DragStateService {
    /** pushes the new state whenever the state changes */
    public state$: BehaviorSubject<DragState>;
 
-   /** holds the thing being dragged, if any */
-   private _tempData: Branch<any> | undefined;
+   /** holds data about the thing being dragged */
+   private _tempData: TempData | undefined;
 
    /** the current state of the drag process */
    private state: DragState;
@@ -21,8 +26,11 @@ export class DragStateService {
    }
 
    /** Called to indicate that something is being dragged. Stores that something for later. */
-   public dragging(value: Branch<any>) {
-      this._tempData = value;
+   public dragging(branch: Branch<any>, parentContainer: ViewContainerRef) {
+      this._tempData = {
+         branch: branch,
+         parentContainer: parentContainer
+      };
       this.state = "dragging";
       this.state$.next(this.state);
    }
@@ -56,7 +64,7 @@ export class DragStateService {
       }
       this.state = "captured";
       this.state$.next(this.state);
-      return this._tempData;
+      return this._tempData?.branch;
    }
 
    /** Called to reset the service for future drags */

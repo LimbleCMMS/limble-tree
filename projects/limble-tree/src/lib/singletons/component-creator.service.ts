@@ -14,19 +14,15 @@ export class ComponentCreatorService {
    appendComponent<T = unknown>(
       component: Type<T>,
       viewContainerRef: ViewContainerRef,
-      index: number | null = null
+      index: number | undefined = undefined
    ) {
       const componentFactory = this.factoryResolver.resolveComponentFactory(
          component
       );
       const componentRef = viewContainerRef.createComponent<T>(
-         componentFactory
+         componentFactory,
+         index
       );
-      if (index !== null) {
-         const currentIndex = viewContainerRef.indexOf(componentRef.hostView);
-         viewContainerRef.detach(currentIndex);
-         viewContainerRef.insert(componentRef.hostView, index);
-      }
       return componentRef;
    }
 }

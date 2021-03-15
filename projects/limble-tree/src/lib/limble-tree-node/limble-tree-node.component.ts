@@ -4,6 +4,8 @@ import {
    Component,
    ElementRef,
    Input,
+   NgZone,
+   OnDestroy,
    OnInit,
    ViewChild,
    ViewContainerRef
@@ -12,18 +14,20 @@ import { ComponentCreatorService } from "../singletons/component-creator.service
 import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 import { DragStateService } from "../singletons/drag-state.service";
 import { LimbleTreeNode, TreeService } from "../limble-tree-root/tree.service";
-import { Branch } from "../classes/Branch";
-import { isDraggingAllowed, isNestingAllowed } from "../util";
-import { filter, first, skipUntil, take } from "rxjs/operators";
+import { Branch, BranchCoordinates } from "../classes/Branch";
+import { arraysAreEqual, isDraggingAllowed, isNestingAllowed } from "../util";
+import { filter, first, skip, skipUntil } from "rxjs/operators";
 import { GlobalEventsService } from "../singletons/global-events.service";
 import { DropZone } from "../classes/DropZone";
+import { merge, Subscription } from "rxjs";
 
 @Component({
    selector: "limble-tree-node",
    templateUrl: "./limble-tree-node.component.html",
    styleUrls: ["./limble-tree-node.component.scss"]
 })
-export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
+export class LimbleTreeNodeComponent
+   implements OnInit, AfterViewInit, OnDestroy {
    @Input() branch: Branch<any> | undefined;
    @ViewChild("nodeHost", { read: ViewContainerRef }) private nodeHost:
       | ViewContainerRef
@@ -40,6 +44,9 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
       | undefined;
    @ViewChild("nodeHostContainer", { read: ElementRef })
    private nodeHostContainer: ElementRef<HTMLElement> | undefined;
+   private currentBranchCoordinates: BranchCoordinates | undefined;
+   private readonly treeChangeSubscription: Subscription;
+   @Input() parentHost: ViewContainerRef | undefined;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
@@ -47,7 +54,8 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
       private readonly dragStateService: DragStateService,
       private readonly dropZoneService: DropZoneService,
       private readonly treeService: TreeService,
-      private readonly globalEventsService: GlobalEventsService
+      private readonly globalEventsService: GlobalEventsService,
+      private readonly ngZone: NgZone
    ) {
       if (
          this.treeService.treeOptions !== undefined &&
@@ -61,21 +69,111 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
       this.renderDropZoneBelow = false;
       this.renderDropZoneAbove = false;
       this.renderDropZoneInside = false;
+      this.treeChangeSubscription = this.treeService.changes$
+         .pipe(
+            //The first one is the initial tree render, which we can ignore
+            skip(1)
+         )
+         .subscribe(() => {
+            this.treeChangeHandler();
+         });
+   }
+
+   private treeChangeHandler() {
+      if (
+         this.branch !== undefined &&
+         this.currentBranchCoordinates !== undefined &&
+         !arraysAreEqual(
+            this.branch.getCoordinates(),
+            this.currentBranchCoordinates
+         )
+      ) {
+         this.updateDropZones();
+      }
    }
 
    ngOnInit() {
+      if (this.treeService.treeOptions?.allowDragging === false) {
+         return;
+      }
+      const parent = this.branch?.getParent();
+      if (parent?.data !== null) {
+         const parentData = parent?.data as LimbleTreeNode;
+         if (!isNestingAllowed(this.treeService.treeOptions, parentData)) {
+            return;
+         }
+      }
       this.registerDropZones();
+      this.currentBranchCoordinates = this.branch?.getCoordinates();
+      this.ngZone.runOutsideAngular(() => {
+         if (
+            this.dropZoneAbove === undefined ||
+            this.dropZoneBelow === undefined ||
+            this.dropZoneInside === undefined
+         ) {
+            throw new Error("Zones not registered");
+         }
+         merge(
+            this.dropZoneAbove.getCommChannel(),
+            this.dropZoneBelow.getCommChannel(),
+            this.dropZoneInside.getCommChannel()
+         )
+            .pipe(filter((message) => message === "checkRendered"))
+            .subscribe(() => {
+               if (
+                  this.dropZoneAbove === undefined ||
+                  this.dropZoneBelow === undefined ||
+                  this.dropZoneInside === undefined ||
+                  this.branch === undefined
+               ) {
+                  throw new Error("Zones not registered");
+               }
+               this.renderDropZoneAbove = this.dropZoneAbove.isRendered();
+               if (this.treeService.getPlaceholder() === true) {
+                  //Only render one drop zone if the placeholder system is active
+                  return;
+               }
+               this.renderDropZoneBelow = this.dropZoneBelow.isRendered();
+               if (
+                  isNestingAllowed(
+                     this.treeService.treeOptions,
+                     this.branch.data
+                  )
+               ) {
+                  this.renderDropZoneInside = this.dropZoneInside.isRendered();
+               }
+            });
+      });
    }
 
    ngAfterViewInit() {
       this.renderNode();
+      this.setDropZoneHosts();
       this.checkForHandle();
       this.changeDetectorRef.detectChanges();
    }
 
+   ngOnDestroy() {
+      this.treeChangeSubscription.unsubscribe();
+      if (this.dropZoneAbove !== undefined) {
+         this.dropZoneService.removeDropZone(this.dropZoneAbove);
+      }
+      if (this.dropZoneBelow !== undefined) {
+         this.dropZoneService.removeDropZone(this.dropZoneBelow);
+      }
+      if (this.dropZoneInside !== undefined) {
+         this.dropZoneService.removeDropZone(this.dropZoneInside);
+      }
+      this.treeService.cleanupSignal$.next(null);
+   }
+
    public dragstartHandler(event: DragEvent): void {
       event.stopPropagation();
-      if (event.dataTransfer === null || this.branch === undefined) {
+      if (
+         event.dataTransfer === null ||
+         this.branch === undefined ||
+         this.parentHost === undefined
+      ) {
          throw new Error("failed to run dragstartHandler");
       }
       const draggedElement = event.target as HTMLElement;
@@ -85,7 +183,7 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
          return;
       }
       event.dataTransfer.effectAllowed = "move";
-      this.dragStateService.dragging(this.branch);
+      this.dragStateService.dragging(this.branch, this.parentHost);
       //We have to use a setTimeout due to a bug in chrome: https://stackoverflow.com/a/20733870/8796651
       setTimeout(() => {
          draggedElement.classList.add("dragging");
@@ -117,25 +215,30 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
       });
    }
 
-   public dragendHandler(event: DragEvent): void {
-      event.stopPropagation();
-      const draggedElement = event.target as HTMLElement;
-      draggedElement.classList.remove("dragging");
-      if (this.dragStateService.getState() !== "captured") {
+   public dragendHandler(event?: DragEvent): void {
+      event?.stopPropagation();
+      if (this.draggableDiv === undefined) {
+         throw new Error("could not get draggable div");
+      }
+      this.draggableDiv.nativeElement.classList.remove("dragging");
+      if (this.dragStateService.getState() === "captured") {
+         if (this.treeService.captured === false) {
+            //Dropped in a different tree. Remove the one in this tree
+            if (this.branch === undefined) {
+               throw new Error("could not get branch in dragendHandler");
+            }
+            this.treeService.cleanupSignal$.next(null);
+            this.treeService.captured = false;
+         }
+         this.dragStateService.release();
+      } else {
          //Wasn't dropped into a valid tree, so reset for next drag and
          //don't do anything else.
          this.dragStateService.release();
-         this.dropZoneService.clear();
+         this.dropZoneService.clearVisibleZones();
          this.dropZoneService.restoreFamilies();
          this.treeService.removePlaceholder();
-         return;
       }
-      this.dragStateService.state$.pipe(take(2)).subscribe((state) => {
-         if (state === "captured" && this.branch !== undefined) {
-            this.treeService.remove(this.branch);
-            this.dragStateService.release();
-         }
-      });
    }
 
    public dragoverHandler(event: DragEvent) {
@@ -145,11 +248,12 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
       if (this.branch === undefined) {
          throw new Error("Can't get current branch during dragover event");
       }
-      const sourceBranch = this.dragStateService.getData();
-      if (sourceBranch === undefined) {
+      const data = this.dragStateService.getData();
+      if (data === undefined) {
          //They might be dragging something that isn't a node. Just ignore it.
          return;
       }
+      const sourceBranch = data.branch;
       //If trying to drop on self, return.
       if (
          sourceBranch === this.branch ||
@@ -248,29 +352,9 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
    }
 
    private registerDropZones(): void {
-      if (this.treeService.treeOptions?.allowDragging === false) {
-         return;
-      }
-      if (this.branch === undefined) {
-         throw new Error("failed to register drop zones");
-      }
-      const parent = this.branch.getParent();
-      let parentData: LimbleTreeNode;
-      if (parent?.data !== null) {
-         parentData = parent?.data as LimbleTreeNode;
-         if (!isNestingAllowed(this.treeService.treeOptions, parentData)) {
-            return;
-         }
-      }
       this.addDropZoneAbove();
-      if (this.treeService.getPlaceholder() === true) {
-         //Only register one drop zone if the placeholder system is active
-         return;
-      }
       this.addDropZoneBelow();
-      if (isNestingAllowed(this.treeService.treeOptions, this.branch.data)) {
-         this.addDropZoneInside();
-      }
+      this.addDropZoneInside();
    }
 
    private addDropZoneAbove(): void {
@@ -284,17 +368,12 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
          [...(parent?.getCoordinates() ?? [])],
          index
       );
-      const addedAbove = this.dropZoneService.addDropZone(this.dropZoneAbove);
-      if (addedAbove === true) {
-         this.renderDropZoneAbove = true;
-      } else {
-         this.renderDropZoneAbove = false;
-      }
+      this.dropZoneService.addDropZone(this.dropZoneAbove);
    }
 
    private addDropZoneBelow(): void {
       if (this.branch === undefined) {
-         throw new Error("failed to register drop zone above");
+         throw new Error("failed to register drop zone below");
       }
       const parent = this.branch.getParent();
       const currentCoordinates = this.branch.getCoordinates();
@@ -303,25 +382,73 @@ export class LimbleTreeNodeComponent implements OnInit, AfterViewInit {
          [...(parent?.getCoordinates() ?? [])],
          index + 1
       );
-      const addedBelow = this.dropZoneService.addDropZone(this.dropZoneBelow);
-      if (addedBelow === true) {
-         this.renderDropZoneBelow = true;
-      } else {
-         this.renderDropZoneBelow = false;
-      }
+      this.dropZoneService.addDropZone(this.dropZoneBelow);
    }
 
    private addDropZoneInside(): void {
       if (this.branch === undefined) {
-         throw new Error("failed to register drop zone above");
+         throw new Error("failed to register drop zone inside");
       }
       this.dropZoneInside = new DropZone([...this.branch.getCoordinates()], 0);
-      const addedInside = this.dropZoneService.addDropZone(this.dropZoneInside);
-      if (addedInside === true) {
-         this.renderDropZoneInside = true;
-      } else {
-         this.renderDropZoneInside = false;
+      this.dropZoneService.addDropZone(this.dropZoneInside);
+   }
+
+   private updateDropZones(): void {
+      if (
+         this.dropZoneAbove === undefined ||
+         this.dropZoneBelow === undefined ||
+         this.dropZoneInside === undefined
+      ) {
+         throw new Error("failed to update drop zones");
       }
+      this.currentBranchCoordinates = this.branch?.getCoordinates();
+      this.updateDropZoneAbove();
+      this.updateDropZoneBelow();
+      this.updateDropZoneInside();
+      this.setDropZoneHosts();
+   }
+
+   private updateDropZoneAbove(): void {
+      if (this.branch === undefined || this.dropZoneAbove === undefined) {
+         throw new Error("failed to update drop zone above");
+      }
+      const parent = this.branch.getParent();
+      const currentCoordinates = this.branch.getCoordinates();
+      const index = currentCoordinates[currentCoordinates.length - 1];
+      const location = this.dropZoneAbove.getLocation();
+      location.setParentCoordinates([...(parent?.getCoordinates() ?? [])]);
+      location.setInsertIndex(index);
+   }
+
+   private updateDropZoneBelow(): void {
+      if (this.branch === undefined || this.dropZoneBelow === undefined) {
+         throw new Error("failed to update drop zone below");
+      }
+      const parent = this.branch.getParent();
+      const currentCoordinates = this.branch.getCoordinates();
+      const index = currentCoordinates[currentCoordinates.length - 1];
+      const location = this.dropZoneBelow.getLocation();
+      location.setParentCoordinates([...(parent?.getCoordinates() ?? [])]);
+      location.setInsertIndex(index + 1);
+   }
+
+   private updateDropZoneInside(): void {
+      if (this.branch === undefined || this.dropZoneInside === undefined) {
+         throw new Error("failed to update drop zone inside");
+      }
+      const location = this.dropZoneInside.getLocation();
+      location.setParentCoordinates([...this.branch.getCoordinates()]);
+   }
+
+   private setDropZoneHosts() {
+      if (
+         this.dropZoneAbove === undefined ||
+         this.dropZoneBelow === undefined
+      ) {
+         throw new Error("could not set drop zone hosts");
+      }
+      this.dropZoneAbove.setHost(this.parentHost);
+      this.dropZoneBelow.setHost(this.parentHost);
    }
 
    private checkForHandle(): void {

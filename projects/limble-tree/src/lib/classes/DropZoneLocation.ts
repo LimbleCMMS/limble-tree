@@ -12,4 +12,12 @@ export class DropZoneLocation {
    public getFullInsertCoordinates() {
       return [...this.parentCoordinates, this.insertIndex];
    }
+
+   public setParentCoordinates(coordinates: BranchCoordinates) {
+      this.parentCoordinates = coordinates;
+   }
+
+   public setInsertIndex(index: number) {
+      this.insertIndex = index;
+   }
 }

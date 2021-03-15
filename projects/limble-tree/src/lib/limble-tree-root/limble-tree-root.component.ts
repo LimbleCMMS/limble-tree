@@ -21,6 +21,7 @@ import { TreeService } from "./tree.service";
 import { isElementDescendant } from "../util";
 import { DragStateService } from "../singletons/drag-state.service";
 import { GlobalEventsService } from "../singletons/global-events.service";
+import { first } from "rxjs/operators";
 
 @Component({
    selector: "limble-tree-root",
@@ -130,24 +131,30 @@ export class LimbleTreeRootComponent
          return;
       }
       //Mouse has left the tree, so clear the drop zones
-      this.dropZoneService.clear();
+      this.dropZoneService.clearVisibleZones();
       this.changeDetectorRef.detectChanges();
    }
 
    public dropHandler(event: DragEvent) {
       event.stopPropagation();
-      const dropZone = this.dropZoneService.getActiveDropZone();
       if (this.dragStateService.getState() !== "droppable") {
          return;
-      }
-      if (dropZone === null) {
-         throw new Error("failed to get active drop zone at drop handler");
       }
       const sourceBranch = this.dragStateService.capture();
       if (sourceBranch === undefined) {
          throw new Error("failed to get current branch in dragendHandler");
       }
-      this.dropZoneService.clear();
+      const dropZone = this.dropZoneService.getActiveDropZone();
+      if (dropZone === null) {
+         throw new Error("failed to get active drop zone at drop handler");
+      }
+      this.treeService.captured = true;
+      this.dragStateService.state$
+         .pipe(first((message) => message === "idle"))
+         .subscribe(() => {
+            this.treeService.captured = false;
+         });
+      this.dropZoneService.clearVisibleZones();
       this.treeService.drop(sourceBranch, dropZone.getFullInsertCoordinates());
    }
 

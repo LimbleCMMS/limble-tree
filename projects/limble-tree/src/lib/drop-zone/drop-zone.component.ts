@@ -53,9 +53,8 @@ export class DropZoneComponent implements OnInit, OnDestroy {
                   this.active = this.dropZone?.isActive() ?? false;
                   break;
                }
-               case "checkBoth": {
-                  this.visible = this.dropZone?.isVisible() ?? false;
-                  this.active = this.dropZone?.isActive() ?? false;
+               case "checkRendered": {
+                  //Do nothing. This message is for other subscribers
                   break;
                }
                default: {

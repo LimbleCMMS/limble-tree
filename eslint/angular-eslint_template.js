@@ -1,0 +1,20 @@
+module.exports = {
+   "@angular-eslint/template/accessibility-alt-text": 0,
+   "@angular-eslint/template/accessibility-elements-content": 0,
+   "@angular-eslint/template/accessibility-table-scope": 0,
+   "@angular-eslint/template/accessibility-valid-aria": 0,
+   "@angular-eslint/template/banana-in-box": 2,
+   "@angular-eslint/template/conditional-complexity": [0, { maxComplexity: 4 }],
+   "@angular-eslint/template/click-events-have-key-events": 0,
+   "@angular-eslint/template/cyclomatic-complexity": [0, { maxComplexity: 6 }],
+   "@angular-eslint/template/i18n": 0,
+   "@angular-eslint/template/mouse-events-have-key-events": 0,
+   "@angular-eslint/template/no-any": 0,
+   "@angular-eslint/template/no-autofocus": 0,
+   "@angular-eslint/template/no-call-expression": 0,
+   "@angular-eslint/template/no-distracting-elements": 0,
+   "@angular-eslint/template/no-duplicate-attributes": 2,
+   "@angular-eslint/template/no-negated-async": 2,
+   "@angular-eslint/template/no-positive-tabindex": 0,
+   "@angular-eslint/template/use-track-by-function": 0
+};
