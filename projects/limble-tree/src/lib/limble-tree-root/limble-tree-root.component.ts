@@ -4,13 +4,14 @@ import {
    Component,
    EventEmitter,
    Input,
+   NgZone,
    OnChanges,
    OnDestroy,
    Output,
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { DropZoneService } from "./drop-zone.service";
 import {
    LimbleTreeData,
@@ -40,18 +41,13 @@ export class LimbleTreeRootComponent
       | ViewContainerRef
       | undefined;
 
-   @ViewChild("dropZoneInside", { read: ViewContainerRef })
-   dropZoneInside: ViewContainerRef | undefined;
-
-   @Output()
-   readonly dropZoneInside$: BehaviorSubject<ViewContainerRef | undefined>;
-
    @Output() readonly treeChange = new EventEmitter<null>();
 
    @Output() readonly treeDrop = new EventEmitter<TreeDrop>();
 
    private readonly changesSubscription: Subscription;
    private readonly dropSubscription: Subscription;
+   public placeholder: boolean;
 
    constructor(
       private readonly treeService: TreeService,
@@ -60,18 +56,22 @@ export class LimbleTreeRootComponent
       private readonly globalEventsService: GlobalEventsService,
       private readonly changeDetectorRef: ChangeDetectorRef
    ) {
-      this.dropZoneInside$ = new BehaviorSubject(this.dropZoneInside);
       this.changesSubscription = this.treeService.changes$.subscribe(() => {
          this.treeChange.emit();
       });
       this.dropSubscription = this.treeService.drops$.subscribe((drop) => {
          this.treeDrop.emit(drop);
       });
+      this.placeholder = false;
+      this.treeService.placeholder$.subscribe((value) => {
+         this.placeholder = value;
+         if (!NgZone.isInAngularZone()) {
+            this.changeDetectorRef.detectChanges();
+         }
+      });
    }
 
    ngAfterViewInit() {
-      this.dropZoneInside$.next(this.dropZoneInside);
-      this.dropZoneInside$.complete();
       if (
          this.options?.listMode !== true &&
          (this.itemsPerPage !== undefined || this.page !== undefined)

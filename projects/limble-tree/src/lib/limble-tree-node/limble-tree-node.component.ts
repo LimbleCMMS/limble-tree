@@ -60,8 +60,7 @@ export class LimbleTreeNodeComponent
    ) {
       if (
          this.treeService.treeOptions !== undefined &&
-         this.treeService.treeOptions.listMode !== true &&
-         this.treeService.getPlaceholder() !== true
+         this.treeService.treeOptions.listMode !== true
       ) {
          this.renderInnerBranch = true;
       } else {
@@ -127,10 +126,6 @@ export class LimbleTreeNodeComponent
                   throw new Error("Zones not registered");
                }
                this.renderDropZoneAbove = this.dropZoneAbove.isRendered();
-               if (this.treeService.getPlaceholder() === true) {
-                  //Only render one drop zone if the placeholder system is active
-                  return;
-               }
                this.renderDropZoneBelow = this.dropZoneBelow.isRendered();
             });
       });
@@ -179,6 +174,13 @@ export class LimbleTreeNodeComponent
          //We have to use a setTimeout due to a bug in chrome: https://stackoverflow.com/a/20733870/8796651
          setTimeout(() => {
             draggedElement.classList.add("dragging");
+            if (
+               this.treeService.treeData?.length === 1 &&
+               this.branch?.getCoordinates().length === 1
+            ) {
+               //We are dragging the only element in the tree, so we have to use the placeholder system
+               this.treeService.placeholder$.next(true);
+            }
          });
          //We use this weird subscription/timeout combo in order to avoid a strange bug where the dragleave event
          //does not fire if the user drags out of the tree too quickly. This issue would make the drop zone
@@ -207,13 +209,6 @@ export class LimbleTreeNodeComponent
                   this.dropZoneService.showDropZoneFamily(this.dropZoneAbove, {
                      joinFamilies: true
                   });
-                  if (
-                     this.treeService.treeData?.length === 1 &&
-                     this.branch.getCoordinates().length === 1
-                  ) {
-                     //We are dragging the only element in the tree, so we have to use the placeholder system
-                     this.treeService.usePlaceholder();
-                  }
                }
             });
          setTimeout(() => {
@@ -246,6 +241,14 @@ export class LimbleTreeNodeComponent
          this.dragStateService.release();
          this.dropZoneService.clearVisibleZones();
          this.dropZoneService.restoreFamilies();
+         if (
+            this.treeService.treeData?.length === 1 &&
+            this.branch?.getCoordinates().length === 1
+         ) {
+            //We were dragging the only element in the tree, so we have to
+            //remove the placeholder that we added in the dragstart
+            this.treeService.placeholder$.next(false);
+         }
       }
    }
 
@@ -267,15 +270,6 @@ export class LimbleTreeNodeComponent
          sourceBranch === this.branch ||
          this.branch.getAncestors().includes(sourceBranch)
       ) {
-         return;
-      }
-      if (
-         this.treeService.getPlaceholder() === true &&
-         this.dropZoneAbove !== undefined
-      ) {
-         //If placeholder system is active, then activate the only existing drop zone
-         //and skip the rest of the logic in this function
-         this.dropZoneService.showDropZoneFamily(this.dropZoneAbove);
          return;
       }
       const target = event.currentTarget as HTMLElement;

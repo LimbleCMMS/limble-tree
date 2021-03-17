@@ -3,9 +3,8 @@ import { ComponentCreatorService } from "../singletons/component-creator.service
 import { DropZoneService } from "./drop-zone.service";
 import { Branch, BranchCoordinates } from "../classes/Branch";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
-import { LimbleTreePlaceholderComponent } from "../limble-tree-placeholder/limble-tree-placeholder.component";
 import { DragStateService } from "../singletons/drag-state.service";
-import { Subject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 import { arraysAreEqual } from "../util";
 import { debounceTime } from "rxjs/operators";
 
@@ -123,7 +122,7 @@ export interface TreeDrop {
 export class TreeService {
    public readonly changes$: Subject<null>;
    public readonly drops$: Subject<TreeDrop>;
-   private host: ViewContainerRef | undefined;
+   public host: ViewContainerRef | undefined;
    public treeData: LimbleTreeData | undefined;
    private uncutData: LimbleTreeData | undefined;
    public treeOptions: ProcessedOptions | undefined;
@@ -132,6 +131,7 @@ export class TreeService {
    public captured: boolean;
    public readonly cleanupSignal$: Subject<null>;
    private synchronizer: boolean;
+   public placeholder$: BehaviorSubject<boolean>;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
@@ -148,6 +148,10 @@ export class TreeService {
          this.cleanup();
       });
       this.synchronizer = false;
+      this.placeholder$ = new BehaviorSubject<boolean>(false);
+      this.placeholder$.subscribe((value) => {
+         this.placeholder = value;
+      });
    }
 
    public drop(source: Branch<any>, targetCoordinates: BranchCoordinates) {
@@ -182,7 +186,9 @@ export class TreeService {
       const targetIndex = target?.getLocation().insertIndex;
       const targetHost = target?.getHost();
       const sourceHost = this.dragStateService.getData()?.parentContainer;
-      this.removePlaceholder();
+      if (this.placeholder === true) {
+         this.placeholder$.next(false);
+      }
       //Publish drop data
       this.drops$.next({
          target: source.data,
@@ -229,10 +235,6 @@ export class TreeService {
       this.cleanupSignal$.next(null);
    }
 
-   public getPlaceholder() {
-      return this.placeholder;
-   }
-
    /** Initializes the service and renders the tree.
     * @param host - The ViewContainerRef into which the tree will be rendered.
     * @param data - The data array that was passed in to LimbleTreeRoot, which is
@@ -266,37 +268,17 @@ export class TreeService {
       this.render();
    }
 
-   public removePlaceholder() {
-      if (this.placeholder === false) {
-         return;
-      }
-      const placeholderIndex = this.treeModel.getChildren().length - 1;
-      if (placeholderIndex !== -1) {
-         this.treeModel.removeChild(placeholderIndex); //remove the placeholder
-         this.host?.remove(placeholderIndex);
-      }
-      this.placeholder = false;
-   }
-
    private cleanup(): void {
-      this.removePlaceholder();
       this.rebuildTreeData();
       if (this.treeData?.length === 0) {
-         this.usePlaceholder();
-      }
-      this.synchronizer = true;
-      setTimeout(() => {
+         //We do a full render here because it isn't actually any slower
+         //when there are no nodes, and it saves us from having to handle
+         //some race conditions with the placeholder component
+         this.render();
+      } else {
          this.changes$.next(null);
-         if (this.synchronizer === false) {
-            //The tree service has been reinitialized since this timeout was called.
-            //The new tree data will just overwrite the drop zone data anyway, so
-            //we can skip the drop zone initialization on this round for efficiency
-            //and also to avoid some possible (?) race conditions
-            return;
-         }
-         this.synchronizer = false;
          this.dropZoneService.update();
-      });
+      }
    }
 
    /** Renders the entire tree from root to leaves */
@@ -310,12 +292,11 @@ export class TreeService {
       }
       this.host.clear();
       this.dropZoneService.restart();
-      //We don't need to call removePlaceholder here because we already cleared it away in the preceding lines. We just have to tell the service that it is done.
-      this.placeholder = false;
+      this.placeholder$.next(false);
       this.treeModel = new Branch(null);
       if (this.treeData.length === 0) {
          //Tree is empty, but we have to to have something there so other trees' items can be dropped into it
-         this.usePlaceholder();
+         this.placeholder$.next(true);
       } else {
          for (const node of this.treeData) {
             const branch = new Branch(node);
@@ -369,27 +350,6 @@ export class TreeService {
          //The LimbleTreeNodeComponent will (indirectly) call the `renderBranch` method of this service to render
          //its own children
       }
-   }
-
-   public usePlaceholder() {
-      if (this.placeholder === true) {
-         return;
-      }
-      if (this.host === undefined) {
-         throw new Error("TreeModel not initialized");
-      }
-      this.placeholder = true;
-      const placeholderNode: LimbleTreeNode = {
-         component: { class: LimbleTreePlaceholderComponent }
-      };
-      const branch = new Branch(placeholderNode);
-      this.treeModel.appendChild(branch);
-      const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
-         LimbleTreeNodeComponent,
-         this.host
-      );
-      componentRef.instance.branch = branch;
-      componentRef.instance.parentHost = this.host;
    }
 
    private processOptions(

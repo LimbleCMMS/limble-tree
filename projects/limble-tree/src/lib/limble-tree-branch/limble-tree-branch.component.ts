@@ -47,9 +47,6 @@ export class LimbleTreeBranchComponent
       if (this.dropZoneInside === undefined) {
          throw new Error("drop zone inside is not defined");
       }
-      if (this.treeService.getPlaceholder() === true) {
-         return;
-      }
       this.dropZoneInside
          .getCommChannel()
          .pipe(filter((message) => message === "checkRendered"))

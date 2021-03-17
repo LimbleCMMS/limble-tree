@@ -3,6 +3,8 @@
    (dragleaveNoChangeDetect)="dragleaveHandler($event)"
    (drop)="dropHandler($event)"
 >
-   <ng-template #dropZoneInside></ng-template>
+   <limble-tree-placeholder
+      *ngIf="placeholder === true"
+   ></limble-tree-placeholder>
    <ng-template #host></ng-template>
 </div>
