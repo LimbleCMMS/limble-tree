@@ -246,7 +246,6 @@ export class LimbleTreeNodeComponent
          this.dragStateService.release();
          this.dropZoneService.clearVisibleZones();
          this.dropZoneService.restoreFamilies();
-         this.treeService.removePlaceholder();
       }
    }
 
@@ -435,10 +434,10 @@ export class LimbleTreeNodeComponent
    }
 
    private updateDropZoneInside(): void {
-      if (
-         this.branch === undefined ||
-         this.innerBranch?.dropZoneInside === undefined
-      ) {
+      if (this.innerBranch?.dropZoneInside === undefined) {
+         return;
+      }
+      if (this.branch === undefined) {
          throw new Error("failed to update drop zone inside");
       }
       const location = this.innerBranch.dropZoneInside.getLocation();

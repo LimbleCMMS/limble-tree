@@ -279,9 +279,24 @@ export class TreeService {
    }
 
    private cleanup(): void {
+      this.removePlaceholder();
       this.rebuildTreeData();
-      this.changes$.next(null);
-      this.dropZoneService.update();
+      if (this.treeData?.length === 0) {
+         this.usePlaceholder();
+      }
+      this.synchronizer = true;
+      setTimeout(() => {
+         this.changes$.next(null);
+         if (this.synchronizer === false) {
+            //The tree service has been reinitialized since this timeout was called.
+            //The new tree data will just overwrite the drop zone data anyway, so
+            //we can skip the drop zone initialization on this round for efficiency
+            //and also to avoid some possible (?) race conditions
+            return;
+         }
+         this.synchronizer = false;
+         this.dropZoneService.update();
+      });
    }
 
    /** Renders the entire tree from root to leaves */
@@ -330,6 +345,7 @@ export class TreeService {
             //and also to avoid some possible (?) race conditions
             return;
          }
+         this.synchronizer = false;
          this.dropZoneService.init(this.treeModel, this.treeOptions);
       });
    }
