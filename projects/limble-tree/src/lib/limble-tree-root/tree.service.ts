@@ -131,6 +131,7 @@ export class TreeService {
    private placeholder: boolean;
    public captured: boolean;
    public readonly cleanupSignal$: Subject<null>;
+   private synchronizer: boolean;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
@@ -146,6 +147,7 @@ export class TreeService {
       this.cleanupSignal$.pipe(debounceTime(5)).subscribe(() => {
          this.cleanup();
       });
+      this.synchronizer = false;
    }
 
    public drop(source: Branch<any>, targetCoordinates: BranchCoordinates) {
@@ -258,8 +260,9 @@ export class TreeService {
          const end = start + this.treeOptions.itemsPerPage;
          this.treeData = this.uncutData.slice(start, end);
       } else {
-         this.treeData = this.uncutData;
+         this.treeData = [...this.uncutData];
       }
+      this.synchronizer = false;
       this.render();
    }
 
@@ -314,13 +317,13 @@ export class TreeService {
             //its own children
          }
       }
-      const treeData = this.treeData;
+      this.synchronizer = true;
       setTimeout(() => {
          if (this.treeOptions === undefined) {
             throw new Error("TreeModel not initialized");
          }
          this.changes$.next(null);
-         if (this.treeData !== treeData) {
+         if (this.synchronizer === false) {
             //The tree service has been reinitialized since this timeout was called.
             //The new tree data will just overwrite the drop zone data anyway, so
             //we can skip the drop zone initialization on this round for efficiency
@@ -409,9 +412,9 @@ export class TreeService {
       ) {
          throw new Error("Tree data not initialized");
       }
-      this.treeData.length = 0;
+      this.uncutData.length = 0;
       for (const branch of this.treeModel.getChildren()) {
-         this.treeData.push(this.rebuildBranch(branch));
+         this.uncutData.push(this.rebuildBranch(branch));
       }
       if (this.treeOptions.listMode === true) {
          let start =
@@ -422,14 +425,9 @@ export class TreeService {
             start = 0;
          }
          const end = start + this.treeOptions.itemsPerPage;
-         this.uncutData.splice(
-            start,
-            this.treeOptions.itemsPerPage,
-            ...this.treeData
-         );
          this.treeData = this.uncutData.slice(start, end);
       } else {
-         this.uncutData = this.treeData;
+         this.treeData = [...this.uncutData];
       }
    }
 

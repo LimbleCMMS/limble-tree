@@ -16,10 +16,9 @@
       <ng-template #nodeHost></ng-template>
    </div>
    <limble-tree-branch
-      *ngIf="branch !== undefined"
+      *ngIf="branch !== undefined && renderInnerBranch === true"
       [branch]="branch"
-      [dropZoneInside]="dropZoneInside"
-      [renderDropZoneInside]="renderDropZoneInside"
+      #innerBranch
    ></limble-tree-branch>
 </div>
 <drop-zone

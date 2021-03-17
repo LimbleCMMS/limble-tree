@@ -60,7 +60,6 @@ export class DropZoneService {
          }
          this.visibleFamily = null;
       }
-      this.restoreFamilies();
       this.setActiveDropZone(null);
    }
 
