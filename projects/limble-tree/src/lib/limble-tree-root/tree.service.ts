@@ -189,14 +189,6 @@ export class TreeService {
       if (this.placeholder === true) {
          this.placeholder$.next(false);
       }
-      //Publish drop data
-      this.drops$.next({
-         target: source.data,
-         oldParent: sourceParent.data as LimbleTreeNode,
-         oldIndex: sourceIndex,
-         newParent: targetParent.data,
-         newIndex: newIndex
-      });
       //Change the treeModel
       targetParent.insertChild(source, newIndex);
       //Prepare to update the view
@@ -232,6 +224,16 @@ export class TreeService {
       } else {
          sourceHost.remove(sourceIndex);
       }
+      //Update the tree data
+      this.rebuildTreeData();
+      //Publish drop data
+      this.drops$.next({
+         target: source.data,
+         oldParent: sourceParent.data as LimbleTreeNode,
+         oldIndex: sourceIndex,
+         newParent: targetParent.data,
+         newIndex: newIndex
+      });
       this.cleanupSignal$.next(null);
    }
 
@@ -269,6 +271,9 @@ export class TreeService {
    }
 
    private cleanup(): void {
+      /* TODO: if the drop occurred in the node's tree of origin, rebuildTreeData()
+      is called for the second time here. We can probably find a way to avoid rebuilding
+      the tree twice in this scenario. */
       this.rebuildTreeData();
       if (this.treeData?.length === 0) {
          //We do a full render here because it isn't actually any slower
