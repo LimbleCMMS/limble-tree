@@ -6,7 +6,7 @@ import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.co
 import { DragStateService } from "../singletons/drag-state.service";
 import { BehaviorSubject, Subject } from "rxjs";
 import { arraysAreEqual } from "../util";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, tap } from "rxjs/operators";
 
 /** An object describing a node of the tree */
 export interface LimbleTreeNode {
@@ -124,12 +124,13 @@ export class TreeService {
    public readonly drops$: Subject<TreeDrop>;
    public host: ViewContainerRef | undefined;
    public treeData: LimbleTreeData | undefined;
-   private uncutData: LimbleTreeData | undefined;
+   /** This should never be reassigned. It is assigned in init() and no where else. We need to keep the reference from breaking. */
+   private originalData: LimbleTreeData | undefined;
    public treeOptions: ProcessedOptions | undefined;
    public treeModel: Branch<any>;
    private placeholder: boolean;
    public captured: boolean;
-   public readonly cleanupSignal$: Subject<null>;
+   public readonly cleanupSignal$: Subject<boolean>;
    private synchronizer: boolean;
    public placeholder$: BehaviorSubject<boolean>;
 
@@ -144,9 +145,18 @@ export class TreeService {
       this.placeholder = false;
       this.captured = false;
       this.cleanupSignal$ = new Subject();
-      this.cleanupSignal$.pipe(debounceTime(5)).subscribe(() => {
-         this.cleanup();
-      });
+      let rebuild = false;
+      this.cleanupSignal$
+         .pipe(
+            tap((value) => {
+               rebuild = value;
+            }),
+            debounceTime(5)
+         )
+         .subscribe(() => {
+            this.cleanup(rebuild);
+            rebuild = false;
+         });
       this.synchronizer = false;
       this.placeholder$ = new BehaviorSubject<boolean>(false);
       this.placeholder$.subscribe((value) => {
@@ -234,7 +244,7 @@ export class TreeService {
          newParent: targetParent.data,
          newIndex: newIndex
       });
-      this.cleanupSignal$.next(null);
+      this.cleanupSignal$.next(false);
    }
 
    /** Initializes the service and renders the tree.
@@ -251,7 +261,7 @@ export class TreeService {
       page?: number
    ): void {
       this.host = host;
-      this.uncutData = data;
+      this.originalData = data;
       this.treeOptions = this.processOptions(options, itemsPerPage, page);
       if (this.treeOptions.listMode === true) {
          let start =
@@ -262,19 +272,18 @@ export class TreeService {
             start = 0;
          }
          const end = start + this.treeOptions.itemsPerPage;
-         this.treeData = this.uncutData.slice(start, end);
+         this.treeData = this.originalData.slice(start, end);
       } else {
-         this.treeData = [...this.uncutData];
+         this.treeData = [...this.originalData];
       }
       this.synchronizer = false;
       this.render();
    }
 
-   private cleanup(): void {
-      /* TODO: if the drop occurred in the node's tree of origin, rebuildTreeData()
-      is called for the second time here. We can probably find a way to avoid rebuilding
-      the tree twice in this scenario. */
-      this.rebuildTreeData();
+   private cleanup(rebuild = false): void {
+      if (rebuild) {
+         this.rebuildTreeData();
+      }
       if (this.treeData?.length === 0) {
          //We do a full render here because it isn't actually any slower
          //when there are no nodes, and it saves us from having to handle
@@ -387,28 +396,30 @@ export class TreeService {
 
    private rebuildTreeData(): void {
       if (
-         this.uncutData === undefined ||
+         this.originalData === undefined ||
          this.treeData === undefined ||
          this.treeOptions === undefined
       ) {
          throw new Error("Tree data not initialized");
       }
-      this.uncutData.length = 0;
+      this.treeData = [];
       for (const branch of this.treeModel.getChildren()) {
-         this.uncutData.push(this.rebuildBranch(branch));
+         this.treeData.push(this.rebuildBranch(branch));
       }
-      if (this.treeOptions.listMode === true) {
-         let start =
+      if (
+         this.treeOptions.listMode === true &&
+         this.treeOptions.itemsPerPage < Infinity
+      ) {
+         const start =
             this.treeOptions.itemsPerPage * (this.treeOptions.page - 1);
-         if (isNaN(start)) {
-            //This catches the case where itemsPerPage was not passed by the user,
-            //causing `start` to equal infinity*0, which is NaN.
-            start = 0;
-         }
-         const end = start + this.treeOptions.itemsPerPage;
-         this.treeData = this.uncutData.slice(start, end);
+         this.originalData.splice(
+            start,
+            this.treeOptions.itemsPerPage,
+            ...this.treeData
+         );
       } else {
-         this.treeData = [...this.uncutData];
+         this.originalData.length = 0;
+         this.originalData.push(...this.treeData);
       }
    }
 

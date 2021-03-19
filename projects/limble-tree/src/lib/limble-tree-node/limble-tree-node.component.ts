@@ -146,7 +146,7 @@ export class LimbleTreeNodeComponent
       if (this.dropZoneBelow !== undefined) {
          this.dropZoneService.removeDropZone(this.dropZoneBelow);
       }
-      this.treeService.cleanupSignal$.next(null);
+      this.treeService.cleanupSignal$.next(true);
    }
 
    public dragstartHandler(event: DragEvent): void {
@@ -231,7 +231,7 @@ export class LimbleTreeNodeComponent
             if (this.branch === undefined) {
                throw new Error("could not get branch in dragendHandler");
             }
-            this.treeService.cleanupSignal$.next(null);
+            this.treeService.cleanupSignal$.next(true);
             this.treeService.captured = false;
          }
          this.dragStateService.release();

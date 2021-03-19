@@ -75,7 +75,7 @@ export class LimbleTreeBranchComponent
       if (this.dropZoneInside !== undefined) {
          this.dropZoneService.removeDropZone(this.dropZoneInside);
       }
-      this.treeService.cleanupSignal$.next(null);
+      this.treeService.cleanupSignal$.next(true);
    }
 
    private addDropZoneInside() {
