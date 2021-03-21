@@ -398,7 +398,8 @@ export class TreeService {
       if (
          this.originalData === undefined ||
          this.treeData === undefined ||
-         this.treeOptions === undefined
+         this.treeOptions === undefined ||
+         this.host === undefined
       ) {
          throw new Error("Tree data not initialized");
       }
@@ -410,13 +411,50 @@ export class TreeService {
          this.treeOptions.listMode === true &&
          this.treeOptions.itemsPerPage < Infinity
       ) {
-         const start =
-            this.treeOptions.itemsPerPage * (this.treeOptions.page - 1);
-         this.originalData.splice(
-            start,
-            this.treeOptions.itemsPerPage,
-            ...this.treeData
-         );
+         const itemsPerPage = this.treeOptions.itemsPerPage;
+         const start = itemsPerPage * (this.treeOptions.page - 1);
+         this.originalData.splice(start, itemsPerPage, ...this.treeData);
+         if (this.treeData.length !== itemsPerPage) {
+            let action = false;
+            if (
+               this.treeData.length < itemsPerPage &&
+               start + itemsPerPage <= this.originalData.length
+            ) {
+               //The current page does not have enough nodes. Add some to the view from the next page.
+               const count = itemsPerPage - this.treeData.length;
+               for (
+                  let index = itemsPerPage - 1;
+                  index < itemsPerPage + count - 1;
+                  index++
+               ) {
+                  const branch = new Branch(this.originalData[start + index]);
+                  this.treeModel.appendChild(branch);
+                  const componentRef = this.componentCreatorService.appendComponent<LimbleTreeNodeComponent>(
+                     LimbleTreeNodeComponent,
+                     this.host
+                  );
+                  componentRef.instance.branch = branch;
+                  componentRef.instance.parentHost = this.host;
+               }
+               action = true;
+            } else if (this.treeData.length > itemsPerPage) {
+               //The current page has too many nodes. Remove some of them from the view.
+               const count = this.treeData.length - itemsPerPage;
+               for (
+                  let index = itemsPerPage + count - 1;
+                  index >= itemsPerPage;
+                  index--
+               ) {
+                  this.treeModel.removeChild(index);
+                  this.host.remove(index);
+               }
+               action = true;
+            }
+            if (action === true) {
+               const end = start + itemsPerPage;
+               this.treeData = this.originalData.slice(start, end);
+            }
+         }
       } else {
          this.originalData.length = 0;
          this.originalData.push(...this.treeData);
