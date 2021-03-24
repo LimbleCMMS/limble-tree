@@ -5,6 +5,9 @@ import type { LimbleTreeNode, ProcessedOptions } from "./tree.service";
 import { arraysAreEqual } from "../util";
 import { DropZone } from "../classes/DropZone";
 import { DropZoneLocation } from "../classes/DropZoneLocation";
+import { EMPTY, Subject } from "rxjs";
+import { TreeConstructionStatus } from "./tree-construction-status.service";
+import { debounce, filter, tap } from "rxjs/operators";
 
 export interface DropZoneFamily {
    /** The deepest member of the family */
@@ -37,8 +40,12 @@ export class DropZoneService {
    private tempFamilies:
       | readonly [DropZoneFamily, DropZoneFamily | null]
       | readonly [];
+   private readonly update$: Subject<null>;
 
-   constructor(private readonly dragStateService: DragStateService) {
+   constructor(
+      private readonly dragStateService: DragStateService,
+      treeConstructionStatus: TreeConstructionStatus
+   ) {
       this.dropZoneArchive = new Set();
       this.dropZoneInventory = [];
       this.dropZoneFamilies = [];
@@ -46,6 +53,30 @@ export class DropZoneService {
       this.activeDropZone = null;
       this.tempFamilies = [];
       this.setActiveDropZone(null);
+      let treeIsStable = false;
+      const treeIsStable$ = treeConstructionStatus.stable$.pipe(
+         tap((value) => {
+            treeIsStable = value;
+         }),
+         filter((value) => value === true)
+      );
+      this.update$ = new Subject();
+      this.update$
+         .pipe(
+            debounce(() => {
+               if (treeIsStable === true) {
+                  //If tree is stable, continue right away
+                  return EMPTY;
+               }
+               //If tree is not stable, wait for it to become so.
+               return treeIsStable$;
+            })
+         )
+         .subscribe(() => {
+            setTimeout(() => {
+               this.updateDropZones();
+            });
+         });
    }
 
    public addDropZone(newDropZone: DropZone): void {
@@ -254,9 +285,7 @@ export class DropZoneService {
    }
 
    public update(): void {
-      this.reset();
-      this.buildInventory();
-      this.assignFamilies();
+      this.update$.next(null);
    }
 
    private assignFamilies(): void {
@@ -387,6 +416,12 @@ export class DropZoneService {
          this.setActiveDropZone(dropZone);
       }
       return true;
+   }
+
+   private updateDropZones(): void {
+      this.reset();
+      this.buildInventory();
+      this.assignFamilies();
    }
 
    private zoneIsAllowed(dropZone: DropZone): boolean {

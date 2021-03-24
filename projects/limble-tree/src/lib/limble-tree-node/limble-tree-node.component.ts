@@ -21,6 +21,7 @@ import { GlobalEventsService } from "../singletons/global-events.service";
 import { DropZone } from "../classes/DropZone";
 import { fromEvent, merge, Subscription } from "rxjs";
 import { LimbleTreeBranchComponent } from "../limble-tree-branch/limble-tree-branch.component";
+import { TreeConstructionStatus } from "../limble-tree-root/tree-construction-status.service";
 
 @Component({
    selector: "limble-tree-node",
@@ -56,8 +57,10 @@ export class LimbleTreeNodeComponent
       private readonly dropZoneService: DropZoneService,
       private readonly treeService: TreeService,
       private readonly globalEventsService: GlobalEventsService,
-      private readonly ngZone: NgZone
+      private readonly ngZone: NgZone,
+      private readonly treeConstructionStatus: TreeConstructionStatus
    ) {
+      this.treeConstructionStatus.constructing();
       if (
          this.treeService.treeOptions !== undefined &&
          this.treeService.treeOptions.listMode !== true
@@ -135,6 +138,7 @@ export class LimbleTreeNodeComponent
       this.renderNode();
       this.setDropZoneHosts();
       this.checkForHandle();
+      this.treeConstructionStatus.doneConstructing();
       this.changeDetectorRef.detectChanges();
    }
 
@@ -190,8 +194,8 @@ export class LimbleTreeNodeComponent
          //render the drop zone at all.
          const dragSubscription = fromEvent(treeElement, "dragover")
             .pipe(first())
-            .subscribe((event) => {
-               event.stopPropagation();
+            .subscribe((dragoverEvent) => {
+               dragoverEvent.stopPropagation();
                if (this.branch === undefined) {
                   throw new Error("Could not show surrounding drop zones");
                }

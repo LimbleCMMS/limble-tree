@@ -4,9 +4,10 @@ import { DropZoneService } from "./drop-zone.service";
 import { Branch, BranchCoordinates } from "../classes/Branch";
 import { LimbleTreeNodeComponent } from "../limble-tree-node/limble-tree-node.component";
 import { DragStateService } from "../singletons/drag-state.service";
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject, EMPTY, Subject } from "rxjs";
 import { arraysAreEqual } from "../util";
-import { debounceTime, tap } from "rxjs/operators";
+import { debounce, debounceTime, filter, tap } from "rxjs/operators";
+import { TreeConstructionStatus } from "./tree-construction-status.service";
 
 /** An object describing a node of the tree */
 export interface LimbleTreeNode {
@@ -131,13 +132,13 @@ export class TreeService {
    private placeholder: boolean;
    public captured: boolean;
    public readonly cleanupSignal$: Subject<boolean>;
-   private synchronizer: boolean;
    public placeholder$: BehaviorSubject<boolean>;
 
    constructor(
       private readonly componentCreatorService: ComponentCreatorService,
       private readonly dropZoneService: DropZoneService,
-      private readonly dragStateService: DragStateService
+      private readonly dragStateService: DragStateService,
+      private readonly treeConstructionStatus: TreeConstructionStatus
    ) {
       this.changes$ = new Subject();
       this.drops$ = new Subject();
@@ -146,18 +147,33 @@ export class TreeService {
       this.captured = false;
       this.cleanupSignal$ = new Subject();
       let rebuild = false;
+      let treeIsStable = false;
+      const treeIsStable$ = this.treeConstructionStatus.stable$.pipe(
+         tap((value) => {
+            treeIsStable = value;
+         }),
+         filter((value) => value === true)
+      );
       this.cleanupSignal$
          .pipe(
             tap((value) => {
                rebuild = value;
             }),
+            debounce(() => {
+               if (treeIsStable === true) {
+                  //If tree is stable, continue right away
+                  return EMPTY;
+               }
+               //If tree is not stable, wait for it to become so.
+               return treeIsStable$;
+            }),
+            //We use this timed debounce to throttle chained destruction of components
             debounceTime(5)
          )
          .subscribe(() => {
             this.cleanup(rebuild);
             rebuild = false;
          });
-      this.synchronizer = false;
       this.placeholder$ = new BehaviorSubject<boolean>(false);
       this.placeholder$.subscribe((value) => {
          this.placeholder = value;
@@ -276,7 +292,6 @@ export class TreeService {
       } else {
          this.treeData = [...this.originalData];
       }
-      this.synchronizer = false;
       this.render();
    }
 
@@ -286,8 +301,7 @@ export class TreeService {
       }
       if (this.treeData?.length === 0) {
          //We do a full render here because it isn't actually any slower
-         //when there are no nodes, and it saves us from having to handle
-         //some race conditions with the placeholder component
+         //when there are no nodes, and it is a little more straightforward
          this.render();
       } else {
          this.changes$.next(null);
@@ -304,6 +318,7 @@ export class TreeService {
       ) {
          throw new Error("TreeModel not initialized");
       }
+      this.treeConstructionStatus.ready(false);
       this.host.clear();
       this.dropZoneService.restart();
       this.placeholder$.next(false);
@@ -327,22 +342,9 @@ export class TreeService {
             //its own children
          }
       }
-      this.synchronizer = true;
-      setTimeout(() => {
-         if (this.treeOptions === undefined) {
-            throw new Error("TreeModel not initialized");
-         }
-         this.changes$.next(null);
-         if (this.synchronizer === false) {
-            //The tree service has been reinitialized since this timeout was called.
-            //The new tree data will just overwrite the drop zone data anyway, so
-            //we can skip the drop zone initialization on this round for efficiency
-            //and also to avoid some possible (?) race conditions
-            return;
-         }
-         this.synchronizer = false;
-         this.dropZoneService.init(this.treeModel, this.treeOptions);
-      });
+      this.treeConstructionStatus.ready(true);
+      this.changes$.next(null);
+      this.dropZoneService.init(this.treeModel, this.treeOptions);
    }
 
    /** Renders a branch of the tree and all of its descendants */

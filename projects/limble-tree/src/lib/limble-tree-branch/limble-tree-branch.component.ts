@@ -3,6 +3,7 @@ import {
    ChangeDetectorRef,
    Component,
    Input,
+   NgZone,
    OnDestroy,
    OnInit,
    ViewChild,
@@ -14,6 +15,7 @@ import { DropZone } from "../classes/DropZone";
 import { filter } from "rxjs/operators";
 import { isNestingAllowed } from "../util";
 import { DropZoneService } from "../limble-tree-root/drop-zone.service";
+import { TreeConstructionStatus } from "../limble-tree-root/tree-construction-status.service";
 
 @Component({
    selector: "limble-tree-branch",
@@ -36,38 +38,47 @@ export class LimbleTreeBranchComponent
    constructor(
       private treeService: TreeService,
       private readonly changeDetectorRef: ChangeDetectorRef,
-      private readonly dropZoneService: DropZoneService
+      private readonly dropZoneService: DropZoneService,
+      private readonly treeConstructionStatus: TreeConstructionStatus,
+      private readonly ngZone: NgZone
    ) {
+      this.treeConstructionStatus.constructing();
       this.indent = this.treeService.treeOptions?.indent;
       this.renderDropZoneInside = false;
    }
 
    public ngOnInit() {
       this.addDropZoneInside();
-      if (this.dropZoneInside === undefined) {
-         throw new Error("drop zone inside is not defined");
-      }
-      this.dropZoneInside
-         .getCommChannel()
-         .pipe(filter((message) => message === "checkRendered"))
-         .subscribe(() => {
-            if (
-               this.dropZoneInside === undefined ||
-               this.branch === undefined
-            ) {
-               throw new Error("Zones not registered");
-            }
-            if (
-               isNestingAllowed(this.treeService.treeOptions, this.branch.data)
-            ) {
-               this.renderDropZoneInside = this.dropZoneInside.isRendered();
-            }
-         });
+      this.ngZone.runOutsideAngular(() => {
+         if (this.dropZoneInside === undefined) {
+            throw new Error("drop zone inside is not defined");
+         }
+         this.dropZoneInside
+            .getCommChannel()
+            .pipe(filter((message) => message === "checkRendered"))
+            .subscribe(() => {
+               if (
+                  this.dropZoneInside === undefined ||
+                  this.branch === undefined
+               ) {
+                  throw new Error("Zones not registered");
+               }
+               if (
+                  isNestingAllowed(
+                     this.treeService.treeOptions,
+                     this.branch.data
+                  )
+               ) {
+                  this.renderDropZoneInside = this.dropZoneInside.isRendered();
+               }
+            });
+      });
    }
 
    public ngAfterViewInit() {
       this.reRender();
       this.setDropZoneHost();
+      this.treeConstructionStatus.doneConstructing();
       this.changeDetectorRef.detectChanges();
    }
 

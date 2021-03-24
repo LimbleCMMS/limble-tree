@@ -23,12 +23,13 @@ import { isElementDescendant } from "../util";
 import { DragStateService } from "../singletons/drag-state.service";
 import { GlobalEventsService } from "../singletons/global-events.service";
 import { first } from "rxjs/operators";
+import { TreeConstructionStatus } from "./tree-construction-status.service";
 
 @Component({
    selector: "limble-tree-root",
    templateUrl: "./limble-tree-root.component.html",
    styleUrls: ["./limble-tree-root.component.scss"],
-   providers: [TreeService, DropZoneService]
+   providers: [TreeService, DropZoneService, TreeConstructionStatus]
 })
 export class LimbleTreeRootComponent
    implements AfterViewInit, OnChanges, OnDestroy {
@@ -57,10 +58,19 @@ export class LimbleTreeRootComponent
       private readonly changeDetectorRef: ChangeDetectorRef
    ) {
       this.changesSubscription = this.treeService.changes$.subscribe(() => {
-         this.treeChange.emit();
+         //"In dev mode, Angular performs an additional check after each change
+         //detection run, to ensure the bindings haven’t changed." We use a timeout here
+         //to preclude the possibility of causing a binding to update in the parent
+         //component after change detection runs but before the additional check.
+         //See https://angular.io/errors/NG0100 for details.
+         setTimeout(() => {
+            this.treeChange.emit();
+         });
       });
       this.dropSubscription = this.treeService.drops$.subscribe((drop) => {
-         this.treeDrop.emit(drop);
+         setTimeout(() => {
+            this.treeDrop.emit(drop);
+         });
       });
       this.placeholder = false;
       this.treeService.placeholder$.subscribe((value) => {
