@@ -9,6 +9,7 @@ import {
 import { Subscription } from "rxjs";
 import { DropZone } from "../classes/DropZone";
 import { DropZoneService } from "../limble-tree-root/drop-zone.service";
+import { TreeConstructionStatus } from "../limble-tree-root/tree-construction-status.service";
 import { TreeService } from "../limble-tree-root/tree.service";
 
 @Component({
@@ -25,8 +26,10 @@ export class LimbleTreePlaceholderComponent
    public constructor(
       private readonly dropZoneService: DropZoneService,
       private readonly changeDetectorRef: ChangeDetectorRef,
-      private readonly treeService: TreeService
+      private readonly treeService: TreeService,
+      private readonly treeConstructionStatus: TreeConstructionStatus
    ) {
+      this.treeConstructionStatus.constructing();
       //This logic is very similar to what the lifecycle hooks of this component do.
       //We use this subscription because sometimes we can't wait for the lifecycle hooks:
       //Specifically, the drop zone registration and deregistration sometimes can't happen
@@ -55,6 +58,7 @@ export class LimbleTreePlaceholderComponent
          throw new Error("placeholder drop zone is not defined");
       }
       this.dropZone.setHost(this.treeService.host);
+      this.treeConstructionStatus.doneConstructing();
       this.changeDetectorRef.detectChanges();
    }
 
