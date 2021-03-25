@@ -447,7 +447,7 @@ export class LimbleTreeNodeComponent
          this.dropZoneAbove === undefined ||
          this.dropZoneBelow === undefined
       ) {
-         throw new Error("could not set drop zone hosts");
+         return;
       }
       this.dropZoneAbove.setHost(this.parentHost);
       this.dropZoneBelow.setHost(this.parentHost);
