@@ -17,7 +17,8 @@
                },
                "configurations": {
                   "production": {
-                     "tsConfig": "projects/limble-tree/tsconfig.lib.prod.json"
+                     "tsConfig": "projects/limble-tree/tsconfig.lib.prod.json",
+                     "project": "projects/limble-tree/ng-package.json"
                   }
                }
             },

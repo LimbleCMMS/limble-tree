@@ -17,7 +17,7 @@
       "module": "es2020",
       "lib": ["es2018", "dom"],
       "paths": {
-         "limble-tree": ["dist/limble-tree/limble-tree", "dist/limble-tree"]
+         "@limble/limble-tree": ["projects/limble-tree/src/public-api"]
       }
    },
    "angularCompilerOptions": {

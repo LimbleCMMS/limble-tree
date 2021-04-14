@@ -51,7 +51,7 @@ See [the package README](https://github.com/LimbleCMMS/limble-tree/blob/main/pro
 
 1. Run `npm ci` to install all the node modules.
 2. Run `npm run buildWatch`. This builds the library in watch mode.
-3. In a second terminal, run `npm run linkStart`. This links the built library to the demo app using `npm link`, and builds the demo app in watch mode. It should automatically open the demo app in your browser.
+3. In a second terminal, run `npm run start`. This builds the demo app in watch mode. It should automatically open the demo app in your browser.
 
 After running these commands, changes in the library or in the demo app will both trigger a live reload so you can immediately view and experiment on your changes.
 
