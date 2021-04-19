@@ -2,6 +2,7 @@ import {
    AfterViewInit,
    ChangeDetectorRef,
    Component,
+   ElementRef,
    EventEmitter,
    Input,
    NgZone,
@@ -55,7 +56,9 @@ export class LimbleTreeRootComponent
       private readonly dropZoneService: DropZoneService,
       private readonly dragStateService: DragStateService,
       private readonly globalEventsService: GlobalEventsService,
-      private readonly changeDetectorRef: ChangeDetectorRef
+      private readonly ngZone: NgZone,
+      private readonly changeDetectorRef: ChangeDetectorRef,
+      private readonly el: ElementRef<Element>
    ) {
       this.changesSubscription = this.treeService.changes$.subscribe(() => {
          //"In dev mode, Angular performs an additional check after each change
@@ -92,6 +95,13 @@ export class LimbleTreeRootComponent
       }
       this.update();
       this.changeDetectorRef.detectChanges();
+
+      this.ngZone.runOutsideAngular(() => {
+         //this is for mac os - without this dragover handler drop events aren't firing correctly
+         this.el.nativeElement.addEventListener("dragover", (event) => {
+            event.preventDefault();
+         });
+      });
    }
 
    ngOnChanges() {
