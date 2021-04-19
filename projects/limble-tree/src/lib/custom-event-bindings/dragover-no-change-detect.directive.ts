@@ -24,7 +24,7 @@ export class DragoverNoChangeDetectDirective implements OnInit, OnDestroy {
       private readonly el: ElementRef<Element>
    ) {
       this.dragoverNoChangeDetect = new EventEmitter<DragEvent>();
-      this.dragoverEventThrottle = 0;
+      this.dragoverEventThrottle = 25;
    }
 
    ngOnInit() {
