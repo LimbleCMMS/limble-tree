@@ -20,7 +20,7 @@ import { TreeConstructionStatus } from "../limble-tree-root/tree-construction-st
 @Component({
    selector: "limble-tree-branch",
    templateUrl: "./limble-tree-branch.component.html",
-   styles: ["./limble-tree-branch.component.scss"]
+   styleUrls: ["./limble-tree-branch.component.scss"]
 })
 export class LimbleTreeBranchComponent
    implements AfterViewInit, OnInit, OnDestroy {
