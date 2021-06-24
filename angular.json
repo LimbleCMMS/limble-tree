@@ -19,8 +19,10 @@
                   "production": {
                      "tsConfig": "projects/limble-tree/tsconfig.lib.prod.json",
                      "project": "projects/limble-tree/ng-package.json"
-                  }
-               }
+                  },
+                  "development": {}
+               },
+               "defaultConfiguration": "production"
             },
             "test": {
                "builder": "@angular-devkit/build-angular:karma",
@@ -100,20 +102,24 @@
                            "maximumError": "10kb"
                         }
                      ]
-                  }
+                  },
+                  "development": {}
                },
-               "defaultConfiguration": ""
+               "defaultConfiguration": "production"
             },
             "serve": {
                "builder": "@angular-devkit/build-angular:dev-server",
                "options": {
-                  "browserTarget": "sandbox:build"
                },
                "configurations": {
                   "production": {
                      "browserTarget": "sandbox:build:production"
+                  },
+                  "development": {
+                     "browserTarget": "sandbox:build:development"
                   }
-               }
+               },
+               "defaultConfiguration": "development"
             },
             "extract-i18n": {
                "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -150,14 +156,17 @@
             "e2e": {
                "builder": "@angular-devkit/build-angular:protractor",
                "options": {
-                  "protractorConfig": "projects/sandbox/e2e/protractor.conf.js",
-                  "devServerTarget": "sandbox:serve"
+                  "protractorConfig": "projects/sandbox/e2e/protractor.conf.js"
                },
                "configurations": {
                   "production": {
                      "devServerTarget": "sandbox:serve:production"
+                  },
+                  "development": {
+                     "devServerTarget": "sandbox:serve:development"
                   }
-               }
+               },
+               "defaultConfiguration": "development"
             }
          }
       }
