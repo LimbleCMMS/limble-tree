@@ -29,7 +29,8 @@ import { TreeConstructionStatus } from "../limble-tree-root/tree-construction-st
    styleUrls: ["./limble-tree-node.component.scss"]
 })
 export class LimbleTreeNodeComponent
-   implements OnInit, AfterViewInit, OnDestroy {
+   implements OnInit, AfterViewInit, OnDestroy
+{
    @Input() branch: Branch<any> | undefined;
    @ViewChild("nodeHost", { read: ViewContainerRef }) private nodeHost:
       | ViewContainerRef
@@ -276,10 +277,15 @@ export class LimbleTreeNodeComponent
       ) {
          return;
       }
-      const target = event.currentTarget as HTMLElement;
+      const target = (event.currentTarget as HTMLElement).closest(
+         ".node-host-container"
+      );
+      if (!(target instanceof HTMLElement)) {
+         throw new Error("Failed to find node host container while dragging");
+      }
       let topLine: number;
       let bottomLine: number;
-      if (this.innerBranch?.dropZoneInside === undefined) {
+      if (this.innerBranch?.renderDropZoneInside === false) {
          topLine = target.offsetHeight / 2 - 6;
          bottomLine = topLine;
       } else {
@@ -296,9 +302,11 @@ export class LimbleTreeNodeComponent
             parentData
          );
       }
+      /** The y-coordinates of the mouse in relation to the node it is hovering over */
+      const offsetY = event.clientY - target.getBoundingClientRect().top;
       const activeDropZone = this.dropZoneService.getActiveDropZone();
       if (
-         event.offsetY < topLine &&
+         offsetY < topLine &&
          this.dropZoneAbove !== undefined &&
          (activeDropZone === null ||
             !DropZone.dropZoneLocationsAreEqual(
@@ -315,7 +323,9 @@ export class LimbleTreeNodeComponent
             activateLowestInsteadOfFounder: true
          });
       } else if (
-         event.offsetY < bottomLine &&
+         offsetY < bottomLine &&
+         offsetY > topLine &&
+         this.innerBranch?.renderDropZoneInside === true &&
          this.innerBranch?.dropZoneInside !== undefined &&
          (activeDropZone === null ||
             !DropZone.dropZoneLocationsAreEqual(
@@ -327,7 +337,7 @@ export class LimbleTreeNodeComponent
             this.innerBranch.dropZoneInside
          );
       } else if (
-         event.offsetY >= bottomLine &&
+         offsetY >= bottomLine &&
          this.dropZoneBelow !== undefined &&
          (activeDropZone === null ||
             !DropZone.dropZoneLocationsAreEqual(
