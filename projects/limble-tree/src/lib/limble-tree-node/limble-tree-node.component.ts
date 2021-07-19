@@ -15,7 +15,12 @@ import { DropZoneService } from "../limble-tree-root/drop-zone.service";
 import { DragStateService } from "../singletons/drag-state.service";
 import { LimbleTreeNode, TreeService } from "../limble-tree-root/tree.service";
 import { Branch, BranchCoordinates } from "../classes/Branch";
-import { arraysAreEqual, isDraggingAllowed, isNestingAllowed } from "../util";
+import {
+   arraysAreEqual,
+   isDraggingAllowed,
+   isNestingAllowed,
+   suddenTreeExit
+} from "../util";
 import { filter, first, skip, skipUntil } from "rxjs/operators";
 import { GlobalEventsService } from "../singletons/global-events.service";
 import { DropZone } from "../classes/DropZone";
@@ -322,6 +327,9 @@ export class LimbleTreeNodeComponent
          this.dropZoneService.showDropZoneFamily(this.dropZoneAbove, {
             activateLowestInsteadOfFounder: true
          });
+         if (suddenTreeExit(event)) {
+            this.dropZoneService.clearVisibleZones();
+         }
       } else if (
          offsetY < bottomLine &&
          offsetY > topLine &&
@@ -336,6 +344,9 @@ export class LimbleTreeNodeComponent
          this.dropZoneService.showDropZoneFamily(
             this.innerBranch.dropZoneInside
          );
+         if (suddenTreeExit(event)) {
+            this.dropZoneService.clearVisibleZones();
+         }
       } else if (
          offsetY >= bottomLine &&
          this.dropZoneBelow !== undefined &&
@@ -352,6 +363,9 @@ export class LimbleTreeNodeComponent
             throw new Error("can't get branch index");
          }
          this.dropZoneService.showDropZoneFamily(this.dropZoneBelow);
+         if (suddenTreeExit(event)) {
+            this.dropZoneService.clearVisibleZones();
+         }
       }
    }
 

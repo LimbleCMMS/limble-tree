@@ -47,7 +47,7 @@ export function isElementDescendant(
 export function isNestingAllowed(
    options?: ProcessedOptions,
    nodeData?: LimbleTreeNode
-) {
+): boolean {
    return (
       options !== undefined &&
       (options.allowNesting === true ||
@@ -60,7 +60,7 @@ export function isNestingAllowed(
 export function isDraggingAllowed(
    options?: ProcessedOptions,
    nodeData?: LimbleTreeNode
-) {
+): boolean {
    return (
       options !== undefined &&
       (options.allowDragging === true ||
@@ -68,4 +68,31 @@ export function isDraggingAllowed(
             nodeData !== undefined &&
             options.allowDragging(nodeData) === true))
    );
+}
+
+export function isFirefox(): boolean {
+   return navigator.userAgent.includes("Firefox");
+}
+
+/** Because drop zones can disappear when the mouse moves, sometimes
+ * moving the mouse just a little bit inside the tree causes the tree to
+ * shrink such that the mouse is no longer over the tree. In this case,
+ * a dragleave event may not fire, and we can't clear the drop zones. This
+ * function is used to catch this edge case.
+ */
+export function suddenTreeExit(event: DragEvent): boolean {
+   if (event.target === null || !(event.target instanceof Element)) {
+      throw new Error("failed to get event target element");
+   }
+   const treeEventHost = event.target.closest(".tree-event-host");
+   if (treeEventHost === null) {
+      console.log(event.target);
+      throw new Error("failed to find treeEventHost");
+   }
+   const rect = treeEventHost.getBoundingClientRect();
+   const clientY = event.clientY;
+   if (clientY > rect.bottom || clientY < rect.top) {
+      return true;
+   }
+   return false;
 }

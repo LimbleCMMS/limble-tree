@@ -20,7 +20,7 @@ import {
    TreeDrop
 } from "../limble-tree-root/tree.service";
 import { TreeService } from "./tree.service";
-import { isElementDescendant } from "../util";
+import { isElementDescendant, isFirefox } from "../util";
 import { DragStateService } from "../singletons/drag-state.service";
 import { GlobalEventsService } from "../singletons/global-events.service";
 import { first } from "rxjs/operators";
@@ -33,7 +33,8 @@ import { TreeConstructionStatus } from "./tree-construction-status.service";
    providers: [TreeService, DropZoneService, TreeConstructionStatus]
 })
 export class LimbleTreeRootComponent
-   implements AfterViewInit, OnChanges, OnDestroy {
+   implements AfterViewInit, OnChanges, OnDestroy
+{
    @Input() data: LimbleTreeData | undefined;
    @Input() options: LimbleTreeOptions | undefined;
    @Input() itemsPerPage: number | undefined;
@@ -127,7 +128,11 @@ export class LimbleTreeRootComponent
          this.itemsPerPage,
          this.page
       );
-      this.globalEventsService.addScrolling();
+      //We check for firefox here because there is a bug in Firefox that causes the
+      //custom scrolling to break. See https://bugzilla.mozilla.org/show_bug.cgi?id=505521#c80
+      if (!isFirefox()) {
+         this.globalEventsService.addScrolling();
+      }
    }
 
    public dragoverHandler(event: DragEvent) {
