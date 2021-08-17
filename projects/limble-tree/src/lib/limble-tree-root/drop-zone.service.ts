@@ -5,7 +5,7 @@ import type { LimbleTreeNode, ProcessedOptions } from "./tree.service";
 import { arraysAreEqual } from "../util";
 import { DropZone } from "../classes/DropZone";
 import { DropZoneLocation } from "../classes/DropZoneLocation";
-import { EMPTY, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { TreeConstructionStatus } from "./tree-construction-status.service";
 import { debounce, filter, tap } from "rxjs/operators";
 
@@ -66,7 +66,7 @@ export class DropZoneService {
             debounce(() => {
                if (treeIsStable === true) {
                   //If tree is stable, continue right away
-                  return EMPTY;
+                  return Promise.resolve();
                }
                //If tree is not stable, wait for it to become so.
                return treeIsStable$;
