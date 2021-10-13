@@ -313,12 +313,12 @@ export class LimbleTreeNodeComponent
       if (
          offsetY < topLine &&
          this.dropZoneAbove !== undefined &&
+         parentNestingAllowed &&
          (activeDropZone === null ||
             !DropZone.dropZoneLocationsAreEqual(
                activeDropZone,
                this.dropZoneAbove
-            )) &&
-         parentNestingAllowed
+            ))
       ) {
          const index = this.branch.getIndex();
          if (index === undefined || index === null) {
@@ -350,13 +350,13 @@ export class LimbleTreeNodeComponent
       } else if (
          offsetY >= bottomLine &&
          this.dropZoneBelow !== undefined &&
+         parentNestingAllowed &&
          (activeDropZone === null ||
             !DropZone.dropZoneLocationsAreEqual(
                activeDropZone,
                this.dropZoneBelow
             )) &&
-         this.branch.getChildren().length === 0 &&
-         parentNestingAllowed
+         this.branch.getChildren().length === 0
       ) {
          const index = this.branch.getIndex();
          if (index === undefined || index === null) {

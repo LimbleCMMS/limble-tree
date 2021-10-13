@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Branch, BranchCoordinates } from "../classes/Branch";
 import { DragStateService } from "../singletons/drag-state.service";
 import type { LimbleTreeNode, ProcessedOptions } from "./tree.service";
-import { arraysAreEqual } from "../util";
+import { arraysAreEqual, isNestingAllowed } from "../util";
 import { DropZone } from "../classes/DropZone";
 import { DropZoneLocation } from "../classes/DropZoneLocation";
 import { Subject } from "rxjs";
@@ -432,11 +432,19 @@ export class DropZoneService {
       if (data === undefined) {
          throw new Error("Can't get dragged node");
       }
-      const dropZoneParent = this.tree.findByCoordinates(
-         dropZone.getLocation().parentCoordinates
-      );
+      const parentCoordinates = dropZone.getLocation().parentCoordinates;
+      const dropZoneParent = this.tree.findByCoordinates(parentCoordinates);
       if (dropZoneParent === undefined) {
          throw new Error("Could not get drop zone parent");
+      }
+      if (
+         parentCoordinates.length > 0 &&
+         !isNestingAllowed(
+            this.treeOptions,
+            dropZoneParent.data as LimbleTreeNode
+         )
+      ) {
+         return false;
       }
       const dropZoneIndex = dropZone.getLocation().insertIndex;
       if (dropZoneIndex === undefined) {
@@ -444,14 +452,14 @@ export class DropZoneService {
       }
       const draggedNode = data.branch;
       if (
-         this.treeOptions.allowDrop(
+         !this.treeOptions.allowDrop(
             draggedNode.data,
             dropZoneParent.data as LimbleTreeNode,
             dropZoneIndex
          )
       ) {
-         return true;
+         return false;
       }
-      return false;
+      return true;
    }
 }
