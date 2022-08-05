@@ -2,6 +2,9 @@
    "name": "libs",
    "version": "0.12.4",
    "license": "MIT",
+   "engines": {
+      "node": "^16.16.0"
+   },
    "scripts": {
       "ng": "ng",
       "build": "ng build limble-tree",
