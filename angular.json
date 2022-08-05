@@ -31,16 +31,6 @@
                   "tsConfig": "projects/limble-tree/tsconfig.spec.json",
                   "karmaConfig": "projects/limble-tree/karma.conf.js"
                }
-            },
-            "lint": {
-               "builder": "@angular-devkit/build-angular:tslint",
-               "options": {
-                  "tsConfig": [
-                     "projects/limble-tree/tsconfig.lib.json",
-                     "projects/limble-tree/tsconfig.spec.json"
-                  ],
-                  "exclude": ["**/node_modules/**"]
-               }
             }
          }
       },
@@ -140,17 +130,6 @@
                   ],
                   "styles": ["projects/sandbox/src/styles.scss"],
                   "scripts": []
-               }
-            },
-            "lint": {
-               "builder": "@angular-devkit/build-angular:tslint",
-               "options": {
-                  "tsConfig": [
-                     "projects/sandbox/tsconfig.app.json",
-                     "projects/sandbox/tsconfig.spec.json",
-                     "projects/sandbox/e2e/tsconfig.json"
-                  ],
-                  "exclude": ["**/node_modules/**"]
                }
             },
             "e2e": {
