@@ -1,9 +1,0 @@
-<div [style.marginLeft.px]="indent">
-   <drop-zone
-      *ngIf="renderDropZoneInside"
-      [dropZone]="dropZoneInside"
-   ></drop-zone>
-   <span [hidden]="branch && branch.data.collapsed" class="limble-child-nodes">
-      <ng-template #children></ng-template>
-   </span>
-</div>

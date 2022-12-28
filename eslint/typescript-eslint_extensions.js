@@ -191,10 +191,26 @@ module.exports = {
     * Disallow magic numbers
     *
     * @remarks
-    * This is turned off because, though sometimes useful, this rule
-    * is often more work than it is worth.
+    * This is turned off because, though certainly useful, this rule
+    * is sometimes more work than it is worth. We may revisit in the future.
     */
    "@typescript-eslint/no-magic-numbers": 0,
+
+   /**
+    * disallow specified modules when loaded by `import`
+    */
+   "@typescript-eslint/no-restricted-imports": [
+      2,
+      {
+         paths: [
+            {
+               name: "axios",
+               message:
+                  "This is a CommonJS module and should be avoided for performance reasons. Import from `axios/dist/axios` instead."
+            }
+         ]
+      }
+   ],
 
    /**
     * Disallow variable declarations from shadowing variables
@@ -229,9 +245,22 @@ module.exports = {
     * Disallow the use of variables before they are defined
     *
     * @remarks
-    * This is turned off because it is not a high priority, and some
-    * developers argue that it is not worth the effort. We may revisit
-    * in the future.
+    * This is turned off because it is not that useful. Typescript will
+    * already throw errors if we try to use a variable that isn't defined --
+    * this rule goes beyond that and requires the variable to be defined
+    * *on a previous line* in the file, not on a subsequent line. This can
+    * get pretty annoying. It would flag this code:
+    *
+    * ```typescript
+    * const clickHandler = () => {
+    *    //This will only run when a user clicks a button.
+    *    //It literally cannot run before `a` is defined.
+    *    console.log(a); //error, because the rule thinks `a` isn't defined yet.
+    * }
+    * const a = 10
+    * ```
+    *
+    * For this reason, we leave the rule turned off.
     */
    "@typescript-eslint/no-use-before-define": 0,
 
@@ -253,6 +282,14 @@ module.exports = {
    "@typescript-eslint/object-curly-spacing": 0,
 
    /**
+    * require or disallow padding lines between statements
+    *
+    * @remarks
+    * This is off because Prettier already handles it.
+    */
+   "@typescript-eslint/padding-line-between-statements": 0,
+
+   /**
     * Enforce the consistent use of either backticks, double, or single quotes
     *
     * @remarks
@@ -261,24 +298,32 @@ module.exports = {
    "@typescript-eslint/quotes": 0,
 
    /**
-    * Disallow async functions which have no await expression
+    * Disallow async functions which have no await expression and do not
+    * return a promise.
     *
     * @remarks
-    * I'm not sure if this rule will be useful enough to be worthwhile.
-    * We may need to revisit this in the future.
+    * Async functions that don't use `await` won't actually run asynchronously.
+    * If the function returns a promise, there is still value in declaring the
+    * function async even if there are no `await`s
+    * (see the `@typescript-eslint/promise-function-async` rule), but otherwise,
+    * marking it as `async` does not do anything except wrap the return
+    * in a promise for no reason. It could be the unintentional result of
+    * refactoring. Some people use it as a shortcut to wrap a value in an
+    * immediately resolved promise, but if that is what you want, you
+    * should also explicitly wrap the return value in a Promise.resolve()
+    * so your intentions are clear.
     */
-   "@typescript-eslint/require-await": 0,
+   "@typescript-eslint/require-await": 1,
 
    /**
     * Enforces consistent returning of awaited values
     *
     * @remarks
-    * This is level 1 because code flagged by this rule is unnecessarily
+    * This is level 2 because code flagged by this rule is unnecessarily
     * inefficient and complex, and may indicate a lack of understanding
-    * about how async functions work. However, there are some rare valid
-    * reasons to do it, so it is not level 2.
+    * about how async functions work.
     */
-   "@typescript-eslint/return-await": 1,
+   "@typescript-eslint/return-await": 2,
 
    /**
     * Require or disallow semicolons instead of ASI
@@ -302,5 +347,13 @@ module.exports = {
     * @remarks
     * This is level 0 because Prettier already takes care of it.
     */
-   "@typescript-eslint/space-infix-ops": 0
+   "@typescript-eslint/space-infix-ops": 0,
+
+   /**
+    * Enforce consistent spacing before blocks.
+    *
+    * @remarks
+    * This rule is level 0 because Prettier should already take care of it.
+    */
+   "@typescript-eslint/space-before-blocks": 0
 };

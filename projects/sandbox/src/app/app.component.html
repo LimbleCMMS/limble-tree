@@ -1,32 +1,4 @@
-<h2>Limble Tree</h2>
-<div class="container">
-   <div style="min-width: 40%; padding-right: 5%">
-      <h3>Tree 1</h3>
-      <limble-tree-root
-         [data]="treeData1"
-         [options]="treeOptions"
-         (treeChange)="treeChangeHandler()"
-         (treeDrop)="treeDropHandler($event)"
-         #tree
-      ></limble-tree-root>
-      <br />
-      <button (click)="addNode({ value1: 'extra thing' })">Add Node</button>
-      <br /><br />
-      <h3>Tree 2</h3>
-      <limble-tree-root
-         [data]="treeData2"
-         [options]="treeOptions"
-      ></limble-tree-root>
-   </div>
-   <div style="min-width: 50%">
-      <h3>
-         Data Object for Tree 1
-         <span style="font-weight: normal">
-            (does not show component <em>class</em> property)
-         </span>
-      </h3>
-      <div class="jsonOutput">
-         {{ limbleTreeDataString }}
-      </div>
-   </div>
+<div class="page-container">
+   <h1>{{ title }}</h1>
+   <div #treeContainer></div>
 </div>

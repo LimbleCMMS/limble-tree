@@ -43,10 +43,10 @@ module.exports = {
     * eg, [(ngModel)] is correct whereas ([ngModel]) is not.
     *
     * @remarks
-    * Not following this rule will result in bugs. It is usually
-    * a mistake or a misunderstanding of the framework/syntax.
+    * This is turned off because, since Angular 14, the Angular compiler already
+    * provides this functionality. See https://angular.io/extended-diagnostics/NG8101
     */
-   "@angular-eslint/template/banana-in-box": 2,
+   "@angular-eslint/template/banana-in-box": 0,
    /**
     * The condition complexity shouldn’t exceed a rational limit in a template.
     *
@@ -59,10 +59,14 @@ module.exports = {
     *
     * See also `@angular-eslint/template/cyclomatic-complexity` rule.
     *
-    * This is turned off for now because we don't follow it and it requires some
-    * refactoring. Revisit in the future.
+    * This is set to our current highest complexity to prevent anything higher.
+    * Ideally we would lower it at some point in the future, but for now we
+    * don't because it would require some refactoring.
     */
-   "@angular-eslint/template/conditional-complexity": [0, { maxComplexity: 4 }],
+   "@angular-eslint/template/conditional-complexity": [
+      1,
+      { maxComplexity: 14 }
+   ],
    /**
     * Ensures that click events are accompanied by at least one key event keyup,
     * keydown or keypress. This is important for users with physical disabilities
@@ -97,10 +101,10 @@ module.exports = {
     * Requires `===` and `!==` in place of `==` and `!=`
     *
     * @remarks
-    * This is a very valuable rule that we should implement at some point: Type
-    * coercion is not clear, and related bugs are very difficult to spot.
-    * However, it will be easy to implement this after we have strict typescript.
-    * So we will leave it off for now.
+    * Type coercion is confusing, and related bugs are very difficult to spot.
+    * We currently violate this rule a lot, and it is hard to fix without better
+    * typescript, so we are leaving it at level 0
+    * until we can get more typescript implemented. Revisit in the future.
     */
    "@angular-eslint/template/eqeqeq": 0,
    /**
@@ -126,10 +130,10 @@ module.exports = {
     *
     * @remarks
     * The use of ‘$any’ nullifies the compile-time benefits of the Angular's type system
-    * and should not be used. However, we have not yet fully implemented typescript and
-    * this isn't a priority right now. We should revisit in the future.
+    * and should not be used. Left it as level 1 because $any might need to be used during
+    * development,
     */
-   "@angular-eslint/template/no-any": 0,
+   "@angular-eslint/template/no-any": 1,
    /**
     * Ensures that the autofocus property is not used
     *
@@ -197,5 +201,31 @@ module.exports = {
     * This is turned off for now because we don't follow it and it requires some
     * refactoring. Revisit in the future.
     */
-   "@angular-eslint/template/use-track-by-function": 0
+   "@angular-eslint/template/use-track-by-function": 0,
+
+   /**
+    * Ensures that $localize tagged messages contain helpful metadata to aid
+    * with translations
+    *
+    * @remarks
+    * I don't think this is applicable to us right now
+    */
+   "@angular-eslint/require-localize-metadata": 0,
+
+   /**
+    * This expands on "@angular-eslint/require-localize-metadata" to require a
+    * description on i18n-* attributes
+    *
+    * @remarks
+    * Again, I don't think this is applicable to us right now
+    */
+   "@angular-eslint/template/i18n": 0,
+
+   /**
+    * Ensures that a button has a valid type specified
+    *
+    * @remarks
+    * This is not a priority for us right now.
+    */
+   "@angular-eslint/template/button-has-type": 0
 };

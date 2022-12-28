@@ -1,62 +1,27 @@
-# Limble Tree
+# LimbleTree
 
-An Angular library for creating highly dynamic drag-and-drop tree structures
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.9.
 
-## About
+## Development server
 
-### Limble
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-Limble is a CMMS SaaS company providing great software to customers around the world. See [limblecmms.com](https://limblecmms.com) for more information. The `limble-tree` library is built by the Limble team and used in Limble's web applications.
+## Code scaffolding
 
-### Status
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-This library is currently in **beta** development. It may not be ready for use in a production environment.
+## Build
 
-### Features
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
--  Unlimited tree depth
--  Can have a different component rendered for each node in the tree
--  Can drag nodes from one location in the tree to other locations
--  Dragging can be turned off for all or some of the nodes
--  Easy nesting of nodes
--  Nesting can be turned off for all or some of the nodes
--  Nodes can be dropped into other limble trees
--  Supports drag handles
--  Catchable events are fired when the tree renders and when a drop occurs
--  Pagination available for flat trees
+## Running unit tests
 
-## Demo
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-(requires node and npm)
+## Running end-to-end tests
 
-To view the demo:
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
-1. clone/download this repo
-2. run `npm ci`
-3. run `npm run start`
-4. Open your browser to `localhost:4200`
+## Further help
 
-## Installation and Usage
-
-See [the package README](https://github.com/LimbleCMMS/limble-tree/blob/main/projects/limble-tree/README.md) or the [NPM page](https://www.npmjs.com/package/@limble/limble-tree)
-
-## Development
-
-### Requirements
-
--  node
--  npm
-
-### Suggested Dev Setup
-
-1. Run `npm ci` to install all the node modules.
-2. Run `npm run buildWatch`. This builds the library in watch mode.
-3. In a second terminal, run `npm run start`. This builds the demo app in watch mode. It should automatically open the demo app in your browser.
-
-After running these commands, changes in the library or in the demo app will both trigger a live reload so you can immediately view and experiment on your changes.
-
-## Issues, Feature Requests, Etc
-
-If you find an issue or you would like to see an improvement, you may create an "issue" or start a "discussion" here in github.
-
-We truly appreciate feedback; but keep in mind that we, the Limble team, built this library for our own needs, and requests from outside our organization may not always be a high priority.
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
