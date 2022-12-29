@@ -14,6 +14,7 @@
       "ng": "ng",
       "publishPackage": "npm run build && cd dist/limble-tree && npm publish",
       "start": "ng serve",
+      "test": "ng test",
       "test:limble-tree": "ng test limble-tree",
       "test:sandbox": "ng test sandbox"
    },

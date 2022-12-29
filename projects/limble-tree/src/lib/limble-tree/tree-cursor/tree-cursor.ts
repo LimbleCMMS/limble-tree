@@ -1,4 +1,4 @@
-import { ComponentRef } from "@angular/core";
+import { ComponentRef, Type, ViewContainerRef } from "@angular/core";
 import { assert } from "../../../shared/assert";
 import { BranchComponent } from "../../components/branch/branch.component";
 import { TreeBranch } from "../../structure/tree-branch/tree-branch";
@@ -7,14 +7,15 @@ import { TreeRoot } from "../../structure/tree-root/tree-root";
 import { TreeError } from "../errors/tree-error";
 import { NodeRef } from "../node-ref";
 import { Tree } from "../tree/tree";
+import { BranchOptions } from "./branch-options";
 
 export class TreeCursor {
    private target: TreeNode<NodeRef>;
-   private _tree: Tree;
+   private readonly _tree: Tree;
 
-   public constructor(tree: Tree, root: TreeRoot<NodeRef>) {
+   public constructor(tree: Tree) {
       this._tree = tree;
-      this.target = root;
+      this.target = tree.root();
       assert(this.target.getContents() instanceof ComponentRef);
    }
 
@@ -22,15 +23,49 @@ export class TreeCursor {
       return this.isRoot(this.target);
    }
 
-   public growBranch(): number {
-      //FIXME: law of demeter?
-      const container = this.target.getContents()?.instance?.branchesContainer;
-      assert(container !== undefined);
-      const componentRef = container.createComponent(BranchComponent);
-      componentRef.changeDetectorRef.detectChanges();
-      const branch = new TreeBranch<NodeRef>(componentRef);
+   public graft(tree: Tree): void {
+      //FIXME: Law of demeter?
+      for (const branch of tree.root().branches()) {
+         //FIXME: law of demeter?
+         const container = this.getBranchesContainer();
+         container.insert(branch.getContents().hostView);
+         branch.graftTo(this.target);
+      }
+   }
+
+   public graftAt(index: number, tree: Tree): void {
+      if (index < 0 || index > this.target.branches().length) {
+         throw new TreeError(`Can't graft at index ${index}. Out of range.`);
+      }
+      let insertIndex = index;
+      //FIXME: Law of demeter?
+      for (const branch of tree.root().branches()) {
+         //FIXME: law of demeter?
+         const container = this.getBranchesContainer();
+         container.insert(branch.getContents().hostView, insertIndex);
+         branch.graftTo(this.target, insertIndex);
+         insertIndex++;
+      }
+   }
+
+   public growBranch<T>(options: BranchOptions<T>): number {
+      const nodeRef = this.insertComponent(options.component);
+      const branch = new TreeBranch<NodeRef>(nodeRef);
       branch.graftTo(this.target);
       return branch.index();
+   }
+
+   public jumpTo(position: Array<number>): void {
+      let target: TreeNode<NodeRef> = this.tree().root();
+      for (const index of position) {
+         target = target.branches()[index];
+         if (target === undefined) {
+            throw new TreeError(
+               `Cannot jump to non-existent position [${position.join(", ")}]`
+            );
+         }
+      }
+      this.target = target;
    }
 
    public position(): Array<number> {
@@ -41,9 +76,16 @@ export class TreeCursor {
       if (!this.isBranch(this.target)) {
          throw new TreeError(`Cannot prune the root of the tree.`);
       }
+      const parent = this.target.parent();
+      const parentBranchesContainer =
+         parent.getContents()?.instance.branchesContainer;
+      if (parentBranchesContainer === undefined) {
+         throw new Error("could not get parentBranchesContainer");
+      }
+      parentBranchesContainer.detach(this.target.index());
       const newRoot = this.target.prune();
       const newTree = new Tree(newRoot);
-      this._tree = newTree;
+      this.target = parent;
       return newTree;
    }
 
@@ -59,20 +101,18 @@ export class TreeCursor {
 
    public stepOut(): void {
       if (!this.isBranch(this.target)) {
-         console.warn(
-            "Cannot step out. Cursor is at the root of the tree. No action is taken."
+         throw new TreeError(
+            "Cannot step out. Cursor is at the root of the tree."
          );
-         return;
       }
       this.target = this.target.parent();
    }
 
    public stepForward(): void {
       if (!this.isBranch(this.target)) {
-         console.warn(
-            "Cannot step forward. Cursor is at the root of the tree. No action is taken."
+         throw new TreeError(
+            "Cannot step forward. Cursor is at the root of the tree."
          );
-         return;
       }
       const index = this.target.index() + 1;
       const siblings = this.target.parent().branches();
@@ -85,10 +125,9 @@ export class TreeCursor {
 
    public stepBackward(): void {
       if (!this.isBranch(this.target)) {
-         console.warn(
-            "Cannot step backward. Cursor is at the root of the tree. No action is taken."
+         throw new TreeError(
+            "Cannot step backward. Cursor is at the root of the tree."
          );
-         return;
       }
       const index = this.target.index() - 1;
       if (index < 0) {
@@ -101,6 +140,22 @@ export class TreeCursor {
 
    public tree(): Tree {
       return this._tree;
+   }
+
+   private getBranchesContainer(): ViewContainerRef {
+      //FIXME: law of demeter?
+      const container = this.target.getContents()?.instance?.branchesContainer;
+      assert(container !== undefined);
+      return container;
+   }
+
+   private insertComponent<T>(component: Type<T>): NodeRef {
+      const container = this.getBranchesContainer();
+      const componentRef =
+         container.createComponent<BranchComponent<T>>(BranchComponent);
+      componentRef.instance.content = component;
+      componentRef.changeDetectorRef.detectChanges();
+      return componentRef;
    }
 
    private isBranch<T>(node: TreeNode<T>): node is TreeBranch<T> {

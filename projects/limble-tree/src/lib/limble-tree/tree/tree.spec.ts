@@ -1,3 +1,4 @@
+import { branchOptions } from "../test-util/test.component";
 import { getViewContainer } from "../test-util/view-container";
 import { TreeCursor } from "../tree-cursor/tree-cursor";
 import { TreeService } from "../tree-service/tree.service";
@@ -24,19 +25,19 @@ describe("Tree", () => {
    it("should plot itself and its posterity", () => {
       const tree = treeService.createTree(getViewContainer());
       const cursor = tree.getCursor();
-      cursor.growBranch();
-      cursor.growBranch();
-      cursor.growBranch();
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
       cursor.stepIn();
-      cursor.growBranch();
-      cursor.growBranch();
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
       cursor.stepOut();
       cursor.stepIn(2);
-      cursor.growBranch();
-      cursor.growBranch();
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
       cursor.stepIn();
-      cursor.growBranch();
-      cursor.growBranch();
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
       expect(tree.plot()).toEqual(
          new Map([
             [
@@ -67,19 +68,19 @@ describe("Tree", () => {
    it("should count the number of branches in the tree, not including the root", () => {
       const tree = treeService.createTree(getViewContainer());
       const cursor = tree.getCursor();
-      cursor.growBranch();
-      cursor.growBranch();
-      cursor.growBranch();
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
       cursor.stepIn();
-      cursor.growBranch();
-      cursor.growBranch();
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
       cursor.stepOut();
       cursor.stepIn(2);
-      cursor.growBranch();
-      cursor.growBranch();
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
       cursor.stepIn();
-      cursor.growBranch();
-      cursor.growBranch();
+      cursor.growBranch(branchOptions);
+      cursor.growBranch(branchOptions);
       expect(tree.count()).toBe(9);
    });
 });

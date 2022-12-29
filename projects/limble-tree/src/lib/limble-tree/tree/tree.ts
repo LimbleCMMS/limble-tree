@@ -4,21 +4,29 @@ import { NodeRef } from "../node-ref";
 import { TreeCursor } from "../tree-cursor/tree-cursor";
 
 export class Tree {
-   public constructor(private readonly root: TreeRoot<NodeRef>) {}
+   private readonly _root: TreeRoot<NodeRef>;
+
+   public constructor(root: TreeRoot<NodeRef>) {
+      this._root = root;
+   }
 
    public getCursor(): TreeCursor {
-      return new TreeCursor(this, this.root);
+      return new TreeCursor(this);
    }
 
    public count(): number {
       let count = -1;
-      this.root.traverse(() => {
+      this.root().traverse(() => {
          count++;
       });
       return count;
    }
 
    public plot(): TreePlot {
-      return this.root.plot();
+      return this.root().plot();
+   }
+
+   public root(): TreeRoot<NodeRef> {
+      return this._root;
    }
 }

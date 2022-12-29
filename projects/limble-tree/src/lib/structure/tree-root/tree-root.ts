@@ -18,7 +18,7 @@ export class TreeRoot<T> implements TreeNode<T> {
       this.childRelationships = [];
       this.subscriptions = [
          this.graftsToSelf().subscribe((event) => {
-            this.registerChildRelationship(event.newRelationship);
+            this.registerChildRelationship(event.newRelationship, event.index);
          }),
          this.prunesToSelf().subscribe((event) => {
             this.deregisterChildRelationship(event.oldRelationship);
@@ -86,7 +86,15 @@ export class TreeRoot<T> implements TreeNode<T> {
       );
    }
 
-   private registerChildRelationship(relationship: TreeRelationship<T>): void {
-      this.childRelationships.push(relationship);
+   private registerChildRelationship(
+      relationship: TreeRelationship<T>,
+      index: number
+   ): void {
+      if (index < 0 || index > this.childRelationships.length) {
+         throw new Error(
+            `Can't register child at index ${index}. Out of range.`
+         );
+      }
+      this.childRelationships.splice(index, 0, relationship);
    }
 }

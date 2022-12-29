@@ -19,10 +19,10 @@ export class TreeBranch<T = unknown> implements TreeNode<T> {
       this.events$ = new Subject();
       this.childRelationships = [];
       this.parentRelationship = new TreeRelationship(new TreeRoot(), this);
-      this.event(new GraftEvent(this.parentRelationship));
+      this.event(new GraftEvent(this.parentRelationship, 0));
       this.subscriptions = [
          this.graftsToSelf().subscribe((event) => {
-            this.registerChildRelationship(event.newRelationship);
+            this.registerChildRelationship(event.newRelationship, event.index);
          }),
          this.prunesToSelf().subscribe((event) => {
             this.deregisterChildRelationship(event.oldRelationship);
@@ -48,10 +48,11 @@ export class TreeBranch<T = unknown> implements TreeNode<T> {
       return this.events$;
    }
 
-   public graftTo(newParent: TreeNode<T>): void {
+   public graftTo(newParent: TreeNode<T>, index?: number): void {
       this.event(new PruneEvent(this.parentRelationship));
       this.parentRelationship.setParent(newParent);
-      this.event(new GraftEvent(this.parentRelationship));
+      const newIndex = index ?? this.parent().branches().length;
+      this.event(new GraftEvent(this.parentRelationship, newIndex));
    }
 
    public index(): number {
@@ -81,7 +82,7 @@ export class TreeBranch<T = unknown> implements TreeNode<T> {
       this.event(new PruneEvent(this.parentRelationship));
       const newParent = new TreeRoot<T>();
       this.parentRelationship.setParent(newParent);
-      this.event(new GraftEvent(this.parentRelationship));
+      this.event(new GraftEvent(this.parentRelationship, 0));
       return newParent;
    }
 
@@ -119,7 +120,15 @@ export class TreeBranch<T = unknown> implements TreeNode<T> {
       );
    }
 
-   private registerChildRelationship(relationship: TreeRelationship<T>): void {
-      this.childRelationships.push(relationship);
+   private registerChildRelationship(
+      relationship: TreeRelationship<T>,
+      index: number
+   ): void {
+      if (index < 0 || index > this.childRelationships.length) {
+         throw new Error(
+            `Can't register child at index ${index}. Out of range.`
+         );
+      }
+      this.childRelationships.splice(index, 0, relationship);
    }
 }

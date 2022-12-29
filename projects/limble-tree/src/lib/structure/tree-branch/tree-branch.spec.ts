@@ -269,4 +269,19 @@ describe("TreeBranch", () => {
          branch3b
       ]);
    });
+
+   it("should graft onto a new parent at the specified index, incrementing the indexes of younger siblings", () => {
+      const self = new TreeBranch(null);
+      const parent = new TreeBranch(null);
+      const sib1 = new TreeBranch(null);
+      const sib2 = new TreeBranch(null);
+      const sib3 = new TreeBranch(null);
+      sib1.graftTo(parent);
+      sib2.graftTo(parent);
+      sib3.graftTo(parent);
+      self.graftTo(parent, 2);
+      expect(parent.branches()).toEqual([sib1, sib2, self, sib3]);
+      expect(self.index()).toBe(2);
+      expect(sib3.index()).toBe(3);
+   });
 });
