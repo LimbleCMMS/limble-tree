@@ -1,6 +1,6 @@
 import { assert } from "../../../shared/assert";
-import { getViewContainer } from "../test-util/view-container";
-import { Tree } from "../tree/tree";
+import { TreeRoot } from "../../main/root/tree-root";
+import { getViewContainer } from "../../test-util/view-container";
 import { TreeService } from "./tree.service";
 
 describe("TreeService", () => {
@@ -9,7 +9,7 @@ describe("TreeService", () => {
       const container = getViewContainer();
       assert(container !== undefined);
       const newTree = treeService.createTree(container);
-      expect(newTree).toBeInstanceOf(Tree);
-      expect(newTree.count()).toBe(0);
+      expect(newTree).toBeInstanceOf(TreeRoot);
+      expect(newTree.branches().length).toBe(0);
    });
 });

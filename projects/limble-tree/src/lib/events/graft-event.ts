@@ -1,14 +1,18 @@
-import { TreeBranch } from "../structure/tree-branch/tree-branch";
-import { TreeRelationship } from "../structure/tree-relationship/tree-relationship";
-import { TreeEvent } from "./tree-event";
+import { TreeBranchNode } from "../structure/tree-branch/tree-branch-node.interface";
+import { TreeNode } from "../structure/tree-node.interface";
+import { TreeEvent } from "./tree-event.interface";
+import { TreeRelationship } from "./tree-relationship.interface";
 
 export class GraftEvent<T> implements TreeEvent<T> {
-   public readonly source: TreeBranch<T>;
+   public readonly source: TreeBranchNode<T>;
+   public readonly parent: TreeNode<T>;
+   public readonly child: TreeBranchNode<T>;
+   public readonly index: number;
 
-   public constructor(
-      public readonly newRelationship: TreeRelationship<T>,
-      public readonly index: number
-   ) {
-      this.source = newRelationship.getChild();
+   public constructor(relationship: TreeRelationship<T>) {
+      this.source = relationship.child;
+      this.child = relationship.child;
+      this.parent = relationship.parent;
+      this.index = relationship.index;
    }
 }

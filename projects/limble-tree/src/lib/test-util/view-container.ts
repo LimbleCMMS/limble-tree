@@ -12,6 +12,7 @@ class ComponentWithViewContainer {
 }
 
 export function getViewContainer(): ViewContainerRef {
+   TestBed.resetTestingModule();
    TestBed.configureTestingModule({
       declarations: [ComponentWithViewContainer]
    });

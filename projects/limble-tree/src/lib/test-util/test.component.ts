@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { BranchOptions } from "../tree-cursor/branch-options";
+import { BranchOptions } from "../main/branch-options";
 
 @Component({
    selector: "N/A",
