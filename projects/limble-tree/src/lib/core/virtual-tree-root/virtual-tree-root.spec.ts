@@ -1,10 +1,12 @@
 import { first } from "rxjs";
-import { getViewContainer } from "../../test-util/view-container";
-import { getStandardBranch } from "../../main/branch/tree-branch.spec";
+import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeNode } from "../../structure/tree-node.interface";
-import { TreeRoot } from "./tree-root";
+import { getViewContainer } from "../../test-util/view-container";
+import { TreeBranch } from "../tree-branch/tree-branch";
+import { getStandardBranch } from "../tree-branch/tree-branch.spec";
+import { TreeRoot } from "../tree-root/tree-root";
 
-describe("TreeRoot", () => {
+describe("VirtualTreeRoot", () => {
    it("should start with no branches", () => {
       const root = new TreeRoot(getViewContainer());
       expect(root.branches()).toEqual([]);
@@ -27,29 +29,30 @@ describe("TreeRoot", () => {
       expect(root.branches()).toEqual([]);
    });
 
-   it("should emit any events it receives or generates", () => {
+   it("should emit any events it receives from descendants", () => {
       const gen1 = new TreeRoot(getViewContainer());
       const gen2 = getStandardBranch();
       gen2.graftTo(gen1);
-      gen2
-         .events()
-         .pipe(first())
-         .subscribe((event) => {
-            expect(event).toBe(nullEvent);
-         });
       gen1
          .events()
          .pipe(first())
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent = { source: gen2 };
-      gen2.event(nullEvent);
+      const nullEvent: TreeEvent = { source: () => gen2 };
+      gen2.dispatch(nullEvent);
    });
 
-   it("should always have a root position", () => {
-      const self = new TreeRoot(getViewContainer());
-      expect(self.position()).toEqual([]);
+   it("should emit any events it dispatches", () => {
+      const root = new TreeRoot(getViewContainer());
+      root
+         .events()
+         .pipe(first())
+         .subscribe((event) => {
+            expect(event).toBe(nullEvent);
+         });
+      const nullEvent: TreeEvent = { source: () => root };
+      root.dispatch(nullEvent);
    });
 
    it("should start with an empty plot", () => {
@@ -124,7 +127,7 @@ describe("TreeRoot", () => {
       branch3b.graftTo(branch3);
       branch3a1.graftTo(branch3a);
       branch3ab.graftTo(branch3a);
-      const nodes: Array<TreeNode<null>> = [];
+      const nodes: Array<TreeNode<TreeBranch<unknown>>> = [];
       root.traverse((node) => {
          nodes.push(node);
       });

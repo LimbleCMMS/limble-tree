@@ -1,45 +1,57 @@
-import { TreePlot } from "../../../shared/tree-plot";
+import { TreePlot } from "../../structure/tree-plot";
 import { filter, Observable, Subject, Subscription } from "rxjs";
 import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
 import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeNode } from "../../structure/tree-node.interface";
-import { TreeRootNode } from "../../structure/tree-root/tree-root-node.interface";
 import { TreeBranchNode } from "../../structure/tree-branch/tree-branch-node.interface";
-import { BranchesContainer } from "../../structure/branchable/branches-container";
-import { NodeRef } from "../node-ref";
+import { TreeBranch } from "../tree-branch/tree-branch";
+import { NodeRef } from "../../core/node-ref";
+import { BranchOptions } from "../../core/branch-options";
+import { assert } from "../../../shared/assert";
+import { ComponentRef, Type, ViewContainerRef } from "@angular/core";
+import { BranchComponent } from "../../public/branch/branch.component";
+import { RootComponent } from "../../public/root/root.component";
 
-export class VirtualTreeRoot implements TreeRootNode<NodeRef> {
-   private readonly branchesContainer: BranchesContainer<
-      TreeBranchNode<NodeRef>
-   >;
-   private readonly events$: Subject<TreeEvent<NodeRef>>;
+export class TreeRoot implements TreeNode {
+   private readonly _branches: Array<TreeBranch>;
+   private readonly events$: Subject<TreeEvent>;
+   private readonly rootComponentRef: ComponentRef<RootComponent>;
    //FIXME: Unsubscribe
    private readonly subscriptions: Array<Subscription>;
 
-   public constructor() {
+   public constructor(viewContainerRef: ViewContainerRef) {
+      this._branches = [];
       this.events$ = new Subject();
-      this.branchesContainer = new BranchesContainer();
+      this.rootComponentRef = viewContainerRef.createComponent(RootComponent);
+      this.rootComponentRef.changeDetectorRef.detectChanges();
       this.subscriptions = [
          this.graftsToSelf().subscribe((event) => {
-            this.registerChildRelationship(event.child, event.index);
+            this.registerChildRelationship(event.child(), event.index());
          }),
          this.prunesToSelf().subscribe((event) => {
-            this.deregisterChildRelationship(event.child);
+            this.deregisterChildRelationship(event.child());
          })
       ];
    }
 
-   public branches(): Array<TreeBranchNode<NodeRef>> {
-      return this.branchesContainer.branches();
+   public branches(): Array<TreeBranch<NodeRef>> {
+      return [...this._branches];
    }
 
-   public event(event: TreeEvent<NodeRef>): void {
+   public dispatch(event: TreeEvent): void {
       this.events$.next(event);
    }
 
-   public events(): Observable<TreeEvent<NodeRef>> {
+   public events(): Observable<TreeEvent> {
       return this.events$;
+   }
+
+   public growBranch(options: BranchOptions<T>): TreeBranchNode<NodeRef> {
+      const nodeRef = this.insertComponent(options.component);
+      const branch = new TreeBranch<T>(nodeRef);
+      this._branches.push(branch);
+      return branch;
    }
 
    public plot(): TreePlot {
@@ -73,6 +85,23 @@ export class VirtualTreeRoot implements TreeRootNode<NodeRef> {
          ),
          filter((event) => event.parent === this)
       );
+   }
+
+   private getBranchesContainer(): ViewContainerRef {
+      const container = this.rootComponentRef.instance?.branchesContainer;
+      assert(container !== undefined);
+      return container;
+   }
+
+   private insertComponent<T>(
+      component: Type<T>
+   ): ComponentRef<BranchComponent<T>> {
+      const container = this.getBranchesContainer();
+      const componentRef =
+         container.createComponent<BranchComponent<T>>(BranchComponent);
+      componentRef.instance.content = component;
+      componentRef.changeDetectorRef.detectChanges();
+      return componentRef;
    }
 
    private prunesToSelf(): Observable<PruneEvent<NodeRef>> {

@@ -1,12 +1,8 @@
-import { TreePlot } from "../../shared/tree-plot";
-import { TreeEvent } from "../events/tree-event.interface";
-import { Branchable } from "./branchable/branchable.interface";
-import { EventConduit } from "./event-conduit.interface";
+import { Branchable } from "../relationships/branchable.interface";
+import { EventConduit } from "../events/event-conduit.interface";
+import { TreePlot } from "./tree-plot";
 
-export interface TreeNode<T>
-   extends EventConduit<TreeEvent<T>>,
-      Branchable<TreeNode<T>> {
+export interface TreeNode<T> extends EventConduit, Branchable<T> {
    plot: () => TreePlot;
-   position: () => Array<number>;
-   traverse: (callback: (branch: TreeNode<T>) => void) => void;
+   traverse: (callback: (node: Branchable<T>) => void) => void;
 }

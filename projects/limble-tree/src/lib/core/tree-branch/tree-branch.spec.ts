@@ -2,13 +2,14 @@ import { assert } from "../../../shared/assert";
 import { skip, take } from "rxjs";
 import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
-import { TreeRoot } from "../root/tree-root";
+import { TreeRoot } from "../tree-root/tree-root";
 import { TreeBranch } from "./tree-branch";
 import { TreeNode } from "../../structure/tree-node.interface";
 import { getViewContainer } from "../../test-util/view-container";
 import { BranchComponent } from "../../components/branch/branch.component";
 import { TestComponent } from "../../test-util/test.component";
-import { VirtualTreeRoot } from "../virtual-root/virtual-tree-root";
+import { VirtualTreeRoot } from "../virtual-tree-root/virtual-tree-root";
+import { TreeEvent } from "../../events/tree-event.interface";
 
 describe("TreeBranch", () => {
    it("should start with no branches", () => {
@@ -40,9 +41,9 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBeInstanceOf(PruneEvent);
             assert(event instanceof PruneEvent);
-            expect(event.source).toBe(self);
-            expect(event.child).toBe(self);
-            expect(event.parent).toBe(oldParent);
+            expect(event.source()).toBe(self);
+            expect(event.child()).toBe(self);
+            expect(event.parent()).toBe(oldParent);
          });
       self
          .events()
@@ -50,9 +51,9 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBeInstanceOf(GraftEvent);
             assert(event instanceof GraftEvent);
-            expect(event.source).toBe(self);
-            expect(event.child).toBe(self);
-            expect(event.parent).toBe(newParent);
+            expect(event.source()).toBe(self);
+            expect(event.child()).toBe(self);
+            expect(event.parent()).toBe(newParent);
          });
       self.graftTo(newParent);
    });
@@ -73,8 +74,8 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent = { source: gen2 };
-      gen2.event(nullEvent);
+      const nullEvent: TreeEvent = { source: () => gen2 };
+      gen2.dispatch(nullEvent);
    });
 
    it("should bubble events up the tree", () => {
@@ -91,8 +92,8 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent = { source: gen3 };
-      gen3.event(nullEvent);
+      const nullEvent: TreeEvent = { source: () => gen3 };
+      gen3.dispatch(nullEvent);
    });
 
    it("should start with index zero", () => {
@@ -133,9 +134,9 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBeInstanceOf(PruneEvent);
             assert(event instanceof PruneEvent);
-            expect(event.source).toBe(child);
-            expect(event.child).toBe(child);
-            expect(event.parent).toBe(parent);
+            expect(event.source()).toBe(child);
+            expect(event.child()).toBe(child);
+            expect(event.parent()).toBe(parent);
          });
       child.prune();
    });
@@ -243,7 +244,7 @@ describe("TreeBranch", () => {
       branch3b.graftTo(branch3);
       branch3a1.graftTo(branch3a);
       branch3ab.graftTo(branch3a);
-      const nodes: Array<TreeNode<null>> = [];
+      const nodes: Array<TreeNode<TreeBranch<unknown>>> = [];
       self.traverse((node) => {
          nodes.push(node);
       });

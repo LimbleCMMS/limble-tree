@@ -1,5 +1,5 @@
 import { assert } from "../../../shared/assert";
-import { TreeRoot } from "../../main/root/tree-root";
+import { TreeRoot } from "../../core/tree-root/tree-root";
 import { getViewContainer } from "../../test-util/view-container";
 import { TreeService } from "./tree.service";
 

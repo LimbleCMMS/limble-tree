@@ -1,5 +1,5 @@
 import { Component, ViewChild, ViewContainerRef } from "@angular/core";
-import { NodeComponent } from "../node-component";
+import { NodeComponent } from "../../components/node-component";
 
 @Component({
    selector: "root",

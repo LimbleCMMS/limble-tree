@@ -1,5 +1,5 @@
 import { assert } from "../../../shared/assert";
-import { TreePlot } from "../../../shared/tree-plot";
+import { TreePlot } from "../../structure/tree-plot";
 import { filter, Observable, Subject, Subscription } from "rxjs";
 import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
@@ -7,61 +7,73 @@ import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeNode } from "../../structure/tree-node.interface";
 import { TreeBranchNode } from "../../structure/tree-branch/tree-branch-node.interface";
 import { BranchOptions } from "../branch-options";
-import { NodeRef } from "../node-ref";
-import { BranchesContainer } from "../../structure/branchable/branches-container";
+import { NodeRef } from "../../core/node-ref";
 import { ComponentRef, Type, ViewContainerRef } from "@angular/core";
 import { BranchComponent } from "../../components/branch/branch.component";
-import { VirtualTreeRoot } from "../virtual-root/virtual-tree-root";
+import { VirtualTreeRoot } from "../virtual-tree-root/virtual-tree-root";
+import { Relationship } from "../relationship.interface";
 
-export class TreeBranch<T> implements TreeBranchNode<NodeRef> {
-   private readonly branchesContainer: BranchesContainer<
-      TreeBranchNode<NodeRef>
-   >;
-   private _parent: TreeNode<NodeRef>;
-   private readonly events$: Subject<TreeEvent<NodeRef>>;
+export class TreeBranch<T>
+   implements TreeBranchNode<NodeRef, TreeBranch<unknown>>
+{
+   private readonly _branches: Array<TreeBranch<unknown>>;
+   private readonly events$: Subject<TreeEvent>;
+   private _parent: TreeNode<TreeBranch<unknown>>;
    //FIXME: Unsubscribe
    private readonly subscriptions: Array<Subscription>;
 
    public constructor(private contents: NodeRef) {
+      this._branches = [];
       this.events$ = new Subject();
-      this.branchesContainer = new BranchesContainer();
       this._parent = new VirtualTreeRoot();
-      this.event(
-         new GraftEvent({ parent: this._parent, child: this, index: 0 })
+      this.dispatch(
+         new GraftEvent(this, { parent: this._parent, child: this, index: 0 })
       );
       this.subscriptions = [
          this.graftsToSelf().subscribe((event) => {
-            this.registerChildRelationship(event.child, event.index);
+            this.registerChildRelationship(event.child(), event.index());
          }),
          this.prunesToSelf().subscribe((event) => {
-            this.deregisterChildRelationship(event.child);
+            this.deregisterChildRelationship(event.child());
          })
       ];
    }
 
-   public branches(): Array<TreeBranchNode<NodeRef>> {
-      return this.branchesContainer.branches();
+   public branches(): Array<TreeBranch<unknown>> {
+      return [...this._branches];
+   }
+
+   public deleteBranch(index?: number): void {
+      if (index === undefined) {
+         this._branches.pop();
+         return;
+      }
+      this._branches.splice(index, 1);
+   }
+
+   public dispatch(event: TreeEvent): void {
+      this.events$.next(event);
+      const parent = this.parent();
+      parent.dispatch(event);
+   }
+
+   public events(): Observable<TreeEvent> {
+      return this.events$;
+   }
+
+   public getBranch(index: number): TreeBranch<unknown> | undefined {
+      return this._branches[index];
    }
 
    public getContents(): NodeRef {
       return this.contents;
    }
 
-   public growBranch(options: BranchOptions<T>): TreeBranchNode<NodeRef> {
+   public growBranch(options: BranchOptions<T>): TreeBranch<T> {
       const nodeRef = this.insertComponent(options.component);
-      const branch = new TreeBranch(nodeRef);
-      this.branchesContainer.growBranch(branch);
+      const branch = new TreeBranch<T>(nodeRef);
+      this._branches.push(branch);
       return branch;
-   }
-
-   public event(event: TreeEvent<NodeRef>): void {
-      this.events$.next(event);
-      const parent = this.parent();
-      parent.event(event);
-   }
-
-   public events(): Observable<TreeEvent<NodeRef>> {
-      return this.events$;
    }
 
    private getBranchesContainer(): ViewContainerRef {
@@ -71,9 +83,12 @@ export class TreeBranch<T> implements TreeBranchNode<NodeRef> {
       return container;
    }
 
-   public graftTo(newParent: TreeNode<NodeRef>, index?: number): number {
-      this.event(
-         new PruneEvent({
+   public graftTo(
+      newParent: TreeNode<TreeBranch<unknown>>,
+      index?: number
+   ): number {
+      this.dispatch(
+         new PruneEvent(this, {
             parent: this._parent,
             child: this,
             index: this.index()
@@ -81,8 +96,12 @@ export class TreeBranch<T> implements TreeBranchNode<NodeRef> {
       );
       this._parent = newParent;
       const newIndex = index ?? this.parent().branches().length;
-      this.event(
-         new GraftEvent({ parent: this._parent, child: this, index: newIndex })
+      this.dispatch(
+         new GraftEvent(this, {
+            parent: this._parent,
+            child: this,
+            index: newIndex
+         })
       );
       return newIndex;
    }
@@ -106,7 +125,7 @@ export class TreeBranch<T> implements TreeBranchNode<NodeRef> {
       return componentRef;
    }
 
-   public parent(): TreeNode<NodeRef> {
+   public parent(): TreeNode<TreeBranch<unknown>> {
       return this._parent;
    }
 
@@ -117,21 +136,24 @@ export class TreeBranch<T> implements TreeBranchNode<NodeRef> {
    }
 
    public position(): Array<number> {
-      const parentPosition = this.parent().position();
-      return [...parentPosition, this.index()];
+      if (this._parent instanceof TreeBranch) {
+         const parentPosition = this._parent.position();
+         return [...parentPosition, this.index()];
+      }
+      return [this.index()];
    }
 
    public prune(): void {
-      this.event(
-         new PruneEvent({
+      this.dispatch(
+         new PruneEvent(this, {
             parent: this._parent,
             child: this,
             index: this.index()
          })
       );
       this._parent = new VirtualTreeRoot();
-      this.event(
-         new GraftEvent({ parent: this._parent, child: this, index: 0 })
+      this.dispatch(
+         new GraftEvent(this, { parent: this._parent, child: this, index: 0 })
       );
    }
 
@@ -139,48 +161,50 @@ export class TreeBranch<T> implements TreeBranchNode<NodeRef> {
       this.contents = contents;
    }
 
-   public traverse(callback: (node: TreeNode<T>) => void): void {
+   public traverse(
+      callback: (node: TreeNode<TreeBranch<unknown>>) => void
+   ): void {
       callback(this);
       this.branches().forEach((branch) => {
          branch.traverse(callback);
       });
    }
 
-   private deregisterChildRelationship(child: TreeBranchNode<NodeRef>): void {
-      const index = this.branchesContainer
-         .branches()
-         .findIndex((branch) => branch === child);
-      this.branchesContainer.delete(index);
+   private deregisterChildRelationship(child: TreeBranch<unknown>): void {
+      const index = this.branches().findIndex((branch) => branch === child);
+      this.deleteBranch(index);
    }
 
-   private graftsToSelf(): Observable<GraftEvent<NodeRef>> {
+   private graftsToSelf(): Observable<GraftEvent<Relationship>> {
       return this.events().pipe(
          filter(
-            (event): event is GraftEvent<NodeRef> => event instanceof GraftEvent
+            (event): event is GraftEvent<Relationship> =>
+               event instanceof GraftEvent
          ),
-         filter((event) => event.parent === this)
+         filter((event) => event.parent() === this)
       );
    }
 
-   private prunesToSelf(): Observable<PruneEvent<NodeRef>> {
+   private prunesToSelf(): Observable<PruneEvent<Relationship>> {
       return this.events().pipe(
          filter(
-            (event): event is PruneEvent<NodeRef> => event instanceof PruneEvent
+            (event): event is PruneEvent<Relationship> =>
+               event instanceof PruneEvent
          ),
-         filter((event) => event.parent === this)
+         filter((event) => event.parent() === this)
       );
    }
 
    private registerChildRelationship(
-      child: TreeBranchNode<NodeRef>,
+      child: TreeBranch<unknown>,
       index: number
    ): void {
-      const branches = this.branchesContainer.branches();
+      const branches = this.branches();
       if (index < 0 || index > branches.length) {
          throw new Error(
             `Can't register child at index ${index}. Out of range.`
          );
       }
-      this.branchesContainer.growBranch(child, index);
+      this._branches.splice(index, 0, child);
    }
 }

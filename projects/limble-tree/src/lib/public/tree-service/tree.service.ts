@@ -1,5 +1,5 @@
 import { Injectable, ViewContainerRef } from "@angular/core";
-import { TreeRoot } from "../../main/root/tree-root";
+import { TreeRoot } from "../../core/tree-root/tree-root";
 
 @Injectable({ providedIn: "root" })
 export class TreeService {

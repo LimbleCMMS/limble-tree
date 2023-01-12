@@ -1,5 +1,5 @@
-import { TreeNode } from "../structure/tree-node.interface";
+import { EventConduit } from "./event-conduit.interface";
 
-export interface TreeEvent<T> {
-   readonly source: TreeNode<T>;
+export interface TreeEvent {
+   source: () => EventConduit;
 }
