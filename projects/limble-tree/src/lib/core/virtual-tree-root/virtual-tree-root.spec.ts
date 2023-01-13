@@ -1,20 +1,27 @@
+import { TestBed } from "@angular/core/testing";
 import { first } from "rxjs";
+import { RootComponent } from "../../components/root/root.component";
 import { TreeEvent } from "../../events/tree-event.interface";
-import { TreeNode } from "../../structure/tree-node.interface";
-import { getViewContainer } from "../../test-util/view-container";
+import { TreeNode } from "../../structure/nodes/tree-node.interface";
+import { VirtualComponent } from "../../components/virtual-component/virtual.component";
 import { TreeBranch } from "../tree-branch/tree-branch";
-import { getStandardBranch } from "../tree-branch/tree-branch.spec";
-import { TreeRoot } from "../tree-root/tree-root";
+import { VirtualTreeRoot } from "./virtual-tree-root";
+import { getVirtualComponent } from "../../test-util/virtual";
+import { getStandardBranch } from "../../test-util/standard-branch";
 
 describe("VirtualTreeRoot", () => {
+   TestBed.configureTestingModule({
+      declarations: [VirtualComponent]
+   });
+
    it("should start with no branches", () => {
-      const root = new TreeRoot(getViewContainer());
+      const root = new VirtualTreeRoot(getVirtualComponent());
       expect(root.branches()).toEqual([]);
    });
 
    it("should allow new branches to graft themselves onto it", () => {
       const branch = getStandardBranch();
-      const root = new TreeRoot(getViewContainer());
+      const root = new VirtualTreeRoot(getVirtualComponent());
       branch.graftTo(root);
       expect(branch.parent()).toBe(root);
       expect(root.branches()).toEqual([branch]);
@@ -22,7 +29,7 @@ describe("VirtualTreeRoot", () => {
 
    it("should remove branches that pruned themselves", () => {
       const branch = getStandardBranch();
-      const root = new TreeRoot(getViewContainer());
+      const root = new VirtualTreeRoot(getVirtualComponent());
       branch.graftTo(root);
       branch.prune();
       expect(branch.parent()).not.toBe(root);
@@ -30,7 +37,7 @@ describe("VirtualTreeRoot", () => {
    });
 
    it("should emit any events it receives from descendants", () => {
-      const gen1 = new TreeRoot(getViewContainer());
+      const gen1 = new VirtualTreeRoot(getVirtualComponent());
       const gen2 = getStandardBranch();
       gen2.graftTo(gen1);
       gen1
@@ -44,7 +51,7 @@ describe("VirtualTreeRoot", () => {
    });
 
    it("should emit any events it dispatches", () => {
-      const root = new TreeRoot(getViewContainer());
+      const root = new VirtualTreeRoot(getVirtualComponent());
       root
          .events()
          .pipe(first())
@@ -56,12 +63,12 @@ describe("VirtualTreeRoot", () => {
    });
 
    it("should start with an empty plot", () => {
-      const self = new TreeRoot(getViewContainer());
+      const self = new VirtualTreeRoot(getVirtualComponent());
       expect(self.plot()).toEqual(new Map());
    });
 
    it("should plot itself and its posterity", () => {
-      const root = new TreeRoot(getViewContainer());
+      const root = new VirtualTreeRoot(getVirtualComponent());
       const branch1 = getStandardBranch();
       const branch1a = getStandardBranch();
       const branch1b = getStandardBranch();
@@ -108,7 +115,7 @@ describe("VirtualTreeRoot", () => {
    });
 
    it("should traverse the tree in depth-first order, including self", () => {
-      const root = new TreeRoot(getViewContainer());
+      const root = new VirtualTreeRoot(getVirtualComponent());
       const branch1 = getStandardBranch();
       const branch1a = getStandardBranch();
       const branch1b = getStandardBranch();
@@ -143,5 +150,11 @@ describe("VirtualTreeRoot", () => {
          branch3ab,
          branch3b
       ]);
+   });
+
+   it("Should have a componentRef whose component is rendered outside of the DOM", () => {
+      const self = new VirtualTreeRoot(getVirtualComponent());
+      expect(self.getContents().instance).toBeInstanceOf(RootComponent);
+      expect(document.querySelector("RootComponent")).toBe(null);
    });
 });

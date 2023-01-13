@@ -5,8 +5,8 @@ import { BranchOptions } from "../core/branch-options";
    selector: "N/A",
    template: "This is a test"
 })
-export class TestComponent {}
+export class EmptyComponent {}
 
-export const branchOptions: BranchOptions<TestComponent> = {
-   component: TestComponent
+export const branchOptions: BranchOptions<EmptyComponent> = {
+   component: EmptyComponent
 };

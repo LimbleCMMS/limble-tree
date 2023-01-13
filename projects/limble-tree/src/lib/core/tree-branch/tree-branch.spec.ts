@@ -4,12 +4,12 @@ import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
 import { TreeRoot } from "../tree-root/tree-root";
 import { TreeBranch } from "./tree-branch";
-import { TreeNode } from "../../structure/tree-node.interface";
-import { getViewContainer } from "../../test-util/view-container";
+import { TreeNode } from "../../structure/nodes/tree-node.interface";
 import { BranchComponent } from "../../components/branch/branch.component";
-import { TestComponent } from "../../test-util/test.component";
 import { VirtualTreeRoot } from "../virtual-tree-root/virtual-tree-root";
 import { TreeEvent } from "../../events/tree-event.interface";
+import { getStandardBranch } from "../../test-util/standard-branch";
+import { getViewContainer } from "../../test-util/virtual";
 
 describe("TreeBranch", () => {
    it("should start with no branches", () => {
@@ -141,14 +141,9 @@ describe("TreeBranch", () => {
       child.prune();
    });
 
-   it("should get and set the contents", () => {
+   it("should hold a reference to a BranchComponent", () => {
       const self = getStandardBranch();
-      const nodeRef1 = getNodeRef();
-      const nodeRef2 = getNodeRef();
-      self.setContents(nodeRef1);
-      expect(self.getContents()).toEqual(nodeRef1);
-      self.setContents(nodeRef2);
-      expect(self.getContents()).toEqual(nodeRef2);
+      expect(self.getContents().instance).toBeInstanceOf(BranchComponent);
    });
 
    it("should get its own position in the tree", () => {
@@ -277,18 +272,3 @@ describe("TreeBranch", () => {
       expect(sib3.index()).toBe(3);
    });
 });
-
-export function getStandardBranch(): TreeBranch<TestComponent> {
-   const nodeRef = getNodeRef();
-   return new TreeBranch(nodeRef);
-}
-
-export function getNodeRef() {
-   const nodeRef =
-      getViewContainer().createComponent<BranchComponent<TestComponent>>(
-         BranchComponent
-      );
-   nodeRef.instance.content = TestComponent;
-   nodeRef.changeDetectorRef.detectChanges();
-   return nodeRef;
-}

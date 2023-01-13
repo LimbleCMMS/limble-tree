@@ -1,8 +1,8 @@
 import { first } from "rxjs";
 import { TreeEvent } from "../../events/tree-event.interface";
-import { TreeNode } from "../../structure/tree-node.interface";
+import { TreeNode } from "../../structure/nodes/tree-node.interface";
+import { getStandardBranch } from "../../test-util/standard-branch";
 import { TreeBranch } from "../tree-branch/tree-branch";
-import { getStandardBranch } from "../tree-branch/tree-branch.spec";
 import { TreeNodeBase } from "./tree-node-base";
 
 describe("TreeNodeBase", () => {
@@ -60,7 +60,7 @@ describe("TreeNodeBase", () => {
    });
 
    it("should plot itself and its posterity", () => {
-      const root = new TreeNodeBase();
+      const node = new TreeNodeBase();
       const branch1 = getStandardBranch();
       const branch1a = getStandardBranch();
       const branch1b = getStandardBranch();
@@ -70,16 +70,16 @@ describe("TreeNodeBase", () => {
       const branch3a1 = getStandardBranch();
       const branch3ab = getStandardBranch();
       const branch3b = getStandardBranch();
-      branch1.graftTo(root);
-      branch2.graftTo(root);
-      branch3.graftTo(root);
+      branch1.graftTo(node);
+      branch2.graftTo(node);
+      branch3.graftTo(node);
       branch1a.graftTo(branch1);
       branch1b.graftTo(branch1);
       branch3a.graftTo(branch3);
       branch3b.graftTo(branch3);
       branch3a1.graftTo(branch3a);
       branch3ab.graftTo(branch3a);
-      expect(root.plot()).toEqual(
+      expect(node.plot()).toEqual(
          new Map([
             [
                0,
@@ -107,7 +107,7 @@ describe("TreeNodeBase", () => {
    });
 
    it("should traverse the tree in depth-first order, excluding self", () => {
-      const root = new TreeNodeBase();
+      const nodeBase = new TreeNodeBase();
       const branch1 = getStandardBranch();
       const branch1a = getStandardBranch();
       const branch1b = getStandardBranch();
@@ -117,9 +117,9 @@ describe("TreeNodeBase", () => {
       const branch3a1 = getStandardBranch();
       const branch3ab = getStandardBranch();
       const branch3b = getStandardBranch();
-      branch1.graftTo(root);
-      branch2.graftTo(root);
-      branch3.graftTo(root);
+      branch1.graftTo(nodeBase);
+      branch2.graftTo(nodeBase);
+      branch3.graftTo(nodeBase);
       branch1a.graftTo(branch1);
       branch1b.graftTo(branch1);
       branch3a.graftTo(branch3);
@@ -127,7 +127,7 @@ describe("TreeNodeBase", () => {
       branch3a1.graftTo(branch3a);
       branch3ab.graftTo(branch3a);
       const nodes: Array<TreeNode<TreeBranch<unknown>>> = [];
-      root.traverse((node) => {
+      nodeBase.traverse((node) => {
          nodes.push(node);
       });
       expect(nodes).toEqual([

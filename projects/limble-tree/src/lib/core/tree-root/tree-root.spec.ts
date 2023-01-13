@@ -1,12 +1,19 @@
 import { first } from "rxjs";
-import { getViewContainer } from "../../test-util/view-container";
-import { getStandardBranch } from "../tree-branch/tree-branch.spec";
-import { TreeNode } from "../../structure/tree-node.interface";
+import { TreeNode } from "../../structure/nodes/tree-node.interface";
 import { TreeRoot } from "./tree-root";
 import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
+import { ViewRef } from "@angular/core";
+import { TestBed } from "@angular/core/testing";
+import { VirtualComponent } from "../../components/virtual-component/virtual.component";
+import { getViewContainer } from "../../test-util/virtual";
+import { getStandardBranch } from "../../test-util/standard-branch";
 
 describe("TreeRoot", () => {
+   TestBed.configureTestingModule({
+      declarations: [VirtualComponent]
+   });
+
    it("should start with no branches", () => {
       const root = new TreeRoot(getViewContainer());
       expect(root.branches()).toEqual([]);
@@ -143,5 +150,13 @@ describe("TreeRoot", () => {
          branch3ab,
          branch3b
       ]);
+   });
+
+   it("Should have a componentRef whose component is rendered in the passed view container", () => {
+      const viewContainerRef = getViewContainer();
+      const self = new TreeRoot(viewContainerRef);
+      expect(self.getContents().hostView).toBe(
+         viewContainerRef.get(0) as ViewRef
+      );
    });
 });

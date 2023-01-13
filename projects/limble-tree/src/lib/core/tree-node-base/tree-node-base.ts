@@ -1,13 +1,18 @@
+import { ComponentRef } from "@angular/core";
 import { filter, Observable, Subject, Subscription } from "rxjs";
+import { NodeComponent } from "../../components/node-component.interface";
 import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
 import { TreeEvent } from "../../events/tree-event.interface";
-import { TreeNode } from "../../structure/tree-node.interface";
+import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
 import { TreePlot } from "../../structure/tree-plot";
 import { Relationship } from "../relationship.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
 
-export class TreeNodeBase implements TreeNode<TreeBranch<unknown>> {
+export class TreeNodeBase
+   implements
+      ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<unknown>>
+{
    private readonly _branches: Array<TreeBranch<unknown>>;
    private readonly events$: Subject<TreeEvent>;
    //FIXME: Unsubscribe
@@ -50,12 +55,8 @@ export class TreeNodeBase implements TreeNode<TreeBranch<unknown>> {
       return this._branches[index];
    }
 
-   public growBranch(newBranch: TreeBranch<unknown>, index?: number): void {
-      if (index === undefined) {
-         this._branches.push(newBranch);
-         return;
-      }
-      this._branches.splice(index, 0, newBranch);
+   public getContents(): never {
+      throw new Error("Not Implemented");
    }
 
    public plot(): TreePlot {
@@ -65,7 +66,12 @@ export class TreeNodeBase implements TreeNode<TreeBranch<unknown>> {
    }
 
    public traverse(
-      callback: (node: TreeNode<TreeBranch<unknown>>) => void
+      callback: (
+         node: ContainerTreeNode<
+            ComponentRef<NodeComponent>,
+            TreeBranch<unknown>
+         >
+      ) => void
    ): void {
       this.branches().forEach((branch) => {
          branch.traverse(callback);
@@ -107,6 +113,6 @@ export class TreeNodeBase implements TreeNode<TreeBranch<unknown>> {
             `Can't register child at index ${index}. Out of range.`
          );
       }
-      this.growBranch(child, index);
+      this._branches.splice(index, 0, child);
    }
 }

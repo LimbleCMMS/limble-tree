@@ -1,8 +1,10 @@
-import { TreeRelationship } from "../relationships/tree-relationship.interface";
-import { TreeNode } from "../structure/tree-node.interface";
+import { ComponentRef } from "@angular/core";
+import { NodeComponent } from "../components/node-component.interface";
+import { ContainerTreeNode } from "../structure/nodes/container-tree-node.interface";
+import { TreeRelationship } from "../structure/tree-relationship.interface";
 import { TreeBranch } from "./tree-branch/tree-branch";
 
 export type Relationship = TreeRelationship<
-   TreeNode<TreeBranch<unknown>>,
+   ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<unknown>>,
    TreeBranch<unknown>
 >;
