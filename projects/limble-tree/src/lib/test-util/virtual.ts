@@ -7,6 +7,7 @@ import {
 } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { NodeComponent } from "../components/node-component.interface";
+import { TreeError } from "../errors";
 
 @Component({
    selector: "N/A",
@@ -29,7 +30,7 @@ export function getViewContainer(): ViewContainerRef {
    const fixture = getVirtualComponent();
    const container = fixture.instance.branchesContainer;
    if (container === undefined) {
-      throw new Error("container is not available");
+      throw new TreeError("container is not available");
    }
    return container;
 }

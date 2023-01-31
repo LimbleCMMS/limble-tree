@@ -9,6 +9,7 @@ import {
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
+import { TreeError } from "../../errors";
 import { HostComponent } from "../host-component.interface";
 import { NodeComponent } from "../node-component.interface";
 
@@ -33,10 +34,10 @@ export class BranchComponent<T>
 
    public ngAfterViewInit(): void {
       if (this.contentContainer === undefined) {
-         throw new Error("Cannot get contentContainer");
+         throw new TreeError("Cannot get contentContainer");
       }
       if (this.contentToHost === undefined) {
-         throw new Error("'content' is a required input");
+         throw new TreeError("'content' is a required input");
       }
       this.hostedContent = this.contentContainer.createComponent(
          this.contentToHost

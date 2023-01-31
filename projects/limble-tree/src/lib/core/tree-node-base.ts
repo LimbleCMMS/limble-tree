@@ -1,6 +1,7 @@
 import { ComponentRef, Type } from "@angular/core";
 import { filter, Observable, Subject, Subscription } from "rxjs";
 import { NodeComponent } from "../components/node-component.interface";
+import { TreeError } from "../errors";
 import { GraftEvent } from "../events/graft-event";
 import { PruneEvent } from "../events/prune-event";
 import { TreeEvent } from "../events/tree-event.interface";
@@ -111,7 +112,7 @@ export class TreeNodeBase<UserlandComponent>
    ): void {
       const branches = this.branches();
       if (index < 0 || index > branches.length) {
-         throw new Error(
+         throw new TreeError(
             `Can't register child at index ${index}. Out of range.`
          );
       }
