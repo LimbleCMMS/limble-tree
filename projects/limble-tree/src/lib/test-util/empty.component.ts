@@ -1,7 +1,9 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 
 @Component({
    selector: "empty-component",
    template: "This is a test"
 })
-export class EmptyComponent {}
+export class EmptyComponent {
+   @Input() testInput?: string;
+}

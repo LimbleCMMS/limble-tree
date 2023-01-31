@@ -11,6 +11,7 @@ import { getStandardBranch } from "../../test-util/standard-branch";
 import { getViewContainer } from "../../test-util/virtual";
 import { EmptyComponent } from "../../test-util/empty.component";
 import { TreeError } from "../../errors/tree-error";
+import { createNullEvent } from "../../test-util/null-event";
 
 describe("TreeBranch", () => {
    it("should start with no branches", () => {
@@ -76,7 +77,7 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent: TreeEvent = { source: () => gen2 };
+      const nullEvent: TreeEvent = createNullEvent(gen2);
       gen2.dispatch(nullEvent);
    });
 
@@ -94,7 +95,7 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent: TreeEvent = { source: () => gen3 };
+      const nullEvent: TreeEvent = createNullEvent(gen3);
       gen3.dispatch(nullEvent);
    });
 
@@ -306,6 +307,15 @@ describe("TreeBranch", () => {
    it("should grow a child branch", () => {
       const self = getStandardBranch();
       self.grow(EmptyComponent);
+      expect(self.plot()).toEqual(new Map([[0, new Map()]]));
+      expect(
+         Array.from(document.getElementsByTagName("empty-component")).length
+      ).toBe(2);
+   });
+
+   it("should grow a child branch with bindings", () => {
+      const self = getStandardBranch();
+      self.grow(EmptyComponent, { bindings: { testInput: "testing" } });
       expect(self.plot()).toEqual(new Map([[0, new Map()]]));
       expect(
          Array.from(document.getElementsByTagName("empty-component")).length

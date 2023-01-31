@@ -8,6 +8,7 @@ import { TestBed } from "@angular/core/testing";
 import { getViewContainer, VirtualComponent } from "../../test-util/virtual";
 import { getStandardBranch } from "../../test-util/standard-branch";
 import { EmptyComponent } from "../../test-util/empty.component";
+import { createNullEvent } from "../../test-util/null-event";
 
 describe("TreeRoot", () => {
    TestBed.configureTestingModule({
@@ -46,7 +47,7 @@ describe("TreeRoot", () => {
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent: TreeEvent = { source: () => gen2 };
+      const nullEvent: TreeEvent = createNullEvent(gen2);
       gen2.dispatch(nullEvent);
    });
 
@@ -58,7 +59,7 @@ describe("TreeRoot", () => {
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent: TreeEvent = { source: () => root };
+      const nullEvent: TreeEvent = createNullEvent(root);
       root.dispatch(nullEvent);
    });
 
@@ -163,6 +164,15 @@ describe("TreeRoot", () => {
    it("should grow a child branch", () => {
       const self = new TreeRoot(getViewContainer());
       self.grow(EmptyComponent);
+      expect(self.plot()).toEqual(new Map([[0, new Map()]]));
+      expect(
+         Array.from(document.getElementsByTagName("empty-component")).length
+      ).toBe(1);
+   });
+
+   it("should grow a child branch with bindings", () => {
+      const self = new TreeRoot<EmptyComponent>(getViewContainer());
+      self.grow(EmptyComponent, { bindings: { testInput: "testing" } });
       expect(self.plot()).toEqual(new Map([[0, new Map()]]));
       expect(
          Array.from(document.getElementsByTagName("empty-component")).length

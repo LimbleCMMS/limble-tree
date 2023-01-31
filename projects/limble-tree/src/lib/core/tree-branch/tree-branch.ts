@@ -11,6 +11,7 @@ import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.int
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeNodeBase } from "../tree-node-base";
 import { TreeError } from "../../errors/tree-error";
+import { BranchOptions, FullBranchOptions } from "../branch-options.interface";
 
 export class TreeBranch<UserlandComponent>
    implements
@@ -36,10 +37,10 @@ export class TreeBranch<UserlandComponent>
          ComponentRef<NodeComponent>,
          TreeBranch<UserlandComponent>
       >,
-      userlandComponent: Type<UserlandComponent>
+      branchOptions: FullBranchOptions<Type<UserlandComponent>>
    ) {
       this.treeNodeBase = new TreeNodeBase();
-      this.userlandComponent = userlandComponent;
+      this.userlandComponent = branchOptions.component;
       this._parent = parent;
       const parentBranchesContainer =
          this._parent.getContents().instance.branchesContainer;
@@ -49,6 +50,7 @@ export class TreeBranch<UserlandComponent>
             BranchComponent<UserlandComponent>
          >(BranchComponent);
       this.contents.instance.contentToHost = this.userlandComponent;
+      this.contents.instance.contentBindings = branchOptions.bindings;
       this.contents.changeDetectorRef.detectChanges();
       this.dispatch(
          new GraftEvent(this, {
@@ -109,9 +111,10 @@ export class TreeBranch<UserlandComponent>
    }
 
    public grow(
-      component: Type<UserlandComponent>
+      component: Type<UserlandComponent>,
+      options?: BranchOptions<UserlandComponent>
    ): TreeBranch<UserlandComponent> {
-      return new TreeBranch(this, component);
+      return new TreeBranch(this, { component, ...options });
    }
 
    public index(): number | undefined {

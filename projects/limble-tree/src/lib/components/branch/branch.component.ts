@@ -24,6 +24,7 @@ export class BranchComponent<T>
    contentContainer: ViewContainerRef | undefined = undefined;
 
    @Input() contentToHost?: Type<T>;
+   @Input() contentBindings?: { [K in keyof Type<T>]?: Type<T>[K] };
 
    private hostedContent?: ComponentRef<T>;
 
@@ -37,6 +38,9 @@ export class BranchComponent<T>
       this.hostedContent = this.contentContainer.createComponent(
          this.contentToHost
       );
+      for (const [key, value] of Object.entries(this.contentBindings ?? {})) {
+         (this.hostedContent.instance as any)[key] = value;
+      }
    }
 
    public getHostedContent(): ComponentRef<T> | undefined {

@@ -8,6 +8,7 @@ import { TreeNodeBase } from "../tree-node-base";
 import { TreeRootNode } from "../../structure/nodes/tree-root.node.interface";
 import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
+import { BranchOptions } from "../branch-options.interface";
 
 export class TreeRoot<UserlandComponent>
    implements
@@ -47,9 +48,10 @@ export class TreeRoot<UserlandComponent>
    }
 
    public grow(
-      component: Type<UserlandComponent>
+      component: Type<UserlandComponent>,
+      options?: BranchOptions<UserlandComponent>
    ): TreeBranch<UserlandComponent> {
-      return new TreeBranch(this, component);
+      return new TreeBranch(this, { component, ...options });
    }
 
    public plot(): TreePlot {

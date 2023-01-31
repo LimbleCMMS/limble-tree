@@ -36,8 +36,12 @@ export class AppComponent implements AfterViewInit {
       const branch1 = root.grow(LoremIpsumComponent);
       const branch2 = root.grow(LoremIpsumComponent);
       const branch3 = root.grow(LoremIpsumComponent);
-      //FIXME
-      const branch1a = branch1.grow(TextRendererComponent);
+      const branch1a = branch1.grow(TextRendererComponent, {
+         bindings: {
+            text1: "This is the first test string",
+            text2: "This is the second test string"
+         }
+      });
       //FIXME
       const branch1b = branch1.grow(ContentProjectorComponent);
       const branch1c = branch1.grow(LoremIpsumComponent);
