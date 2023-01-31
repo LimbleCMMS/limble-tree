@@ -1,12 +1,16 @@
-import { Type } from "@angular/core";
+import { EventEmitter, Type } from "@angular/core";
 
 export interface BranchOptions<Component> {
-   bindings?: {
+   inputBindings?: {
       [K in keyof Component]?: Component[K];
+   };
+   outputBindings?: {
+      [K in keyof Component]?: Component[K] extends EventEmitter<infer T>
+         ? (value: T) => void
+         : never;
    };
 }
 
-export interface FullBranchOptions<Component extends Type<unknown>>
-   extends BranchOptions<Component> {
-   component: Component;
+export interface FullBranchOptions<Component> extends BranchOptions<Component> {
+   component: Type<Component>;
 }

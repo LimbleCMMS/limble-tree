@@ -315,7 +315,7 @@ describe("TreeBranch", () => {
 
    it("should grow a child branch with bindings", () => {
       const self = getStandardBranch();
-      self.grow(EmptyComponent, { bindings: { testInput: "testing" } });
+      self.grow(EmptyComponent, { inputBindings: { testInput: "testing" } });
       expect(self.plot()).toEqual(new Map([[0, new Map()]]));
       expect(
          Array.from(document.getElementsByTagName("empty-component")).length

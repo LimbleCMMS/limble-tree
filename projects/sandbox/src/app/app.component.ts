@@ -6,7 +6,7 @@ import {
    ViewContainerRef
 } from "@angular/core";
 import { TreeService } from "@limble/limble-tree";
-import { ContentProjectorComponent } from "./content-projector/content-projector.component";
+import { CollapsibleComponent } from "./collapsible/collapsible.component";
 import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
 import { TextRendererComponent } from "./text-renderer/text-renderer.component";
 
@@ -32,18 +32,19 @@ export class AppComponent implements AfterViewInit {
       if (this.treeContainer === undefined) {
          throw new Error("cannot get tree container");
       }
-      const root = this.treeService.createEmptyTree(this.treeContainer);
+      const root = this.treeService.createEmptyTree<
+         LoremIpsumComponent | TextRendererComponent | CollapsibleComponent
+      >(this.treeContainer);
       const branch1 = root.grow(LoremIpsumComponent);
       const branch2 = root.grow(LoremIpsumComponent);
       const branch3 = root.grow(LoremIpsumComponent);
       const branch1a = branch1.grow(TextRendererComponent, {
-         bindings: {
+         inputBindings: {
             text1: "This is the first test string",
             text2: "This is the second test string"
          }
       });
-      //FIXME
-      const branch1b = branch1.grow(ContentProjectorComponent);
+      const branch1b = branch1.grow(CollapsibleComponent);
       const branch1c = branch1.grow(LoremIpsumComponent);
       const branch2a = branch2.grow(LoremIpsumComponent);
       const branch3a = branch3.grow(LoremIpsumComponent);
@@ -51,11 +52,11 @@ export class AppComponent implements AfterViewInit {
       setTimeout(() => {
          branch1a.prune();
          branch1b.prune();
-      }, 2500);
+      }, 2000);
       setTimeout(() => {
          branch1a.graftTo(branch3);
          branch1b.graftTo(branch3);
-      }, 5000);
+      }, 3000);
       this.changeDetectorRef.detectChanges();
       root.events().subscribe((event) => {
          this.events.push({ type: event.type() });

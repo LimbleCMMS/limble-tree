@@ -135,7 +135,7 @@ describe("TreeRoot", () => {
       branch3b.graftTo(branch3);
       branch3a1.graftTo(branch3a);
       branch3ab.graftTo(branch3a);
-      const nodes: Array<TreeNode<TreeBranch<unknown>>> = [];
+      const nodes: Array<TreeNode<TreeBranch<EmptyComponent>>> = [];
       root.traverse((node) => {
          nodes.push(node);
       });
@@ -172,7 +172,7 @@ describe("TreeRoot", () => {
 
    it("should grow a child branch with bindings", () => {
       const self = new TreeRoot<EmptyComponent>(getViewContainer());
-      self.grow(EmptyComponent, { bindings: { testInput: "testing" } });
+      self.grow(EmptyComponent, { inputBindings: { testInput: "testing" } });
       expect(self.plot()).toEqual(new Map([[0, new Map()]]));
       expect(
          Array.from(document.getElementsByTagName("empty-component")).length

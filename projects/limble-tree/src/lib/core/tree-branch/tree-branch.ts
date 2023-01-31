@@ -37,7 +37,7 @@ export class TreeBranch<UserlandComponent>
          ComponentRef<NodeComponent>,
          TreeBranch<UserlandComponent>
       >,
-      branchOptions: FullBranchOptions<Type<UserlandComponent>>
+      branchOptions: FullBranchOptions<UserlandComponent>
    ) {
       this.treeNodeBase = new TreeNodeBase();
       this.userlandComponent = branchOptions.component;
@@ -50,7 +50,21 @@ export class TreeBranch<UserlandComponent>
             BranchComponent<UserlandComponent>
          >(BranchComponent);
       this.contents.instance.contentToHost = this.userlandComponent;
-      this.contents.instance.contentBindings = branchOptions.bindings;
+      this.contents.instance.contentCreated.subscribe(
+         (userlandComponentInstance) => {
+            for (const [key, value] of Object.entries(
+               branchOptions.inputBindings ?? {}
+            )) {
+               (userlandComponentInstance as any)[key] = value;
+            }
+            for (const [key, value] of Object.entries(
+               branchOptions.outputBindings ?? {}
+            )) {
+               (userlandComponentInstance as any)[key].subscribe(value);
+            }
+            (userlandComponentInstance as any).treeBranch = this;
+         }
+      );
       this.contents.changeDetectorRef.detectChanges();
       this.dispatch(
          new GraftEvent(this, {
@@ -155,7 +169,7 @@ export class TreeBranch<UserlandComponent>
       return [index];
    }
 
-   public prune(): ViewRef | undefined {
+   public prune(): this | undefined {
       const parent = this._parent;
       const index = this.index();
       if (index === undefined || parent === undefined) return;
@@ -171,7 +185,7 @@ export class TreeBranch<UserlandComponent>
          })
       );
       this._parent = undefined;
-      return this.detachedView;
+      return this;
    }
 
    public traverse(
