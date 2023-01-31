@@ -21,6 +21,10 @@ export class PruneEvent<T extends TreeRelationship<any, any>>
       return this._child;
    }
 
+   public type(): "prune" {
+      return "prune";
+   }
+
    public index(): number {
       return this._index;
    }

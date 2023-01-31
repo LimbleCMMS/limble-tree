@@ -1,6 +1,16 @@
 <div class="page-container">
    <h1>Limble Tree Sandbox</h1>
-   <div class="tree">
-      <div #treeContainer></div>
+   <div class="tree-container">
+      <div class="divider">
+         <div class="tree">
+            <div #treeContainer></div>
+         </div>
+         <div class="events">
+            <strong> Events </strong>
+            <div *ngFor="let event of events">
+               {{ event.type }}
+            </div>
+         </div>
+      </div>
    </div>
 </div>

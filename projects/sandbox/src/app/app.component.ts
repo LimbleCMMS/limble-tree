@@ -19,10 +19,14 @@ export class AppComponent implements AfterViewInit {
    @ViewChild("treeContainer", { read: ViewContainerRef })
    treeContainer?: ViewContainerRef;
 
+   protected events: Array<{ type: string }>;
+
    public constructor(
       private readonly treeService: TreeService,
       private readonly changeDetectorRef: ChangeDetectorRef
-   ) {}
+   ) {
+      this.events = [];
+   }
 
    public ngAfterViewInit(): void {
       if (this.treeContainer === undefined) {
@@ -49,5 +53,8 @@ export class AppComponent implements AfterViewInit {
          branch1b.graftTo(branch3);
       }, 5000);
       this.changeDetectorRef.detectChanges();
+      root.events().subscribe((event) => {
+         this.events.push({ type: event.type() });
+      });
    }
 }

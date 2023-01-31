@@ -21,6 +21,10 @@ export class GraftEvent<T extends TreeRelationship<any, any>>
       return this._child;
    }
 
+   public type(): "graft" {
+      return "graft";
+   }
+
    public index(): number {
       return this._index;
    }

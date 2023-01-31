@@ -6,8 +6,21 @@ h1 {
    margin-top: 0;
 }
 
-.tree {
+.tree-container {
    padding: 32px;
    box-shadow: 0 0 8px 0 #888 inset;
    border-radius: 8px;
+   max-width: 100%;
+}
+
+.divider {
+   display: flex;
+   justify-content: space-between;
+}
+
+.events {
+   width: 10%;
+   max-width: 200px;
+   min-width: 50px;
+   text-align: right;
 }
