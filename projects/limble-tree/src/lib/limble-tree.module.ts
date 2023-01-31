@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
-import { ComponentsModule } from "../components/components.module";
-import { TreeService } from "./tree-service/tree.service";
+import { ComponentsModule } from "./components/components.module";
+import { TreeService } from "./core/tree-service/tree.service";
 
 @NgModule({
    declarations: [],

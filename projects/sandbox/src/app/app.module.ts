@@ -4,17 +4,19 @@ import { LimbleTreeModule } from "@limble/limble-tree";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
-import { NodeComponent } from "./node/node.component";
-import { HttpClientModule } from "@angular/common/http";
+import { ContentProjectorComponent } from "./content-projector/content-projector.component";
+import { TextRendererComponent } from "./text-renderer/text-renderer.component";
+import { BoxComponent } from "./box/box.component";
 
 @NgModule({
-   declarations: [AppComponent, NodeComponent, LoremIpsumComponent],
-   imports: [
-      BrowserModule,
-      AppRoutingModule,
-      LimbleTreeModule,
-      HttpClientModule
+   declarations: [
+      AppComponent,
+      ContentProjectorComponent,
+      LoremIpsumComponent,
+      TextRendererComponent,
+      BoxComponent
    ],
+   imports: [BrowserModule, AppRoutingModule, LimbleTreeModule],
    providers: [],
    bootstrap: [AppComponent]
 })

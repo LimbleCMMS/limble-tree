@@ -2,18 +2,19 @@ import { TreePlot } from "../../structure/tree-plot";
 import { Observable } from "rxjs";
 import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
-import { ComponentRef, ViewContainerRef } from "@angular/core";
+import { ComponentRef, Type, ViewContainerRef } from "@angular/core";
 import { RootComponent } from "../../components/root/root.component";
-import { TreeNodeBase } from "../tree-node-base/tree-node-base";
+import { TreeNodeBase } from "../tree-node-base";
 import { TreeRootNode } from "../../structure/nodes/tree-root.node.interface";
 import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
 
-export class TreeRoot
-   implements TreeRootNode<ComponentRef<RootComponent>, TreeBranch<unknown>>
+export class TreeRoot<UserlandComponent>
+   implements
+      TreeRootNode<ComponentRef<RootComponent>, TreeBranch<UserlandComponent>>
 {
    private readonly rootComponentRef: ComponentRef<RootComponent>;
-   private readonly treeNodeBase: TreeNodeBase;
+   private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
 
    public constructor(viewContainerRef: ViewContainerRef) {
       this.treeNodeBase = new TreeNodeBase();
@@ -21,7 +22,7 @@ export class TreeRoot
       this.rootComponentRef.changeDetectorRef.detectChanges();
    }
 
-   public branches(): Array<TreeBranch<unknown>> {
+   public branches(): Array<TreeBranch<UserlandComponent>> {
       return this.treeNodeBase.branches();
    }
 
@@ -37,12 +38,18 @@ export class TreeRoot
       return this.treeNodeBase.events();
    }
 
-   public getBranch(index: number): TreeBranch<unknown> | undefined {
+   public getBranch(index: number): TreeBranch<UserlandComponent> | undefined {
       return this.treeNodeBase.getBranch(index);
    }
 
    public getContents(): ComponentRef<RootComponent> {
       return this.rootComponentRef;
+   }
+
+   public grow(
+      component: Type<UserlandComponent>
+   ): TreeBranch<UserlandComponent> {
+      return new TreeBranch(this, component);
    }
 
    public plot(): TreePlot {
@@ -53,7 +60,7 @@ export class TreeRoot
       callback: (
          node: ContainerTreeNode<
             ComponentRef<NodeComponent>,
-            TreeBranch<unknown>
+            TreeBranch<UserlandComponent>
          >
       ) => void
    ): void {

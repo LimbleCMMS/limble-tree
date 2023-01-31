@@ -5,39 +5,42 @@ import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
 import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeBranchNode } from "../../structure/nodes/tree-branch-node.interface";
-import { ComponentRef, Type } from "@angular/core";
+import { ComponentRef, Type, ViewRef } from "@angular/core";
 import { BranchComponent } from "../../components/branch/branch.component";
-import { VirtualTreeRoot } from "../virtual-tree-root/virtual-tree-root";
 import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
-import { VirtualComponent } from "../../components/virtual-component/virtual.component";
-import { TreeNodeBase } from "../tree-node-base/tree-node-base";
+import { TreeNodeBase } from "../tree-node-base";
+import { TreeError } from "../../errors/tree-error";
 
 export class TreeBranch<UserlandComponent>
    implements
       TreeBranchNode<
          ComponentRef<BranchComponent<UserlandComponent>>,
-         TreeBranch<unknown>,
+         TreeBranch<UserlandComponent>,
          ComponentRef<NodeComponent>
       >
 {
    private readonly contents: ComponentRef<BranchComponent<UserlandComponent>>;
-   private _parent: ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<unknown>
-   >;
-   private readonly treeNodeBase: TreeNodeBase;
+   private _parent:
+      | ContainerTreeNode<
+           ComponentRef<NodeComponent>,
+           TreeBranch<UserlandComponent>
+        >
+      | undefined;
+   private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
    private readonly userlandComponent: Type<UserlandComponent>;
-   private readonly virtualComponent: ComponentRef<VirtualComponent>;
+   private detachedView: ViewRef | null = null;
 
    public constructor(
-      userlandComponent: Type<UserlandComponent>,
-      virtualComponent: ComponentRef<VirtualComponent>
+      parent: ContainerTreeNode<
+         ComponentRef<NodeComponent>,
+         TreeBranch<UserlandComponent>
+      >,
+      userlandComponent: Type<UserlandComponent>
    ) {
       this.treeNodeBase = new TreeNodeBase();
       this.userlandComponent = userlandComponent;
-      this.virtualComponent = virtualComponent;
-      this._parent = new VirtualTreeRoot(this.virtualComponent);
+      this._parent = parent;
       const parentBranchesContainer =
          this._parent.getContents().instance.branchesContainer;
       assert(parentBranchesContainer !== undefined);
@@ -48,11 +51,15 @@ export class TreeBranch<UserlandComponent>
       this.contents.instance.contentToHost = this.userlandComponent;
       this.contents.changeDetectorRef.detectChanges();
       this.dispatch(
-         new GraftEvent(this, { parent: this._parent, child: this, index: 0 })
+         new GraftEvent(this, {
+            parent: this._parent,
+            child: this,
+            index: this._parent.branches().length
+         })
       );
    }
 
-   public branches(): Array<TreeBranch<unknown>> {
+   public branches(): Array<TreeBranch<UserlandComponent>> {
       return this.treeNodeBase.branches();
    }
 
@@ -62,14 +69,14 @@ export class TreeBranch<UserlandComponent>
 
    public dispatch(event: TreeEvent): void {
       this.treeNodeBase.dispatch(event);
-      this._parent.dispatch(event);
+      this._parent?.dispatch(event);
    }
 
    public events(): Observable<TreeEvent> {
       return this.treeNodeBase.events();
    }
 
-   public getBranch(index: number): TreeBranch<unknown> | undefined {
+   public getBranch(index: number): TreeBranch<UserlandComponent> | undefined {
       return this.treeNodeBase.getBranch(index);
    }
 
@@ -80,22 +87,20 @@ export class TreeBranch<UserlandComponent>
    public graftTo(
       newParent: ContainerTreeNode<
          ComponentRef<NodeComponent>,
-         TreeBranch<unknown>
+         TreeBranch<UserlandComponent>
       >,
       index?: number
    ): number {
-      this.dispatch(
-         new PruneEvent(this, {
-            parent: this._parent,
-            child: this,
-            index: this.index()
-         })
-      );
+      const ownIndex = this.index();
+      if (ownIndex !== undefined) {
+         this.prune();
+      }
       this._parent = newParent;
-      const newIndex = index ?? this.parent().branches().length;
+      const newIndex = index ?? newParent.branches().length;
+      this.reattachView();
       this.dispatch(
          new GraftEvent(this, {
-            parent: this._parent,
+            parent: newParent,
             child: this,
             index: newIndex
          })
@@ -103,7 +108,16 @@ export class TreeBranch<UserlandComponent>
       return newIndex;
    }
 
-   public index(): number {
+   public grow(
+      component: Type<UserlandComponent>
+   ): TreeBranch<UserlandComponent> {
+      return new TreeBranch(this, component);
+   }
+
+   public index(): number | undefined {
+      if (!this._parent) {
+         return undefined;
+      }
       const index = this._parent
          .branches()
          .findIndex((branch) => branch === this);
@@ -111,10 +125,12 @@ export class TreeBranch<UserlandComponent>
       return index;
    }
 
-   public parent(): ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<unknown>
-   > {
+   public parent():
+      | ContainerTreeNode<
+           ComponentRef<NodeComponent>,
+           TreeBranch<UserlandComponent>
+        >
+      | undefined {
       return this._parent;
    }
 
@@ -123,36 +139,56 @@ export class TreeBranch<UserlandComponent>
    }
 
    public position(): Array<number> {
+      const index = this.index();
+      if (index === undefined) {
+         throw new TreeError(
+            "branch has no parent. Position cannot be determined."
+         );
+      }
       if (this._parent instanceof TreeBranch) {
          const parentPosition = this._parent.position();
-         return [...parentPosition, this.index()];
+         return [...parentPosition, index];
       }
-      return [this.index()];
+      return [index];
    }
 
-   public prune(): void {
+   public prune(): ViewRef | undefined {
+      const parent = this._parent;
+      const index = this.index();
+      if (index === undefined || parent === undefined) return;
+      const container = parent.getContents().instance.branchesContainer;
+      assert(container !== undefined);
+      this.detachedView = container.detach(index);
+      assert(this.detachedView !== null);
       this.dispatch(
          new PruneEvent(this, {
-            parent: this._parent,
+            parent: parent,
             child: this,
-            index: this.index()
+            index: index
          })
       );
-      this._parent = new VirtualTreeRoot(this.virtualComponent);
-      this.dispatch(
-         new GraftEvent(this, { parent: this._parent, child: this, index: 0 })
-      );
+      this._parent = undefined;
+      return this.detachedView;
    }
 
    public traverse(
       callback: (
          node: ContainerTreeNode<
             ComponentRef<NodeComponent>,
-            TreeBranch<unknown>
+            TreeBranch<UserlandComponent>
          >
       ) => void
    ): void {
       callback(this);
       this.treeNodeBase.traverse(callback);
+   }
+
+   private reattachView(index?: number): void {
+      assert(this._parent !== undefined);
+      assert(this.detachedView !== null);
+      const container = this._parent.getContents().instance.branchesContainer;
+      assert(container !== undefined);
+      container.insert(this.detachedView, index);
+      this.detachedView = null;
    }
 }

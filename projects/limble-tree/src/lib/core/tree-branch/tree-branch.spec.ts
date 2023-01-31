@@ -6,10 +6,11 @@ import { TreeRoot } from "../tree-root/tree-root";
 import { TreeBranch } from "./tree-branch";
 import { TreeNode } from "../../structure/nodes/tree-node.interface";
 import { BranchComponent } from "../../components/branch/branch.component";
-import { VirtualTreeRoot } from "../virtual-tree-root/virtual-tree-root";
 import { TreeEvent } from "../../events/tree-event.interface";
 import { getStandardBranch } from "../../test-util/standard-branch";
 import { getViewContainer } from "../../test-util/virtual";
+import { EmptyComponent } from "../../test-util/empty.component";
+import { TreeError } from "../../errors/tree-error";
 
 describe("TreeBranch", () => {
    it("should start with no branches", () => {
@@ -19,8 +20,9 @@ describe("TreeBranch", () => {
 
    it("should start with a new virtual root as the parent", () => {
       const self = getStandardBranch();
-      expect(self.parent()).toBeInstanceOf(VirtualTreeRoot);
-      expect(self.parent().branches()).toEqual([self]);
+      const parent = self.parent();
+      expect(parent).toBeInstanceOf(TreeRoot);
+      expect(parent?.branches()).toEqual([self]);
    });
 
    it("should graft onto a new parent", () => {
@@ -79,7 +81,7 @@ describe("TreeBranch", () => {
    });
 
    it("should bubble events up the tree", () => {
-      const root = new TreeRoot(getViewContainer());
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
       const gen1 = getStandardBranch();
       const gen2 = getStandardBranch();
       const gen3 = getStandardBranch();
@@ -119,9 +121,19 @@ describe("TreeBranch", () => {
       const child = getStandardBranch();
       child.graftTo(parent);
       child.prune();
-      expect(child.parent()).not.toBe(parent);
+      expect(child.parent()).toBe(undefined);
       expect(parent.branches()).toEqual([]);
-      expect(child.index()).toBe(0);
+      expect(child.index()).toBe(undefined);
+   });
+
+   it("should detach its userland component from the DOM when pruned", () => {
+      const parent = getStandardBranch();
+      const child = getStandardBranch();
+      child.graftTo(parent);
+      child.prune();
+      expect(
+         Array.from(document.getElementsByTagName("empty-component")).length
+      ).toBe(0);
    });
 
    it("should emit a PruneEvent when pruned", () => {
@@ -156,7 +168,9 @@ describe("TreeBranch", () => {
       const sib2 = getStandardBranch();
       const sib3 = getStandardBranch();
       self.prune();
-      expect(self.position()).toEqual([0]);
+      expect(() => {
+         self.position();
+      }).toThrowError(TreeError);
       sib1.graftTo(parent);
       sib2.graftTo(parent);
       self.graftTo(parent);
@@ -239,7 +253,7 @@ describe("TreeBranch", () => {
       branch3b.graftTo(branch3);
       branch3a1.graftTo(branch3a);
       branch3ab.graftTo(branch3a);
-      const nodes: Array<TreeNode<TreeBranch<unknown>>> = [];
+      const nodes: Array<TreeNode<TreeBranch<EmptyComponent>>> = [];
       self.traverse((node) => {
          nodes.push(node);
       });
@@ -270,5 +284,31 @@ describe("TreeBranch", () => {
       expect(parent.branches()).toEqual([sib1, sib2, self, sib3]);
       expect(self.index()).toBe(2);
       expect(sib3.index()).toBe(3);
+   });
+
+   it("should attach its view to the new parent when grafted", () => {
+      const self = getStandardBranch();
+      const parent = getStandardBranch();
+      const container = parent.getContents().instance.branchesContainer;
+      expect(container?.length).toBe(0);
+      self.graftTo(parent);
+      expect(container?.length).toBe(1);
+      expect(
+         Array.from(
+            //Angular renders child views in the DOM as siblings of the view container element.
+            container?.element.nativeElement.parentElement.getElementsByTagName(
+               self.getContents().location.nativeElement.tagName
+            )
+         ).length
+      ).toBe(1);
+   });
+
+   it("should grow a child branch", () => {
+      const self = getStandardBranch();
+      self.grow(EmptyComponent);
+      expect(self.plot()).toEqual(new Map([[0, new Map()]]));
+      expect(
+         Array.from(document.getElementsByTagName("empty-component")).length
+      ).toBe(2);
    });
 });

@@ -1,6 +1,6 @@
 export interface Graftable<Parent> {
    graftTo: (newParent: Parent, index?: number) => number;
-   index: () => number;
-   parent: () => Parent;
+   index: () => number | undefined;
+   parent: () => Parent | undefined;
    prune: () => void;
 }

@@ -5,9 +5,9 @@ import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
 import { ViewRef } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { VirtualComponent } from "../../components/virtual-component/virtual.component";
-import { getViewContainer } from "../../test-util/virtual";
+import { getViewContainer, VirtualComponent } from "../../test-util/virtual";
 import { getStandardBranch } from "../../test-util/standard-branch";
+import { EmptyComponent } from "../../test-util/empty.component";
 
 describe("TreeRoot", () => {
    TestBed.configureTestingModule({
@@ -21,7 +21,7 @@ describe("TreeRoot", () => {
 
    it("should allow new branches to graft themselves onto it", () => {
       const branch = getStandardBranch();
-      const root = new TreeRoot(getViewContainer());
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
       branch.graftTo(root);
       expect(branch.parent()).toBe(root);
       expect(root.branches()).toEqual([branch]);
@@ -29,7 +29,7 @@ describe("TreeRoot", () => {
 
    it("should remove branches that pruned themselves", () => {
       const branch = getStandardBranch();
-      const root = new TreeRoot(getViewContainer());
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
       branch.graftTo(root);
       branch.prune();
       expect(branch.parent()).not.toBe(root);
@@ -37,7 +37,7 @@ describe("TreeRoot", () => {
    });
 
    it("should emit any events it receives from descendants", () => {
-      const gen1 = new TreeRoot(getViewContainer());
+      const gen1 = new TreeRoot<EmptyComponent>(getViewContainer());
       const gen2 = getStandardBranch();
       gen2.graftTo(gen1);
       gen1
@@ -68,7 +68,7 @@ describe("TreeRoot", () => {
    });
 
    it("should plot itself and its posterity", () => {
-      const root = new TreeRoot(getViewContainer());
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
       const branch1 = getStandardBranch();
       const branch1a = getStandardBranch();
       const branch1b = getStandardBranch();
@@ -115,7 +115,7 @@ describe("TreeRoot", () => {
    });
 
    it("should traverse the tree in depth-first order, including self", () => {
-      const root = new TreeRoot(getViewContainer());
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
       const branch1 = getStandardBranch();
       const branch1a = getStandardBranch();
       const branch1b = getStandardBranch();
@@ -158,5 +158,14 @@ describe("TreeRoot", () => {
       expect(self.getContents().hostView).toBe(
          viewContainerRef.get(0) as ViewRef
       );
+   });
+
+   it("should grow a child branch", () => {
+      const self = new TreeRoot(getViewContainer());
+      self.grow(EmptyComponent);
+      expect(self.plot()).toEqual(new Map([[0, new Map()]]));
+      expect(
+         Array.from(document.getElementsByTagName("empty-component")).length
+      ).toBe(1);
    });
 });

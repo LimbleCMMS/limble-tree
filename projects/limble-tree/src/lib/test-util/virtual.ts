@@ -1,12 +1,25 @@
 import {
+   ApplicationRef,
+   Component,
    ComponentRef,
-   EnvironmentInjector,
+   ViewChild,
    ViewContainerRef
 } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { VirtualComponent } from "../components/virtual-component/virtual.component";
+import { NodeComponent } from "../components/node-component.interface";
 
-export function getVirtualComponent(): ComponentRef<VirtualComponent> {
+@Component({
+   selector: "N/A",
+   template: "<div #container></div>"
+})
+export class VirtualComponent implements NodeComponent {
+   @ViewChild("container", { read: ViewContainerRef })
+   public branchesContainer: ViewContainerRef | undefined;
+
+   public constructor(public readonly app: ApplicationRef) {}
+}
+
+function getVirtualComponent(): ComponentRef<VirtualComponent> {
    const fixture = TestBed.createComponent(VirtualComponent);
    fixture.detectChanges();
    return fixture.componentRef;
@@ -19,8 +32,4 @@ export function getViewContainer(): ViewContainerRef {
       throw new Error("container is not available");
    }
    return container;
-}
-
-export function getInjector(): EnvironmentInjector {
-   return getVirtualComponent().instance.app.injector;
 }

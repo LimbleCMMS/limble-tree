@@ -4,7 +4,10 @@ import { ContainerTreeNode } from "../structure/nodes/container-tree-node.interf
 import { TreeRelationship } from "../structure/tree-relationship.interface";
 import { TreeBranch } from "./tree-branch/tree-branch";
 
-export type Relationship = TreeRelationship<
-   ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<unknown>>,
-   TreeBranch<unknown>
+export type Relationship<UserlandComponent> = TreeRelationship<
+   ContainerTreeNode<
+      ComponentRef<NodeComponent>,
+      TreeBranch<UserlandComponent>
+   >,
+   TreeBranch<UserlandComponent>
 >;

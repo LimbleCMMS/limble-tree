@@ -1,4 +1,3 @@
-import { HttpClient } from "@angular/common/http";
 import { Component } from "@angular/core";
 import { loremIpsum } from "./lorem-ipsum";
 
@@ -10,8 +9,8 @@ import { loremIpsum } from "./lorem-ipsum";
 export class LoremIpsumComponent {
    public text?: string;
 
-   public constructor(private readonly http: HttpClient) {
+   public constructor() {
       const random = Math.floor(Math.random() * 50);
-      this.text = loremIpsum[random];
+      this.text = `${loremIpsum[random]}`;
    }
 }
