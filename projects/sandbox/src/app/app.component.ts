@@ -19,19 +19,26 @@ import { TextRendererComponent } from "./text-renderer/text-renderer.component";
 export class AppComponent implements AfterViewInit {
    @ViewChild("treeContainer", { read: ViewContainerRef })
    treeContainer?: ViewContainerRef;
+   @ViewChild("treeContainer2", { read: ViewContainerRef })
+   treeContainer2?: ViewContainerRef;
 
    protected events: Array<{ type: string }>;
+   protected events2: Array<{ type: string }>;
 
    public constructor(
       private readonly treeService: TreeService,
       private readonly changeDetectorRef: ChangeDetectorRef
    ) {
       this.events = [];
+      this.events2 = [];
    }
 
    public ngAfterViewInit(): void {
-      if (this.treeContainer === undefined) {
-         throw new Error("cannot get tree container");
+      if (
+         this.treeContainer === undefined ||
+         this.treeContainer2 === undefined
+      ) {
+         throw new Error("cannot get tree containers");
       }
       const root = this.treeService.createEmptyTree<
          | LoremIpsumComponent
@@ -51,7 +58,7 @@ export class AppComponent implements AfterViewInit {
       const branch1b = branch1.grow(CollapsibleComponent);
       const branch1c = branch1.grow(DraggableComponent);
       const branch2a = branch2.grow(LoremIpsumComponent);
-      const branch3a = branch3.grow(LoremIpsumComponent);
+      const branch3a = branch3.grow(DraggableComponent);
       const branch1b1 = branch1b.grow(LoremIpsumComponent);
       // setTimeout(() => {
       //    branch1a.prune();
@@ -64,6 +71,18 @@ export class AppComponent implements AfterViewInit {
       this.changeDetectorRef.detectChanges();
       root.events().subscribe((event) => {
          this.events.push({ type: event.type() });
+      });
+
+      const root2 = this.treeService.createEmptyTree<
+         | LoremIpsumComponent
+         | TextRendererComponent
+         | CollapsibleComponent
+         | DraggableComponent
+      >(this.treeContainer2);
+      root2.grow(LoremIpsumComponent);
+      root2.grow(DraggableComponent);
+      root2.events().subscribe((event) => {
+         this.events2.push({ type: event.type() });
       });
    }
 }

@@ -13,4 +13,17 @@
          </div>
       </div>
    </div>
+   <div class="tree-container">
+      <div class="divider">
+         <div class="tree">
+            <div #treeContainer2></div>
+         </div>
+         <div class="events">
+            <strong> Events </strong>
+            <div *ngFor="let event of events2">
+               {{ event.type }}
+            </div>
+         </div>
+      </div>
+   </div>
 </div>
