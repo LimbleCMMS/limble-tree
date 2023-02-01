@@ -38,8 +38,12 @@ class DropzoneRenderer {
                final = cursor;
                cursor = cursor.branches().at(-1);
             }
-            assert(final instanceof TreeBranch || final instanceof TreeRoot);
-            this.showLowerZones(final);
+            // Gotta do a settimeout so that showLowerZones doesn't run until after
+            // the dragged branch is pruned.
+            setTimeout(() => {
+               assert(final instanceof TreeBranch || final instanceof TreeRoot);
+               this.showLowerZones(final);
+            });
          });
    }
 
