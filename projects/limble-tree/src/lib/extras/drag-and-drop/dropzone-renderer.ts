@@ -162,8 +162,11 @@ class DropzoneRenderer {
          final = cursor;
          cursor = cursor.branches().at(-1);
       }
-      if (final !== undefined) {
-         this.showInnerZone(treeBranch);
+      if (
+         final !== undefined &&
+         (final instanceof TreeRoot || final instanceof TreeBranch)
+      ) {
+         this.showInnerZone(final);
       }
    }
 
