@@ -1,11 +1,12 @@
 import { assert } from "../../../shared/assert";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TreeBranch } from "../../core";
-import { dropzoneRenderer } from "../../core/dropzone-renderer/dropzone-renderer";
 
 export enum DragStates {
    Idle = 0,
-   Dragging = 1
+   Starting = 1,
+   Dragging = 2,
+   Dropped = 3
 }
 
 class DragState {
@@ -25,21 +26,33 @@ class DragState {
       return this.dragData;
    }
 
-   public dragging<T>(treeBranch: TreeBranch<T>): void {
+   public starting<T>(treeBranch: TreeBranch<T>): void {
       assert(this._state === DragStates.Idle);
       this.dragData = treeBranch;
+      this.state$.next(DragStates.Starting);
+   }
+
+   public dragging(): void {
+      assert(this._state === DragStates.Starting);
       this.state$.next(DragStates.Dragging);
    }
 
    public dropped(): void {
       assert(this._state === DragStates.Dragging);
+      this.state$.next(DragStates.Dropped);
+   }
+
+   public restart(): void {
       this.dragData = undefined;
-      dropzoneRenderer.clearCurrentDisplay();
       this.state$.next(DragStates.Idle);
    }
 
    public events(): Observable<DragStates> {
       return this.state$;
+   }
+
+   public state(): DragStates {
+      return this._state;
    }
 }
 

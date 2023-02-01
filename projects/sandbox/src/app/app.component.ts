@@ -5,7 +5,11 @@ import {
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
-import { TreeService } from "@limble/limble-tree";
+import {
+   TreeDragAndDropService,
+   TreeRoot,
+   TreeService
+} from "@limble/limble-tree";
 import { CollapsibleComponent } from "./collapsible/collapsible.component";
 import { DraggableComponent } from "./draggable/draggable.component";
 import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
@@ -25,9 +29,17 @@ export class AppComponent implements AfterViewInit {
    protected events: Array<{ type: string }>;
    protected events2: Array<{ type: string }>;
 
+   private root2?: TreeRoot<
+      | LoremIpsumComponent
+      | TextRendererComponent
+      | CollapsibleComponent
+      | DraggableComponent
+   >;
+
    public constructor(
       private readonly treeService: TreeService,
-      private readonly changeDetectorRef: ChangeDetectorRef
+      private readonly changeDetectorRef: ChangeDetectorRef,
+      private readonly dragAndDrop: TreeDragAndDropService
    ) {
       this.events = [];
       this.events2 = [];
@@ -73,16 +85,22 @@ export class AppComponent implements AfterViewInit {
          this.events.push({ type: event.type() });
       });
 
-      const root2 = this.treeService.createEmptyTree<
+      this.root2 = this.treeService.createEmptyTree<
          | LoremIpsumComponent
          | TextRendererComponent
          | CollapsibleComponent
          | DraggableComponent
       >(this.treeContainer2);
-      root2.grow(LoremIpsumComponent);
-      root2.grow(DraggableComponent);
-      root2.events().subscribe((event) => {
+      this.root2.grow(LoremIpsumComponent);
+      this.root2.grow(DraggableComponent);
+      this.root2.events().subscribe((event) => {
          this.events2.push({ type: event.type() });
       });
+   }
+
+   public showRootDropzone(): void {
+      if (!this.root2) return;
+      if (this.root2.branches().length > 0) return;
+      this.dragAndDrop.showRootDropzone(this.root2);
    }
 }

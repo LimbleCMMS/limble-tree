@@ -24,10 +24,15 @@ export class RootComponent implements NodeComponent, AfterViewInit {
       undefined;
 
    @Output() readonly afterViewInit = new EventEmitter<void>();
+   @Output() readonly dropped = new EventEmitter<void>();
 
    public showInnerDropzone: boolean = false;
 
    public ngAfterViewInit(): void {
       this.afterViewInit.emit();
+      if (this.dropzone === undefined) {
+         throw new Error("dropzone is not defined");
+      }
+      this.dropzone.dropped.subscribe(this.dropped);
    }
 }

@@ -12,8 +12,7 @@ import { NodeComponent } from "../../components/node-component.interface";
 import { TreeNodeBase } from "../tree-node-base";
 import { TreeError } from "../../errors/tree-error";
 import { BranchOptions, FullBranchOptions } from "../branch-options.interface";
-import { dropzoneRenderer } from "../dropzone-renderer/dropzone-renderer";
-import { dragState } from "../../extras/drag-and-drop/drag-state";
+import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
 
 export class TreeBranch<UserlandComponent>
    implements
@@ -84,17 +83,7 @@ export class TreeBranch<UserlandComponent>
             dropzoneRenderer.showUpperZones(this);
          });
       this.contents.instance.dropped.subscribe((placement) => {
-         if (placement === "inner") {
-            this.dropHandler(this, 0);
-         }
-         if (placement === "lateral") {
-            const currentParent = this.parent();
-            const index = this.index();
-            if (currentParent === undefined || index === undefined) {
-               throw new Error("branch must have a parent");
-            }
-            this.dropHandler(currentParent, index + 1);
-         }
+         dropzoneRenderer.handleDrop(this, placement);
       });
       this.contents.changeDetectorRef.detectChanges();
       this.dispatch(
@@ -238,23 +227,5 @@ export class TreeBranch<UserlandComponent>
       assert(container !== undefined);
       container.insert(this.detachedView, index);
       this.detachedView = null;
-   }
-
-   private dropHandler(
-      parent: ContainerTreeNode<
-         ComponentRef<NodeComponent>,
-         TreeBranch<UserlandComponent>
-      >,
-      index: number
-   ): void {
-      const treeBranch = dragState.getDragData<UserlandComponent>();
-      if (treeBranch == undefined) {
-         throw new TreeError("Cannot get dragged branch");
-      }
-      treeBranch.graftTo(parent, index);
-      (
-         treeBranch.getContents().location.nativeElement as HTMLElement
-      ).style.display = "block";
-      dragState.dropped();
    }
 }

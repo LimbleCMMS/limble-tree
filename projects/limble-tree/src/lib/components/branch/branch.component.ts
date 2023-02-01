@@ -57,6 +57,7 @@ export class BranchComponent<T>
       this.hostedContent = this.contentContainer.createComponent(
          this.contentToHost
       );
+      this.hostedContent.changeDetectorRef.detectChanges();
       this.contentCreated.emit(this.hostedContent.instance);
       if (this.dropzones === undefined) {
          throw new Error("querylist not defined");
