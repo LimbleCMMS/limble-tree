@@ -35,7 +35,8 @@
       "destructured",
       "eslint's",
       "dropzone",
-      "dropzones"
+      "dropzones",
+      "collapser"
    ],
    "eslint.options": {
       "extensions": [".js", ".ts", ".html"]

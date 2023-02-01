@@ -1,6 +1,6 @@
 import { ComponentRef } from "@angular/core";
 import { NodeComponent } from "../components/node-component.interface";
-import { TreeBranch, TreeRoot } from "../core";
+import { TreeBranch } from "../core";
 import { ContainerTreeNode } from "../structure/nodes/container-tree-node.interface";
 import { EventConduit } from "./event-conduit.interface";
 import { TreeEvent } from "./tree-event.interface";

@@ -1,4 +1,4 @@
-import { ComponentRef, Type } from "@angular/core";
+import { ComponentRef } from "@angular/core";
 import { filter, Observable, Subject, Subscription } from "rxjs";
 import { NodeComponent } from "../components/node-component.interface";
 import { TreeError } from "../errors";
@@ -12,7 +12,7 @@ import { Relationship } from "./relationship.interface";
 import { TreeBranch } from "./tree-branch/tree-branch";
 
 export class TreeNodeBase<UserlandComponent>
-   implements TreeNode<TreeBranch<UserlandComponent>>
+   implements Partial<TreeNode<TreeBranch<UserlandComponent>>>
 {
    private readonly _branches: Array<TreeBranch<UserlandComponent>>;
    private readonly events$: Subject<TreeEvent>;

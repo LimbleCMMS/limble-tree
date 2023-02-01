@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { TreeBranch, TreeCollapseService } from "@limble/limble-tree";
 
 @Component({
@@ -6,12 +6,19 @@ import { TreeBranch, TreeCollapseService } from "@limble/limble-tree";
    templateUrl: "./collapsible.component.html",
    styleUrls: ["./collapsible.component.scss"]
 })
-export class CollapsibleComponent {
+export class CollapsibleComponent implements OnInit {
    @Input() treeBranch?: TreeBranch<CollapsibleComponent>;
    protected collapsed: boolean;
 
    public constructor(private readonly collapseService: TreeCollapseService) {
       this.collapsed = false;
+   }
+
+   public ngOnInit(): void {
+      if (this.treeBranch === undefined) {
+         throw new Error();
+      }
+      this.collapsed = this.treeBranch.branchOptions.startCollapsed ?? false;
    }
 
    protected toggle(): void {

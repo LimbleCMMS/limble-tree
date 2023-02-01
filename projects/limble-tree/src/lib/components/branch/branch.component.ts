@@ -57,7 +57,6 @@ export class BranchComponent<T>
       this.hostedContent = this.contentContainer.createComponent(
          this.contentToHost
       );
-      this.hostedContent.changeDetectorRef.detectChanges();
       this.contentCreated.emit(this.hostedContent.instance);
       if (this.dropzones === undefined) {
          throw new Error("querylist not defined");
@@ -71,6 +70,7 @@ export class BranchComponent<T>
          inner.dropped.pipe(map(() => "inner" as const)),
          lateral.dropped.pipe(map(() => "lateral" as const))
       ).subscribe(this.dropped);
+      this.hostedContent.changeDetectorRef.detectChanges();
    }
 
    public getHostedContent(): ComponentRef<T> | undefined {

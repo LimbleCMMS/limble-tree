@@ -9,6 +9,7 @@ export interface BranchOptions<Component> {
          ? (value: T) => void
          : never;
    };
+   startCollapsed?: boolean;
 }
 
 export interface FullBranchOptions<Component> extends BranchOptions<Component> {

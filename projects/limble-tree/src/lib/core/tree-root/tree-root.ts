@@ -69,6 +69,10 @@ export class TreeRoot<UserlandComponent>
       return this.treeNodeBase.plot();
    }
 
+   public root(): this {
+      return this;
+   }
+
    public traverse(
       callback: (
          node: ContainerTreeNode<

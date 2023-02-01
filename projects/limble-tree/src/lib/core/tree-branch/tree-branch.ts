@@ -5,7 +5,13 @@ import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
 import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeBranchNode } from "../../structure/nodes/tree-branch-node.interface";
-import { ComponentRef, Type, ViewRef } from "@angular/core";
+import {
+   ComponentRef,
+   createComponent,
+   EnvironmentInjector,
+   Type,
+   ViewRef
+} from "@angular/core";
 import { BranchComponent } from "../../components/branch/branch.component";
 import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
@@ -15,6 +21,7 @@ import { BranchOptions, FullBranchOptions } from "../branch-options.interface";
 import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
 import { config } from "../configuration/configuration";
 import { TreeRoot } from "..";
+import { treeCollapser } from "../../extras/collapse/collapse";
 
 export class TreeBranch<UserlandComponent>
    implements
@@ -40,30 +47,32 @@ export class TreeBranch<UserlandComponent>
          ComponentRef<NodeComponent>,
          TreeBranch<UserlandComponent>
       >,
-      branchOptions: FullBranchOptions<UserlandComponent>
+      public readonly branchOptions: FullBranchOptions<UserlandComponent>
    ) {
       this.treeNodeBase = new TreeNodeBase();
-      this.userlandComponent = branchOptions.component;
-      this._parent = parent;
+      this.userlandComponent = this.branchOptions.component;
       const parentBranchesContainer =
-         this._parent.getContents().instance.branchesContainer;
+         parent.getContents().instance.branchesContainer;
       assert(parentBranchesContainer !== undefined);
-      this.contents =
-         parentBranchesContainer.createComponent<
-            BranchComponent<UserlandComponent>
-         >(BranchComponent);
+      this.contents = createComponent<BranchComponent<UserlandComponent>>(
+         BranchComponent,
+         {
+            environmentInjector:
+               parentBranchesContainer.injector.get(EnvironmentInjector)
+         }
+      );
       this.contents.instance.contentToHost = this.userlandComponent;
-      this.setIndentation();
+      this.setIndentation(parent);
       //FIXME: unsubscribe
       this.contents.instance.contentCreated.subscribe(
          (userlandComponentInstance) => {
             for (const [key, value] of Object.entries(
-               branchOptions.inputBindings ?? {}
+               this.branchOptions.inputBindings ?? {}
             )) {
                (userlandComponentInstance as any)[key] = value;
             }
             for (const [key, value] of Object.entries(
-               branchOptions.outputBindings ?? {}
+               this.branchOptions.outputBindings ?? {}
             )) {
                (userlandComponentInstance as any)[key].subscribe(value);
             }
@@ -88,14 +97,24 @@ export class TreeBranch<UserlandComponent>
       this.contents.instance.dropped.subscribe((placement) => {
          dropzoneRenderer.handleDrop(this, placement);
       });
-      this.contents.changeDetectorRef.detectChanges();
-      this.dispatch(
-         new GraftEvent(this, {
-            parent: this._parent,
-            child: this,
-            index: this._parent.branches().length
-         })
-      );
+      if (
+         parent instanceof TreeBranch &&
+         parent.branchOptions.startCollapsed === true
+      ) {
+         treeCollapser.storePrecollapsedNode(parent, this);
+         this.detachedView = this.contents.hostView;
+      } else {
+         parentBranchesContainer.insert(this.contents.hostView);
+         this.contents.changeDetectorRef.detectChanges();
+         this._parent = parent;
+         this.dispatch(
+            new GraftEvent(this, {
+               parent: this._parent,
+               child: this,
+               index: this._parent.branches().length
+            })
+         );
+      }
    }
 
    public branches(): Array<TreeBranch<UserlandComponent>> {
@@ -246,8 +265,13 @@ export class TreeBranch<UserlandComponent>
       this.detachedView = null;
    }
 
-   private setIndentation(): void {
-      const root = this.root();
+   private setIndentation(
+      parent: ContainerTreeNode<
+         ComponentRef<NodeComponent>,
+         TreeBranch<UserlandComponent>
+      >
+   ): void {
+      const root = parent.root();
       assert(root !== undefined);
       const options = config.getConfig(root);
       const branchesContainerEl = this.contents.location.nativeElement

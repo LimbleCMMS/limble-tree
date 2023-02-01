@@ -67,7 +67,9 @@ export class AppComponent implements AfterViewInit {
             text2: "This is the second test string"
          }
       });
-      const branch1b = branch1.grow(CollapsibleComponent);
+      const branch1b = branch1.grow(CollapsibleComponent, {
+         startCollapsed: true
+      });
       const branch1c = branch1.grow(DraggableComponent);
       const branch2a = branch2.grow(LoremIpsumComponent);
       const branch3a = branch3.grow(DraggableComponent);
