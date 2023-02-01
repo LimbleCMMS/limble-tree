@@ -14,11 +14,4 @@ export class TreeService {
       config.setConfig(root, options);
       return root;
    }
-
-   // public createTreeFromArray<Component>(
-   //    container: ViewContainerRef
-   // ): TreeRoot<Component> {
-   //    //FIXME
-   //    return new TreeRoot<Component>(container);
-   // }
 }
