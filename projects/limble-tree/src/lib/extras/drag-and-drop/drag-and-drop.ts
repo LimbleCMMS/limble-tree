@@ -4,6 +4,8 @@ import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
 import { config } from "../../core/configuration/configuration";
 import { TreeError } from "../../errors";
+import { DragEndEvent } from "../../events/drag-end-event";
+import { DragStartEvent } from "../../events/drag-start-event";
 import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
 import { dragState, DragStates } from "./drag-state";
 
@@ -15,6 +17,7 @@ class DragAndDrop {
          event.preventDefault();
          return;
       }
+      treeBranch.dispatch(new DragStartEvent(treeBranch));
       this.setDragEffects(treeBranch, event);
       this.watchForDragend(treeBranch, event);
       // We have to do a setTimeout because DOM changes are not allowed during a
@@ -31,7 +34,7 @@ class DragAndDrop {
       index: number
    ): void {
       const treeBranch = dragState.getDragData<T>();
-      if (treeBranch == undefined) {
+      if (treeBranch === undefined) {
          throw new TreeError("Cannot get dragged branch");
       }
       treeBranch.graftTo(parent, index);
@@ -82,6 +85,7 @@ class DragAndDrop {
                this.drop(parent, index);
             }
             dragState.restart();
+            treeBranch.dispatch(new DragEndEvent(treeBranch, parent, index));
          },
          { once: true }
       );
