@@ -9,6 +9,7 @@ import { TreeRootNode } from "../../structure/nodes/tree-root.node.interface";
 import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
 import { BranchOptions } from "../branch-options.interface";
+import { dropzoneRenderer } from "../dropzone-renderer/dropzone-renderer";
 
 export class TreeRoot<UserlandComponent>
    implements
@@ -20,6 +21,13 @@ export class TreeRoot<UserlandComponent>
    public constructor(viewContainerRef: ViewContainerRef) {
       this.treeNodeBase = new TreeNodeBase();
       this.rootComponentRef = viewContainerRef.createComponent(RootComponent);
+      this.rootComponentRef.instance.afterViewInit.subscribe(() => {
+         const dropzone = this.rootComponentRef.instance.dropzone;
+         if (!dropzone) {
+            throw new Error("dropzone not defined");
+         }
+         dropzoneRenderer.registerDropzone(dropzone, this);
+      });
       this.rootComponentRef.changeDetectorRef.detectChanges();
    }
 

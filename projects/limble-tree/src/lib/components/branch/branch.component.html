@@ -1,6 +1,8 @@
-<div class="content">
+<div class="content" (dragover)="dragoverHandler($event)">
    <div #contentContainer></div>
 </div>
 <div class="branches-container">
+   <dropzone placement="inner" [hidden]="!showInnerDropzone"></dropzone>
    <div #branchesContainer></div>
 </div>
+<dropzone placement="lateral" [hidden]="!showLateralDropzone"></dropzone>

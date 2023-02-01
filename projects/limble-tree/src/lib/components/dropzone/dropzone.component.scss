@@ -1,0 +1,13 @@
+.dropzone {
+   border-radius: 8px;
+   border: 1px dashed #727374;
+   background-color: #dddddd;
+   height: 20px;
+   margin: 8px 0 8px 0;
+   &.active {
+      border-color: #289e49;
+      background-color: #d0e8d6;
+      height: 48px;
+      cursor: grabbing;
+   }
+}

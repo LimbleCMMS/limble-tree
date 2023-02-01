@@ -1,0 +1,8 @@
+<div
+   class="dropzone"
+   [ngClass]="{ active: active }"
+   (dragenter)="dragenterHandler()"
+   (dragleave)="dragleaveHandler()"
+   (dragover)="dragoverHandler($event)"
+   (drop)="dropHandler($event)"
+></div>

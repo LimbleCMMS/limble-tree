@@ -4,17 +4,12 @@ import { TreeRoot } from "./tree-root";
 import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
 import { ViewRef } from "@angular/core";
-import { TestBed } from "@angular/core/testing";
-import { getViewContainer, VirtualComponent } from "../../test-util/virtual";
+import { getViewContainer } from "../../test-util/virtual";
 import { getStandardBranch } from "../../test-util/standard-branch";
 import { EmptyComponent } from "../../test-util/empty.component";
 import { createNullEvent } from "../../test-util/null-event";
 
 describe("TreeRoot", () => {
-   TestBed.configureTestingModule({
-      declarations: [VirtualComponent]
-   });
-
    it("should start with no branches", () => {
       const root = new TreeRoot(getViewContainer());
       expect(root.branches()).toEqual([]);

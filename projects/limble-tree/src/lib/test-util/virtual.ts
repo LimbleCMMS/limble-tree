@@ -16,6 +16,7 @@ import { TreeError } from "../errors";
 export class VirtualComponent implements NodeComponent {
    @ViewChild("container", { read: ViewContainerRef })
    public branchesContainer: ViewContainerRef | undefined;
+   public showInnerDropzone: boolean = false;
 
    public constructor(public readonly app: ApplicationRef) {}
 }

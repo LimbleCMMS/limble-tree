@@ -7,6 +7,7 @@ import {
 } from "@angular/core";
 import { TreeService } from "@limble/limble-tree";
 import { CollapsibleComponent } from "./collapsible/collapsible.component";
+import { DraggableComponent } from "./draggable/draggable.component";
 import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
 import { TextRendererComponent } from "./text-renderer/text-renderer.component";
 
@@ -33,7 +34,10 @@ export class AppComponent implements AfterViewInit {
          throw new Error("cannot get tree container");
       }
       const root = this.treeService.createEmptyTree<
-         LoremIpsumComponent | TextRendererComponent | CollapsibleComponent
+         | LoremIpsumComponent
+         | TextRendererComponent
+         | CollapsibleComponent
+         | DraggableComponent
       >(this.treeContainer);
       const branch1 = root.grow(LoremIpsumComponent);
       const branch2 = root.grow(LoremIpsumComponent);
@@ -45,18 +49,18 @@ export class AppComponent implements AfterViewInit {
          }
       });
       const branch1b = branch1.grow(CollapsibleComponent);
-      const branch1c = branch1.grow(LoremIpsumComponent);
+      const branch1c = branch1.grow(DraggableComponent);
       const branch2a = branch2.grow(LoremIpsumComponent);
       const branch3a = branch3.grow(LoremIpsumComponent);
       const branch1b1 = branch1b.grow(LoremIpsumComponent);
-      setTimeout(() => {
-         branch1a.prune();
-         branch1b.prune();
-      }, 2000);
-      setTimeout(() => {
-         branch1a.graftTo(branch3);
-         branch1b.graftTo(branch3);
-      }, 3000);
+      // setTimeout(() => {
+      //    branch1a.prune();
+      //    branch1b.prune();
+      // }, 2000);
+      // setTimeout(() => {
+      //    branch1a.graftTo(branch3);
+      //    branch1b.graftTo(branch3);
+      // }, 3000);
       this.changeDetectorRef.detectChanges();
       root.events().subscribe((event) => {
          this.events.push({ type: event.type() });

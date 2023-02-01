@@ -1,6 +1,6 @@
 import { assert } from "../../../shared/assert";
 import { TreePlot } from "../../structure/tree-plot";
-import { Observable } from "rxjs";
+import { filter, Observable } from "rxjs";
 import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
 import { TreeEvent } from "../../events/tree-event.interface";
@@ -12,6 +12,8 @@ import { NodeComponent } from "../../components/node-component.interface";
 import { TreeNodeBase } from "../tree-node-base";
 import { TreeError } from "../../errors/tree-error";
 import { BranchOptions, FullBranchOptions } from "../branch-options.interface";
+import { dropzoneRenderer } from "../dropzone-renderer/dropzone-renderer";
+import { dragState } from "../../extras/drag-and-drop/drag-state";
 
 export class TreeBranch<UserlandComponent>
    implements
@@ -50,6 +52,7 @@ export class TreeBranch<UserlandComponent>
             BranchComponent<UserlandComponent>
          >(BranchComponent);
       this.contents.instance.contentToHost = this.userlandComponent;
+      //FIXME: unsubscribe
       this.contents.instance.contentCreated.subscribe(
          (userlandComponentInstance) => {
             for (const [key, value] of Object.entries(
@@ -63,8 +66,36 @@ export class TreeBranch<UserlandComponent>
                (userlandComponentInstance as any)[key].subscribe(value);
             }
             (userlandComponentInstance as any).treeBranch = this;
+            const dropzones = this.contents.instance.dropzones;
+            if (!dropzones) {
+               throw new Error("dropzones not defined");
+            }
+            dropzoneRenderer.registerDropzones(dropzones, this);
          }
       );
+      this.contents.instance.showDropzones
+         .pipe(filter((direction) => direction === "lower"))
+         .subscribe(() => {
+            dropzoneRenderer.showLowerZones(this);
+         });
+      this.contents.instance.showDropzones
+         .pipe(filter((direction) => direction === "upper"))
+         .subscribe(() => {
+            dropzoneRenderer.showUpperZones(this);
+         });
+      this.contents.instance.dropped.subscribe((placement) => {
+         if (placement === "inner") {
+            this.dropHandler(this, 0);
+         }
+         if (placement === "lateral") {
+            const currentParent = this.parent();
+            const index = this.index();
+            if (currentParent === undefined || index === undefined) {
+               throw new Error("branch must have a parent");
+            }
+            this.dropHandler(currentParent, index + 1);
+         }
+      });
       this.contents.changeDetectorRef.detectChanges();
       this.dispatch(
          new GraftEvent(this, {
@@ -113,7 +144,7 @@ export class TreeBranch<UserlandComponent>
       }
       this._parent = newParent;
       const newIndex = index ?? newParent.branches().length;
-      this.reattachView();
+      this.reattachView(newIndex);
       this.dispatch(
          new GraftEvent(this, {
             parent: newParent,
@@ -207,5 +238,23 @@ export class TreeBranch<UserlandComponent>
       assert(container !== undefined);
       container.insert(this.detachedView, index);
       this.detachedView = null;
+   }
+
+   private dropHandler(
+      parent: ContainerTreeNode<
+         ComponentRef<NodeComponent>,
+         TreeBranch<UserlandComponent>
+      >,
+      index: number
+   ): void {
+      const treeBranch = dragState.getDragData<UserlandComponent>();
+      if (treeBranch == undefined) {
+         throw new TreeError("Cannot get dragged branch");
+      }
+      treeBranch.graftTo(parent, index);
+      (
+         treeBranch.getContents().location.nativeElement as HTMLElement
+      ).style.display = "block";
+      dragState.dropped();
    }
 }
