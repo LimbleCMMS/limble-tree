@@ -13,6 +13,8 @@ import { TreeNodeBase } from "../tree-node-base";
 import { TreeError } from "../../errors/tree-error";
 import { BranchOptions, FullBranchOptions } from "../branch-options.interface";
 import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
+import { config } from "../configuration/configuration";
+import { TreeRoot } from "..";
 
 export class TreeBranch<UserlandComponent>
    implements
@@ -51,6 +53,7 @@ export class TreeBranch<UserlandComponent>
             BranchComponent<UserlandComponent>
          >(BranchComponent);
       this.contents.instance.contentToHost = this.userlandComponent;
+      this.setIndentation();
       //FIXME: unsubscribe
       this.contents.instance.contentCreated.subscribe(
          (userlandComponentInstance) => {
@@ -208,6 +211,20 @@ export class TreeBranch<UserlandComponent>
       return this;
    }
 
+   public root(): TreeRoot<UserlandComponent> | undefined {
+      const parent = this.parent();
+      if (parent === undefined) {
+         return undefined;
+      }
+      if (parent instanceof TreeBranch) {
+         return parent.root();
+      }
+      if (parent instanceof TreeRoot) {
+         return parent;
+      }
+      throw new Error("unexpected parent type");
+   }
+
    public traverse(
       callback: (
          node: ContainerTreeNode<
@@ -227,5 +244,16 @@ export class TreeBranch<UserlandComponent>
       assert(container !== undefined);
       container.insert(this.detachedView, index);
       this.detachedView = null;
+   }
+
+   private setIndentation(): void {
+      const root = this.root();
+      assert(root !== undefined);
+      const options = config.getConfig(root);
+      const branchesContainerEl = this.contents.location.nativeElement
+         .getElementsByClassName("branches-container")
+         .item(0);
+      assert(branchesContainerEl instanceof HTMLElement);
+      branchesContainerEl.style.marginLeft = `${options?.indentation ?? 16}px`;
    }
 }

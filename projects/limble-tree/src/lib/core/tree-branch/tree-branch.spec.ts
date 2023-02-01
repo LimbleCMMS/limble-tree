@@ -321,4 +321,27 @@ describe("TreeBranch", () => {
          Array.from(document.getElementsByTagName("empty-component")).length
       ).toBe(2);
    });
+
+   it("should retrieve its own root ancestor", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      const branch1 = getStandardBranch();
+      const branch1a = getStandardBranch();
+      const branch1b = getStandardBranch();
+      const branch2 = getStandardBranch();
+      const branch3 = getStandardBranch();
+      const branch3a = getStandardBranch();
+      const branch3a1 = getStandardBranch();
+      const branch3ab = getStandardBranch();
+      const branch3b = getStandardBranch();
+      branch1.graftTo(root);
+      branch2.graftTo(root);
+      branch3.graftTo(root);
+      branch1a.graftTo(branch1);
+      branch1b.graftTo(branch1);
+      branch3a.graftTo(branch3);
+      branch3b.graftTo(branch3);
+      branch3a1.graftTo(branch3a);
+      branch3ab.graftTo(branch3a);
+      expect(branch3ab.root()).toBe(root);
+   });
 });

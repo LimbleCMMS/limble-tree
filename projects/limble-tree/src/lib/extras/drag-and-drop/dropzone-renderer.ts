@@ -9,6 +9,7 @@ import { TreeBranch } from "../../core/tree-branch/tree-branch";
 import { TreeRoot } from "../../core/tree-root/tree-root";
 import { dragState, DragStates } from "./drag-state";
 import { filter } from "rxjs";
+import { config } from "../../core/configuration/configuration";
 
 class DropzoneRenderer {
    private currentDisplay: {
@@ -114,7 +115,7 @@ class DropzoneRenderer {
          return;
       }
       this.clearCurrentDisplay();
-      treeNode.getContents().instance.showInnerDropzone = true;
+      this.showInnerZone(treeNode);
       if (treeNode.branches().length === 0) {
          this.loopThroughLowerZones(treeNode);
       }
@@ -140,7 +141,7 @@ class DropzoneRenderer {
          | ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<T>>
          | undefined = treeNode;
       while (cursor instanceof TreeBranch) {
-         cursor.getContents().instance.showLateralDropzone = true;
+         this.showLateralZone(cursor);
          const parent = cursor.parent();
          const index = cursor.index();
          assert(parent !== undefined && index !== undefined);
@@ -157,13 +158,55 @@ class DropzoneRenderer {
          ?.getBranch((treeBranch.index() ?? 0) - 1);
       let final = treeBranch.parent();
       while (cursor !== undefined) {
-         cursor.getContents().instance.showLateralDropzone = true;
+         this.showLateralZone(cursor);
          final = cursor;
          cursor = cursor.branches().at(-1);
       }
       if (final !== undefined) {
-         final.getContents().instance.showInnerDropzone = true;
+         this.showInnerZone(treeBranch);
       }
+   }
+
+   private nestingAllowed(treeNode: unknown): boolean {
+      if (treeNode instanceof TreeRoot) {
+         return true;
+      }
+      if (treeNode instanceof TreeBranch) {
+         const allowNesting =
+            config.getConfig(treeNode.root())?.allowNesting ??
+            ((): true => true);
+         return allowNesting(treeNode);
+      }
+      throw new Error("unsupported treeNode type");
+   }
+
+   private dropAllowed(parent: unknown, index: number): boolean {
+      const sourceNode = dragState.getDragData();
+      assert(sourceNode instanceof TreeBranch);
+      if (parent instanceof TreeRoot) {
+         const allowDrop =
+            config.getConfig(parent)?.allowDrop ?? ((): true => true);
+         return allowDrop(sourceNode, parent, index);
+      }
+      if (parent instanceof TreeBranch) {
+         const allowDrop =
+            config.getConfig(parent.root())?.allowDrop ?? ((): true => true);
+         return allowDrop(sourceNode, parent, index);
+      }
+      throw new Error("unsupported treeNode type");
+   }
+
+   private showInnerZone<T>(treeNode: TreeBranch<T> | TreeRoot<T>): void {
+      if (!this.nestingAllowed(treeNode) || !this.dropAllowed(treeNode, 0))
+         return;
+      treeNode.getContents().instance.showInnerDropzone = true;
+   }
+
+   private showLateralZone<T>(treeBranch: TreeBranch<T>): void {
+      const index = treeBranch.index();
+      assert(index !== undefined);
+      if (!this.dropAllowed(treeBranch.parent(), index + 1)) return;
+      treeBranch.getContents().instance.showLateralDropzone = true;
    }
 }
 

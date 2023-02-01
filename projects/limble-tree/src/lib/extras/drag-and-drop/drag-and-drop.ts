@@ -2,6 +2,7 @@ import { ComponentRef } from "@angular/core";
 import { Subject } from "rxjs";
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
+import { config } from "../../core/configuration/configuration";
 import { TreeError } from "../../errors";
 import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
 import { dragState, DragStates } from "./drag-state";
@@ -10,24 +11,12 @@ class DragAndDrop {
    public readonly dragAborted$ = new Subject<DragEvent>();
 
    public dragStart<T>(treeBranch: TreeBranch<T>, event: DragEvent): void {
-      this.setDragEffects(treeBranch, event);
-      const parent = treeBranch.parent();
-      const index = treeBranch.index();
-      if (parent === undefined || index === undefined) {
-         throw new Error("branch must have a parent");
+      if (!this.draggingAllowed(treeBranch)) {
+         event.preventDefault();
+         return;
       }
-      event.target?.addEventListener(
-         "dragend",
-         (dragend) => {
-            if (dragState.state() !== DragStates.Dropped) {
-               //The drag ended but a drop never occurred, so put the dragged branch back where it started.
-               this.dragAborted$.next(dragend as DragEvent);
-               this.drop(parent, index);
-            }
-            dragState.restart();
-         },
-         { once: true }
-      );
+      this.setDragEffects(treeBranch, event);
+      this.watchForDragend(treeBranch, event);
       // We have to do a setTimeout because DOM changes are not allowed during a
       // dragstart event.
       setTimeout(() => {
@@ -73,6 +62,36 @@ class DragAndDrop {
       const nativeElement = treeBranch.getContents().location.nativeElement;
       const [xOffset, yOffset] = this.getDragImageOffsets(event, nativeElement);
       dataTransfer.setDragImage(nativeElement, xOffset, yOffset);
+   }
+
+   private watchForDragend<T>(
+      treeBranch: TreeBranch<T>,
+      event: DragEvent
+   ): void {
+      const parent = treeBranch.parent();
+      const index = treeBranch.index();
+      if (parent === undefined || index === undefined) {
+         throw new Error("branch must have a parent");
+      }
+      event.target?.addEventListener(
+         "dragend",
+         (dragend) => {
+            if (dragState.state() !== DragStates.Dropped) {
+               //The drag ended but a drop never occurred, so put the dragged branch back where it started.
+               this.dragAborted$.next(dragend as DragEvent);
+               this.drop(parent, index);
+            }
+            dragState.restart();
+         },
+         { once: true }
+      );
+   }
+
+   private draggingAllowed<T>(treeBranch: TreeBranch<T>): boolean {
+      const allowDragging =
+         config.getConfig(treeBranch.root())?.allowDragging ??
+         ((): true => true);
+      return allowDragging(treeBranch);
    }
 }
 
