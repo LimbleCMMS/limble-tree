@@ -4,9 +4,23 @@
    background-color: #dddddd;
    height: 20px;
    margin: 8px 0 8px 0;
+   transition: height 0.2s ease-out;
+   animation: animation 0.2s ease-out;
    &.active {
       border-color: #289e49;
+      border-width: 2px;
       background-color: #d0e8d6;
       height: 48px;
    }
+}
+
+@keyframes animation {
+	from {
+		height: 0px;
+		opacity: 0;
+	}
+	to {
+		height: 20px;
+		opacity: 1;	
+	}
 }
