@@ -8,8 +8,9 @@ import { ContainerTreeNode } from "../../structure/container-tree-node.interface
 import { TreeBranch } from "../../core/tree-branch/tree-branch";
 import { TreeRoot } from "../../core/tree-root/tree-root";
 import { dragState, DragStates } from "./drag-state";
-import { filter } from "rxjs";
+import { filter, first } from "rxjs";
 import { config } from "../../core/configuration/configuration";
+import { PruneEvent } from "../../events";
 
 class DropzoneRenderer {
    private currentDisplay: {
@@ -39,12 +40,18 @@ class DropzoneRenderer {
                final = cursor;
                cursor = cursor.branches().at(-1);
             }
-            // Gotta do a settimeout so that showLowerZones doesn't run until after
-            // the dragged branch is pruned.
-            setTimeout(() => {
-               assert(final instanceof TreeBranch || final instanceof TreeRoot);
-               this.showLowerZones(final);
-            });
+            branch
+               .events()
+               .pipe(
+                  filter((event) => event instanceof PruneEvent),
+                  first()
+               )
+               .subscribe(() => {
+                  assert(
+                     final instanceof TreeBranch || final instanceof TreeRoot
+                  );
+                  this.showLowerZones(final);
+               });
          });
    }
 
