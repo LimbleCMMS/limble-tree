@@ -15,7 +15,7 @@ import { LimbleTreeData } from "../legacy-tree-data.interface";
 import { LimbleTreeOptions } from "../legacy-tree-options.interface";
 import { TreeRoot } from "../../tree-root/tree-root";
 import { filter, Subscription } from "rxjs";
-import { DragEndEvent } from "@limble/limble-tree";
+import { DragEndEvent } from "../../../events";
 
 /** @deprecated */
 @Component({
