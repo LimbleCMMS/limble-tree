@@ -1,6 +1,5 @@
 import {
    AfterViewInit,
-   ChangeDetectorRef,
    Component,
    ViewChild,
    ViewContainerRef
@@ -10,6 +9,7 @@ import {
    TreeRoot,
    TreeService
 } from "@limble/limble-tree";
+import { EMPTY, map, Observable, scan } from "rxjs";
 import { CollapsibleComponent } from "./collapsible/collapsible.component";
 import { DraggableComponent } from "./draggable/draggable.component";
 import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
@@ -26,26 +26,67 @@ export class AppComponent implements AfterViewInit {
    @ViewChild("treeContainer2", { read: ViewContainerRef })
    treeContainer2?: ViewContainerRef;
 
-   protected events: Array<{ type: string }>;
-   protected events2: Array<{ type: string }>;
+   protected events$?: Observable<Array<{ type: string }>>;
+   protected events2$?: Observable<Array<{ type: string }>>;
 
+   private root?: TreeRoot<
+      | LoremIpsumComponent
+      | TextRendererComponent
+      | CollapsibleComponent
+      | DraggableComponent
+   >;
    private root2?: TreeRoot<
       | LoremIpsumComponent
       | TextRendererComponent
       | CollapsibleComponent
       | DraggableComponent
    >;
+   private toggle = 1;
 
    public constructor(
       private readonly treeService: TreeService,
-      private readonly changeDetectorRef: ChangeDetectorRef,
       private readonly dragAndDrop: TreeDragAndDropService
-   ) {
-      this.events = [];
-      this.events2 = [];
-   }
+   ) {}
+
+   public toggleTrees = (): void => {
+      if (this.toggle === 0) {
+         this.root?.destroy();
+         this.root2?.destroy();
+         this.events$ = EMPTY;
+         this.events2$ = EMPTY;
+         this.toggle = 1;
+      } else {
+         const [root, root2] = this.buildTrees();
+         this.root = root;
+         this.root2 = root2;
+         this.toggle = 0;
+      }
+   };
 
    public ngAfterViewInit(): void {
+      this.toggleTrees();
+   }
+
+   public showRootDropzone(): void {
+      if (!this.root2) return;
+      if (this.root2.branches().length > 0) return;
+      this.dragAndDrop.showRootDropzone(this.root2);
+   }
+
+   private buildTrees(): [
+      TreeRoot<
+         | LoremIpsumComponent
+         | TextRendererComponent
+         | CollapsibleComponent
+         | DraggableComponent
+      >,
+      TreeRoot<
+         | LoremIpsumComponent
+         | TextRendererComponent
+         | CollapsibleComponent
+         | DraggableComponent
+      >
+   ] {
       if (
          this.treeContainer === undefined ||
          this.treeContainer2 === undefined
@@ -82,27 +123,32 @@ export class AppComponent implements AfterViewInit {
       //    branch1a.graftTo(branch3);
       //    branch1b.graftTo(branch3);
       // }, 3000);
-      this.changeDetectorRef.detectChanges();
-      root.events().subscribe((event) => {
-         this.events.push({ type: event.type() });
-      });
-
-      this.root2 = this.treeService.createEmptyTree<
+      const root2 = this.treeService.createEmptyTree<
          | LoremIpsumComponent
          | TextRendererComponent
          | CollapsibleComponent
          | DraggableComponent
       >(this.treeContainer2);
-      this.root2.grow(LoremIpsumComponent);
-      this.root2.grow(DraggableComponent);
-      this.root2.events().subscribe((event) => {
-         this.events2.push({ type: event.type() });
-      });
-   }
-
-   public showRootDropzone(): void {
-      if (!this.root2) return;
-      if (this.root2.branches().length > 0) return;
-      this.dragAndDrop.showRootDropzone(this.root2);
+      root2.grow(LoremIpsumComponent);
+      root2.grow(DraggableComponent);
+      this.events$ = root.events().pipe(
+         map((event) => {
+            return { type: event.type() };
+         }),
+         scan((acc, curr) => {
+            acc.push(curr);
+            return acc;
+         }, [] as Array<{ type: string }>)
+      );
+      this.events2$ = root2.events().pipe(
+         map((event) => {
+            return { type: event.type() };
+         }),
+         scan((acc, curr) => {
+            acc.push(curr);
+            return acc;
+         }, [] as Array<{ type: string }>)
+      );
+      return [root, root2];
    }
 }

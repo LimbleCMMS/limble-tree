@@ -15,6 +15,10 @@ class Configuration {
    public getConfig(root: any): TreeOptions | undefined {
       return this.configStorage.get(root);
    }
+
+   public delete(root: any): void {
+      this.configStorage.delete(root);
+   }
 }
 
 export const config = new Configuration();

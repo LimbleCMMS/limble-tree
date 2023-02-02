@@ -16,7 +16,6 @@ export class TreeNodeBase<UserlandComponent>
 {
    private readonly _branches: Array<TreeBranch<UserlandComponent>>;
    private readonly events$: Subject<TreeEvent>;
-   //FIXME: Unsubscribe
    private readonly subscriptions: Array<Subscription>;
 
    public constructor() {
@@ -42,6 +41,12 @@ export class TreeNodeBase<UserlandComponent>
          return;
       }
       this._branches.splice(index, 1);
+   }
+
+   public destroy(): void {
+      this.subscriptions.forEach((sub) => {
+         sub.unsubscribe();
+      });
    }
 
    public dispatch(event: TreeEvent): void {

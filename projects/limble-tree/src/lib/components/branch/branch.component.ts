@@ -5,6 +5,7 @@ import {
    ComponentRef,
    EventEmitter,
    Input,
+   OnDestroy,
    Output,
    QueryList,
    Type,
@@ -26,7 +27,7 @@ import { NodeComponent } from "../node-component.interface";
    imports: [CommonModule, DropzoneComponent]
 })
 export class BranchComponent<T>
-   implements NodeComponent, HostComponent<T>, AfterViewInit
+   implements NodeComponent, HostComponent<T>, AfterViewInit, OnDestroy
 {
    @ViewChild("branchesContainer", { read: ViewContainerRef })
    branchesContainer: ViewContainerRef | undefined = undefined;
@@ -86,5 +87,12 @@ export class BranchComponent<T>
       } else {
          this.showDropzones.emit("lower");
       }
+   }
+
+   public ngOnDestroy(): void {
+      //I'm not 100% sure why, but we have to remove any reference to the
+      //componentRef otherwise Angular will never release it for garbage
+      //collection.
+      this.hostedContent = undefined;
    }
 }

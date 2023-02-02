@@ -60,6 +60,18 @@ class DropzoneRenderer {
       this.currentDisplay = null;
    }
 
+   public clearTreeFromRegistry(tree: TreeRoot<any> | TreeBranch<any>): void {
+      const nodes: Array<
+         ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<any>>
+      > = [];
+      tree.traverse((node) => nodes.push(node));
+      for (const [dropzoneComponent, treeNode] of this.registry) {
+         if (nodes.includes(treeNode)) {
+            this.registry.delete(dropzoneComponent);
+         }
+      }
+   }
+
    public getDropzoneLocation<T>(
       dropzone: DropzoneComponent
    ): [TreeBranch<T> | TreeRoot<T>, "inner" | "lateral"] {

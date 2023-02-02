@@ -24,6 +24,7 @@ class TreeCollapser {
          branch.graftTo(treeBranch);
       });
       this.tempStorage.delete(treeBranch);
+      treeBranch.getContents().changeDetectorRef.detectChanges();
    }
 
    public isCollapsed<T>(treeBranch: TreeBranch<T>): boolean {

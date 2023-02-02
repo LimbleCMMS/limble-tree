@@ -1,5 +1,7 @@
 <div class="page-container">
    <h1>Limble Tree Sandbox</h1>
+   <button (click)="toggleTrees()">Toggle all trees</button>
+   <br /><br />
    <div class="tree-container">
       <div class="divider">
          <div class="tree">
@@ -7,7 +9,7 @@
          </div>
          <div class="events">
             <strong> Events </strong>
-            <div *ngFor="let event of events">
+            <div *ngFor="let event of events$ | async">
                {{ event.type }}
             </div>
          </div>
@@ -20,7 +22,7 @@
          </div>
          <div class="events">
             <strong> Events </strong>
-            <div *ngFor="let event of events2">
+            <div *ngFor="let event of events2$ | async">
                {{ event.type }}
             </div>
          </div>

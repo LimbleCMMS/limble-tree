@@ -1,5 +1,5 @@
 import { TreePlot } from "../../structure/tree-plot";
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
 import { ComponentRef, Type, ViewContainerRef } from "@angular/core";
@@ -10,27 +10,34 @@ import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.int
 import { NodeComponent } from "../../components/node-component.interface";
 import { BranchOptions } from "../branch-options.interface";
 import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
+import { config } from "../configuration/configuration";
 
 export class TreeRoot<UserlandComponent>
    implements
       TreeRootNode<ComponentRef<RootComponent>, TreeBranch<UserlandComponent>>
 {
+   private readonly instanceSubscriptions: Array<Subscription>;
    private readonly rootComponentRef: ComponentRef<RootComponent>;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
 
-   public constructor(viewContainerRef: ViewContainerRef) {
+   public constructor(private readonly viewContainerRef: ViewContainerRef) {
       this.treeNodeBase = new TreeNodeBase();
-      this.rootComponentRef = viewContainerRef.createComponent(RootComponent);
-      this.rootComponentRef.instance.afterViewInit.subscribe(() => {
-         const dropzone = this.rootComponentRef.instance.dropzone;
-         if (!dropzone) {
-            throw new Error("dropzone not defined");
+      this.rootComponentRef =
+         this.viewContainerRef.createComponent(RootComponent);
+      const viewInitSub =
+         this.rootComponentRef.instance.afterViewInit.subscribe(() => {
+            const dropzone = this.rootComponentRef.instance.dropzone;
+            if (!dropzone) {
+               throw new Error("dropzone not defined");
+            }
+            dropzoneRenderer.registerDropzone(dropzone, this);
+         });
+      const droppedSub = this.rootComponentRef.instance.dropped.subscribe(
+         () => {
+            dropzoneRenderer.handleDrop(this, "inner");
          }
-         dropzoneRenderer.registerDropzone(dropzone, this);
-      });
-      this.rootComponentRef.instance.dropped.subscribe(() => {
-         dropzoneRenderer.handleDrop(this, "inner");
-      });
+      );
+      this.instanceSubscriptions = [viewInitSub, droppedSub];
       this.rootComponentRef.changeDetectorRef.detectChanges();
    }
 
@@ -40,6 +47,19 @@ export class TreeRoot<UserlandComponent>
 
    public deleteBranch(index?: number): void {
       this.treeNodeBase.deleteBranch(index);
+   }
+
+   public destroy(): void {
+      dropzoneRenderer.clearTreeFromRegistry(this);
+      this.branches().forEach((branch) => {
+         branch.destroy();
+      });
+      this.treeNodeBase.destroy();
+      this.instanceSubscriptions.forEach((sub) => {
+         sub.unsubscribe();
+      });
+      this.viewContainerRef.clear();
+      config.delete(this);
    }
 
    public dispatch(event: TreeEvent): void {

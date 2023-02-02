@@ -1,6 +1,6 @@
 import { assert } from "../../../shared/assert";
 import { TreePlot } from "../../structure/tree-plot";
-import { filter, Observable } from "rxjs";
+import { filter, Observable, Subscription } from "rxjs";
 import { GraftEvent } from "../../events/graft-event";
 import { PruneEvent } from "../../events/prune-event";
 import { TreeEvent } from "../../events/tree-event.interface";
@@ -32,6 +32,8 @@ export class TreeBranch<UserlandComponent>
       >
 {
    private readonly contents: ComponentRef<BranchComponent<UserlandComponent>>;
+   private readonly instanceSubscriptions: Array<Subscription>;
+   private readonly outputBindingSubscriptions: Array<Subscription>;
    private _parent:
       | ContainerTreeNode<
            ComponentRef<NodeComponent>,
@@ -63,8 +65,8 @@ export class TreeBranch<UserlandComponent>
       );
       this.contents.instance.contentToHost = this.userlandComponent;
       this.setIndentation(parent);
-      //FIXME: unsubscribe
-      this.contents.instance.contentCreated.subscribe(
+      this.outputBindingSubscriptions = [];
+      const contentCreatedSub = this.contents.instance.contentCreated.subscribe(
          (userlandComponentInstance) => {
             for (const [key, value] of Object.entries(
                this.branchOptions.inputBindings ?? {}
@@ -74,7 +76,9 @@ export class TreeBranch<UserlandComponent>
             for (const [key, value] of Object.entries(
                this.branchOptions.outputBindings ?? {}
             )) {
-               (userlandComponentInstance as any)[key].subscribe(value);
+               this.outputBindingSubscriptions.push(
+                  (userlandComponentInstance as any)[key].subscribe(value)
+               );
             }
             (userlandComponentInstance as any).treeBranch = this;
             const dropzones = this.contents.instance.dropzones;
@@ -84,19 +88,27 @@ export class TreeBranch<UserlandComponent>
             dropzoneRenderer.registerDropzones(dropzones, this);
          }
       );
-      this.contents.instance.showDropzones
+      const showLowerZonesSub = this.contents.instance.showDropzones
          .pipe(filter((direction) => direction === "lower"))
          .subscribe(() => {
             dropzoneRenderer.showLowerZones(this);
          });
-      this.contents.instance.showDropzones
+      const showUpperZonesSub = this.contents.instance.showDropzones
          .pipe(filter((direction) => direction === "upper"))
          .subscribe(() => {
             dropzoneRenderer.showUpperZones(this);
          });
-      this.contents.instance.dropped.subscribe((placement) => {
-         dropzoneRenderer.handleDrop(this, placement);
-      });
+      const droppedSub = this.contents.instance.dropped.subscribe(
+         (placement) => {
+            dropzoneRenderer.handleDrop(this, placement);
+         }
+      );
+      this.instanceSubscriptions = [
+         contentCreatedSub,
+         showLowerZonesSub,
+         showUpperZonesSub,
+         droppedSub
+      ];
       if (
          parent instanceof TreeBranch &&
          parent.branchOptions.startCollapsed === true
@@ -123,6 +135,23 @@ export class TreeBranch<UserlandComponent>
 
    public deleteBranch(index?: number): void {
       this.treeNodeBase.deleteBranch(index);
+   }
+
+   public destroy(): void {
+      if (treeCollapser.isCollapsed(this)) {
+         treeCollapser.expand(this);
+         dropzoneRenderer.clearTreeFromRegistry(this);
+      }
+      this.branches().forEach((branch) => {
+         branch.destroy();
+      });
+      this.treeNodeBase.destroy();
+      this.instanceSubscriptions.forEach((sub) => {
+         sub.unsubscribe();
+      });
+      this.outputBindingSubscriptions.forEach((sub) => {
+         sub.unsubscribe();
+      });
    }
 
    public dispatch(event: TreeEvent): void {
