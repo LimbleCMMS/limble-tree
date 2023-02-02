@@ -1,4 +1,5 @@
 import { ComponentRef } from "@angular/core";
+import { assert } from "../../../shared/assert";
 import { Subject } from "rxjs";
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
@@ -71,9 +72,9 @@ class DragAndDrop {
       treeBranch: TreeBranch<T>,
       event: DragEvent
    ): void {
-      const parent = treeBranch.parent();
+      const oldParent = treeBranch.parent();
       const index = treeBranch.index();
-      if (parent === undefined || index === undefined) {
+      if (oldParent === undefined || index === undefined) {
          throw new Error("branch must have a parent");
       }
       event.target?.addEventListener(
@@ -82,10 +83,12 @@ class DragAndDrop {
             if (dragState.state() !== DragStates.Dropped) {
                //The drag ended but a drop never occurred, so put the dragged branch back where it started.
                this.dragAborted$.next(dragend as DragEvent);
-               this.drop(parent, index);
+               this.drop(oldParent, index);
             }
             dragState.restart();
-            treeBranch.dispatch(new DragEndEvent(treeBranch, parent, index));
+            const newParent = treeBranch.parent();
+            assert(newParent !== undefined);
+            treeBranch.dispatch(new DragEndEvent(treeBranch, newParent, index));
          },
          { once: true }
       );

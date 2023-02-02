@@ -1,10 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import {
-   LimbleTreeModule,
-   TreeCollapseModule,
-   TreeDragAndDropModule
-} from "@limble/limble-tree";
+import { LimbleTreeModule } from "@limble/limble-tree";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
@@ -24,13 +20,7 @@ import { DraggableComponent } from "./draggable/draggable.component";
       CollapsibleComponent,
       DraggableComponent
    ],
-   imports: [
-      BrowserModule,
-      AppRoutingModule,
-      LimbleTreeModule,
-      TreeCollapseModule,
-      TreeDragAndDropModule
-   ],
+   imports: [BrowserModule, AppRoutingModule, LimbleTreeModule],
    providers: [],
    bootstrap: [AppComponent]
 })

@@ -9,3 +9,4 @@ export * from "./lib/events";
 export * from "./lib/structure";
 export * from "./lib/extras/collapse";
 export * from "./lib/extras/drag-and-drop";
+export * from "./lib/legacy";

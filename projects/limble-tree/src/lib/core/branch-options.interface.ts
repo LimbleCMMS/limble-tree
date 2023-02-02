@@ -10,6 +10,7 @@ export interface BranchOptions<Component> {
          : never;
    };
    startCollapsed?: boolean;
+   meta?: Record<string, any>;
 }
 
 export interface FullBranchOptions<Component> extends BranchOptions<Component> {

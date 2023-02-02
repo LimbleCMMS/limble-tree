@@ -1,12 +1,9 @@
 import { Type, ViewContainerRef } from "@angular/core";
-import { TreeRoot } from "../tree-root/tree-root";
+import { TreeRoot, TreeBranch, TreeOptions, config } from "../core";
 import { LimbleTreeOptions as LegacyLimbleTreeOptions } from "./legacy-tree-options.interface";
 import { LimbleTreeData, LimbleTreeNode } from "./legacy-tree-data.interface";
-import { TreeOptions } from "../configuration/tree-options.interface";
-import { config } from "../configuration/configuration";
-import { TreeBranch } from "..";
-import { TreeError } from "../../errors";
-import { treeCollapser } from "../../extras/collapse/collapse";
+import { TreeError } from "../errors";
+import { treeCollapser } from "../extras/collapse/collapse";
 
 /**
  * A shim to help with the transition from v0 to v1.
@@ -15,8 +12,7 @@ import { treeCollapser } from "../../extras/collapse/collapse";
 export class LegacyTree {
    /**
     * Creates a v1 tree structure from a v0 data array and v0 tree options.
-    * Note: the `listMode` option will be ignored, and custom data on a
-    * node will also be ignored.
+    * Note: the `listMode` and `collapsible` options will be ignored.
     */
    public createTreeFromLegacyArray<Component>(
       container: ViewContainerRef,
@@ -75,7 +71,8 @@ export class LegacyTree {
          options.defaultComponent?.bindings ??
          {}) as { [K in keyof T]?: T[K] | undefined };
       const branch = parent.grow(component as Type<T>, {
-         inputBindings: bindings
+         inputBindings: bindings,
+         meta: node
       });
       for (const childNode of node.nodes ?? []) {
          this.renderTreeNode(branch, childNode, options);

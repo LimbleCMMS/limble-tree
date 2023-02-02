@@ -1,14 +1,24 @@
 import { NgModule } from "@angular/core";
-import { BranchComponent } from "./components/branch/branch.component";
-import { RootComponent } from "./components/root/root.component";
-import { LimbleTreeRootComponent } from "./core";
-import { LegacyTree } from "./core/legacy/legacy-tree";
+import { TreeCollapseModule } from "./extras/collapse";
+import { TreeDragAndDropModule } from "./extras/drag-and-drop";
 import { TreeService } from "./core/tree-service/tree.service";
+import { LimbleTreeLegacyModule } from "./legacy";
+import { DraggableDirective } from "./extras/drag-and-drop/draggable.directive";
 
 @NgModule({
    declarations: [],
-   imports: [RootComponent, BranchComponent, LimbleTreeRootComponent],
-   providers: [TreeService, LegacyTree],
-   exports: []
+   imports: [
+      LimbleTreeLegacyModule,
+      TreeCollapseModule,
+      TreeDragAndDropModule,
+      DraggableDirective
+   ],
+   providers: [TreeService],
+   exports: [
+      LimbleTreeLegacyModule,
+      TreeCollapseModule,
+      TreeDragAndDropModule,
+      DraggableDirective
+   ]
 })
 export class LimbleTreeModule {}
