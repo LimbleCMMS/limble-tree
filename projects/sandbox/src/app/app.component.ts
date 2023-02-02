@@ -115,14 +115,6 @@ export class AppComponent implements AfterViewInit {
       const branch2a = branch2.grow(LoremIpsumComponent);
       const branch3a = branch3.grow(DraggableComponent);
       const branch1b1 = branch1b.grow(LoremIpsumComponent);
-      // setTimeout(() => {
-      //    branch1a.prune();
-      //    branch1b.prune();
-      // }, 2000);
-      // setTimeout(() => {
-      //    branch1a.graftTo(branch3);
-      //    branch1b.graftTo(branch3);
-      // }, 3000);
       const root2 = this.treeService.createEmptyTree<
          | LoremIpsumComponent
          | TextRendererComponent
