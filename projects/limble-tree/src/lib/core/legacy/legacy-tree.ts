@@ -12,7 +12,7 @@ import { treeCollapser } from "../../extras/collapse/collapse";
  * A shim to help with the transition from v0 to v1.
  * @deprecated
  */
-export class LegacyTreeService {
+export class LegacyTree {
    /**
     * Creates a v1 tree structure from a v0 data array and v0 tree options.
     * Note: the `listMode` option will be ignored, and custom data on a
@@ -31,7 +31,7 @@ export class LegacyTreeService {
       return root;
    }
 
-   private upgradeOptions(legacyOptions: LegacyLimbleTreeOptions): TreeOptions {
+   public upgradeOptions(legacyOptions: LegacyLimbleTreeOptions): TreeOptions {
       return {
          indentation: legacyOptions.indent,
          allowNesting: (branch): boolean => {
