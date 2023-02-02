@@ -1,7 +1,7 @@
 import { assert } from "../../../shared/assert";
 import { skip, take } from "rxjs";
-import { GraftEvent } from "../../events/graft-event";
-import { PruneEvent } from "../../events/prune-event";
+import { GraftEvent } from "../../events/relational/graft-event";
+import { PruneEvent } from "../../events/relational/prune-event";
 import { TreeRoot } from "../tree-root/tree-root";
 import { TreeBranch } from "./tree-branch";
 import { TreeNode } from "../../structure/nodes/tree-node.interface";

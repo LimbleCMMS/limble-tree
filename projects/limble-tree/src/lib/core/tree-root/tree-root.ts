@@ -1,12 +1,12 @@
 import { TreePlot } from "../../structure/tree-plot";
 import { Observable, Subscription } from "rxjs";
-import { TreeEvent } from "../../events/tree-event.interface";
+import { TreeEvent } from "../../structure/tree-event.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
 import { ComponentRef, Type, ViewContainerRef } from "@angular/core";
 import { RootComponent } from "../../components/root/root.component";
 import { TreeNodeBase } from "../tree-node-base";
-import { TreeRootNode } from "../../structure/nodes/tree-root.node.interface";
-import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
+import { TreeRootNode } from "../../structure/tree-root.node.interface";
+import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
 import { BranchOptions } from "../branch-options.interface";
 import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";

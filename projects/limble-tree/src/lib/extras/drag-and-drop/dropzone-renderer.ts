@@ -4,7 +4,7 @@ import { BranchComponent } from "../../components/branch/branch.component";
 import { DropzoneComponent } from "../../components/dropzone/dropzone.component";
 import { NodeComponent } from "../../components/node-component.interface";
 import { dragAndDrop } from "./drag-and-drop";
-import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
+import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { TreeBranch } from "../../core/tree-branch/tree-branch";
 import { TreeRoot } from "../../core/tree-root/tree-root";
 import { dragState, DragStates } from "./drag-state";

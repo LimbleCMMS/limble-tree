@@ -1,10 +1,10 @@
 import { assert } from "../../../shared/assert";
 import { TreePlot } from "../../structure/tree-plot";
 import { filter, Observable, Subscription } from "rxjs";
-import { GraftEvent } from "../../events/graft-event";
-import { PruneEvent } from "../../events/prune-event";
-import { TreeEvent } from "../../events/tree-event.interface";
-import { TreeBranchNode } from "../../structure/nodes/tree-branch-node.interface";
+import { GraftEvent } from "../../events/relational/graft-event";
+import { PruneEvent } from "../../events/relational/prune-event";
+import { TreeEvent } from "../../structure/tree-event.interface";
+import { TreeBranchNode } from "../../structure/tree-branch-node.interface";
 import {
    ComponentRef,
    createComponent,
@@ -13,7 +13,7 @@ import {
    ViewRef
 } from "@angular/core";
 import { BranchComponent } from "../../components/branch/branch.component";
-import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
+import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeNodeBase } from "../tree-node-base";
 import { TreeError } from "../../errors/tree-error";

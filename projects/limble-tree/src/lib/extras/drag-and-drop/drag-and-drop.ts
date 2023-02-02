@@ -4,9 +4,9 @@ import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
 import { config } from "../../core/configuration/configuration";
 import { TreeError } from "../../errors";
-import { DragEndEvent } from "../../events/drag-end-event";
-import { DragStartEvent } from "../../events/drag-start-event";
-import { ContainerTreeNode } from "../../structure/nodes/container-tree-node.interface";
+import { DragEndEvent } from "../../events/drag/drag-end-event";
+import { DragStartEvent } from "../../events/drag/drag-start-event";
+import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { dragState, DragStates } from "./drag-state";
 
 class DragAndDrop {

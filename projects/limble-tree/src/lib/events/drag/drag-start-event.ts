@@ -1,5 +1,5 @@
-import { EventConduit } from "./event-conduit.interface";
-import { TreeEvent } from "./tree-event.interface";
+import { EventConduit } from "../../structure/event-conduit.interface";
+import { TreeEvent } from "../../structure/tree-event.interface";
 
 export class DragStartEvent implements TreeEvent {
    private readonly _source: EventConduit;

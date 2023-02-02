@@ -1,4 +1,4 @@
-import { TreeEvent } from "./tree-event.interface";
+import { TreeEvent } from "../../structure/tree-event.interface";
 
 export interface RelationalTreeEvent<Parent, Child> extends TreeEvent {
    parent: () => Parent;

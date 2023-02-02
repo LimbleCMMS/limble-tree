@@ -1,6 +1,6 @@
-import { EventConduit } from "./event-conduit.interface";
+import { EventConduit } from "../../structure/event-conduit.interface";
 import { RelationalTreeEvent } from "./relational-tree-event.interface";
-import { TreeRelationship } from "../structure/tree-relationship.interface";
+import { TreeRelationship } from "../../structure/tree-relationship.interface";
 
 export class GraftEvent<T extends TreeRelationship<any, any>>
    implements RelationalTreeEvent<T["parent"], T["child"]>
