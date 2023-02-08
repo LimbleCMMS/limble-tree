@@ -73,8 +73,8 @@ class DragAndDrop {
       event: DragEvent
    ): void {
       const oldParent = treeBranch.parent();
-      const index = treeBranch.index();
-      if (oldParent === undefined || index === undefined) {
+      const oldIndex = treeBranch.index();
+      if (oldParent === undefined || oldIndex === undefined) {
          throw new Error("branch must have a parent");
       }
       event.target?.addEventListener(
@@ -83,12 +83,16 @@ class DragAndDrop {
             if (dragState.state() !== DragStates.Dropped) {
                //The drag ended but a drop never occurred, so put the dragged branch back where it started.
                this.dragAborted$.next(dragend as DragEvent);
-               this.drop(oldParent, index);
+               this.drop(oldParent, oldIndex);
             }
             dragState.restart();
             const newParent = treeBranch.parent();
             assert(newParent !== undefined);
-            treeBranch.dispatch(new DragEndEvent(treeBranch, newParent, index));
+            const newIndex = treeBranch.index();
+            assert(newIndex !== undefined);
+            treeBranch.dispatch(
+               new DragEndEvent(treeBranch, newParent, newIndex)
+            );
          },
          { once: true }
       );
