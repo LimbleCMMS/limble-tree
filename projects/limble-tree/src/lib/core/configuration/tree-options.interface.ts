@@ -38,8 +38,7 @@ export interface TreeOptions {
 
    /**
     * Whether all branches should start out in a collapsed state, so that only one
-    * level of the tree is visible at first. This can provide a performance boost for
-    * large trees. Defaults to false.
+    * level of the tree is visible at first. Defaults to false.
     */
    startAllCollapsed?: boolean;
 }

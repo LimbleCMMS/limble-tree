@@ -56,6 +56,7 @@ export class LimbleTreeRootComponent
 
    public ngOnDestroy(): void {
       this.dropSubscription?.unsubscribe();
+      this.root?.destroy();
    }
 
    public update(): void {
@@ -69,13 +70,14 @@ export class LimbleTreeRootComponent
             "LimbleTreeRootComponent's `host` property is not defined"
          );
       }
+      this.root?.destroy();
+      this.dropSubscription?.unsubscribe();
       this.root = this.legacyTree.createTreeFromLegacyArray(
          this.host,
          this.data,
          this.options
       );
       this.treeChange.emit();
-      this.dropSubscription?.unsubscribe();
       this.dropSubscription = this.root
          .events()
          .pipe(

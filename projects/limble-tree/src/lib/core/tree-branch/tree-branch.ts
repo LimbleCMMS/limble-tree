@@ -145,6 +145,14 @@ export class TreeBranch<UserlandComponent>
       this.branches().forEach((branch) => {
          branch.destroy();
       });
+      const parent = this._parent;
+      const index = this.index();
+      if (index !== undefined && parent !== undefined) {
+         const container = parent.getContents().instance.branchesContainer;
+         assert(container !== undefined);
+         container.remove(index);
+         parent.deleteBranch(index);
+      }
       this.treeNodeBase.destroy();
       this.instanceSubscriptions.forEach((sub) => {
          sub.unsubscribe();
@@ -248,6 +256,7 @@ export class TreeBranch<UserlandComponent>
       assert(container !== undefined);
       this.detachedView = container.detach(index);
       assert(this.detachedView !== null);
+      this.detachedView.detach();
       this.dispatch(
          new PruneEvent(this, {
             parent: parent,
@@ -290,6 +299,7 @@ export class TreeBranch<UserlandComponent>
       assert(this.detachedView !== null);
       const container = this._parent.getContents().instance.branchesContainer;
       assert(container !== undefined);
+      this.detachedView.reattach();
       container.insert(this.detachedView, index);
       this.detachedView = null;
    }
