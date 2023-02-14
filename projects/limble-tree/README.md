@@ -1,25 +1,44 @@
-# LimbleTree
+# Limble Tree
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.0.
+## Description
 
-## Code scaffolding
+An Angular library for building visual tree structures. Built and used by the team at [Limble](https://limblecmms.com/);
 
-Run `ng generate component component-name --project limble-tree` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project limble-tree`.
+Features:
 
-> Note: Don't forget to add `--project limble-tree` or else it will be added to the default project in your `angular.json` file.
+-  collapsibility
+-  drag-and-drop, both within a single tree and between trees.
+-  infinite tree depth
+-  hybrid trees with many different components
 
-## Build
+## Installation
 
-Run `ng build limble-tree` to build the project. The build artifacts will be stored in the `dist/` directory.
+```
+   npm install @limble/limble-tree
+```
 
-## Publishing
+## Basic Usage
 
-After building your library with `ng build limble-tree`, go to the dist folder `cd dist/limble-tree` and run `npm publish`.
+TODO
 
-## Running unit tests
+## Collapsibility
 
-Run `ng test limble-tree` to execute the unit tests via [Karma](https://karma-runner.github.io).
+TODO
 
-## Further help
+## Drag and Drop
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+TODO
+
+## Tree Events
+
+TODO
+
+-  Drag Start
+-  Drop
+-  Drag End
+-  Prune
+-  Graft
+
+## Legacy Shims
+
+TODO
