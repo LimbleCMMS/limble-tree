@@ -1,5 +1,4 @@
 import { ComponentRef } from "@angular/core";
-import { assert } from "../../../shared/assert";
 import { Subject } from "rxjs";
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
@@ -9,6 +8,7 @@ import { DragEndEvent } from "../../events/drag/drag-end-event";
 import { DragStartEvent } from "../../events/drag/drag-start-event";
 import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { dragState, DragStates } from "./drag-state";
+import { DropEvent } from "../../events/drag/drop-event";
 
 class DragAndDrop {
    public readonly dragAborted$ = new Subject<DragEvent>();
@@ -38,11 +38,8 @@ class DragAndDrop {
       if (treeBranch === undefined) {
          throw new TreeError("Cannot get dragged branch");
       }
-      treeBranch.graftTo(parent, index);
-      (
-         treeBranch.getContents().location.nativeElement as HTMLElement
-      ).style.display = "block";
-      dragState.dropped();
+      this.graftDraggedBranch(treeBranch, parent, index);
+      treeBranch.dispatch(new DropEvent(treeBranch, parent, index));
    }
 
    private getDragImageOffsets(
@@ -83,16 +80,10 @@ class DragAndDrop {
             if (dragState.state() !== DragStates.Dropped) {
                //The drag ended but a drop never occurred, so put the dragged branch back where it started.
                this.dragAborted$.next(dragend as DragEvent);
-               this.drop(oldParent, oldIndex);
+               this.graftDraggedBranch(treeBranch, oldParent, oldIndex);
             }
             dragState.restart();
-            const newParent = treeBranch.parent();
-            assert(newParent !== undefined);
-            const newIndex = treeBranch.index();
-            assert(newIndex !== undefined);
-            treeBranch.dispatch(
-               new DragEndEvent(treeBranch, newParent, newIndex)
-            );
+            treeBranch.dispatch(new DragEndEvent(treeBranch));
          },
          { once: true }
       );
@@ -103,6 +94,18 @@ class DragAndDrop {
          config.getConfig(treeBranch.root())?.allowDragging ??
          ((): true => true);
       return allowDragging(treeBranch);
+   }
+
+   private graftDraggedBranch<T>(
+      treeBranch: TreeBranch<T>,
+      parent: ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<T>>,
+      index: number
+   ): void {
+      treeBranch.graftTo(parent, index);
+      (
+         treeBranch.getContents().location.nativeElement as HTMLElement
+      ).style.display = "block";
+      dragState.dropped();
    }
 }
 

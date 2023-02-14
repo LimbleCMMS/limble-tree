@@ -15,7 +15,7 @@ import { LimbleTreeData } from "../legacy-tree-data.interface";
 import { LimbleTreeOptions } from "../legacy-tree-options.interface";
 import { TreeRoot } from "../../core";
 import { filter, Subscription } from "rxjs";
-import { DragEndEvent } from "../../events";
+import { DropEvent } from "../../events";
 
 /** @deprecated */
 @Component({
@@ -34,7 +34,7 @@ export class LimbleTreeRootComponent
    @ViewChild("host", { read: ViewContainerRef }) host?: ViewContainerRef;
 
    @Output() readonly treeChange = new EventEmitter<void>();
-   @Output() readonly treeDrop = new EventEmitter<DragEndEvent<any>>();
+   @Output() readonly treeDrop = new EventEmitter<DropEvent<any>>();
 
    private dropSubscription?: Subscription;
    private readonly legacyTree: LegacyTree;
@@ -82,8 +82,7 @@ export class LimbleTreeRootComponent
          .events()
          .pipe(
             filter(
-               (event): event is DragEndEvent<any> =>
-                  event instanceof DragEndEvent
+               (event): event is DropEvent<any> => event instanceof DropEvent
             )
          )
          .subscribe(this.treeDrop);
