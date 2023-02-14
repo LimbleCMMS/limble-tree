@@ -70,9 +70,13 @@ export class LegacyTree {
       const bindings = (node.component?.bindings ??
          options.defaultComponent?.bindings ??
          {}) as { [K in keyof T]?: T[K] | undefined };
+      const nodeData = { ...node };
+      delete nodeData.nodes;
+      delete nodeData.collapsed;
+      delete nodeData.component;
       const branch = parent.grow(component as Type<T>, {
          inputBindings: bindings,
-         meta: node
+         meta: { nodeData }
       });
       for (const childNode of node.nodes ?? []) {
          this.renderTreeNode(branch, childNode, options);

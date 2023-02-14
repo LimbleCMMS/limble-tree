@@ -221,6 +221,10 @@ export class TreeBranch<UserlandComponent>
       return index;
    }
 
+   public meta(): Record<string, any> {
+      return this.branchOptions.meta ?? {};
+   }
+
    public parent():
       | ContainerTreeNode<
            ComponentRef<NodeComponent>,
