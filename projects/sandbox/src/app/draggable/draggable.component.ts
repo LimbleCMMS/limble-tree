@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { TreeBranch, TreeDragAndDropService } from "@limble/limble-tree";
+import { TreeBranch } from "@limble/limble-tree";
 
 @Component({
    selector: "draggable",
@@ -8,11 +8,4 @@ import { TreeBranch, TreeDragAndDropService } from "@limble/limble-tree";
 })
 export class DraggableComponent {
    @Input() treeBranch?: TreeBranch<DraggableComponent>;
-
-   public constructor(private readonly dragService: TreeDragAndDropService) {}
-
-   protected dragStart(event: DragEvent): void {
-      if (this.treeBranch === undefined) return;
-      this.dragService.dragStart(this.treeBranch, event);
-   }
 }
