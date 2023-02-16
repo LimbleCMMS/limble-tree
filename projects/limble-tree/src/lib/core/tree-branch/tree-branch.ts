@@ -66,49 +66,7 @@ export class TreeBranch<UserlandComponent>
       this.contents.instance.contentToHost = this.userlandComponent;
       this.setIndentation(parent);
       this.outputBindingSubscriptions = [];
-      const contentCreatedSub = this.contents.instance.contentCreated.subscribe(
-         (userlandComponentInstance) => {
-            for (const [key, value] of Object.entries(
-               this.branchOptions.inputBindings ?? {}
-            )) {
-               (userlandComponentInstance as any)[key] = value;
-            }
-            for (const [key, value] of Object.entries(
-               this.branchOptions.outputBindings ?? {}
-            )) {
-               this.outputBindingSubscriptions.push(
-                  (userlandComponentInstance as any)[key].subscribe(value)
-               );
-            }
-            (userlandComponentInstance as any).treeBranch = this;
-            const dropzones = this.contents.instance.dropzones;
-            if (!dropzones) {
-               throw new Error("dropzones not defined");
-            }
-            dropzoneRenderer.registerDropzones(dropzones, this);
-         }
-      );
-      const showLowerZonesSub = this.contents.instance.showDropzones
-         .pipe(filter((direction) => direction === "lower"))
-         .subscribe(() => {
-            dropzoneRenderer.showLowerZones(this);
-         });
-      const showUpperZonesSub = this.contents.instance.showDropzones
-         .pipe(filter((direction) => direction === "upper"))
-         .subscribe(() => {
-            dropzoneRenderer.showUpperZones(this);
-         });
-      const droppedSub = this.contents.instance.dropped.subscribe(
-         (placement) => {
-            dropzoneRenderer.handleDrop(this, placement);
-         }
-      );
-      this.instanceSubscriptions = [
-         contentCreatedSub,
-         showLowerZonesSub,
-         showUpperZonesSub,
-         droppedSub
-      ];
+      this.instanceSubscriptions = this.getInstanceSubscriptions();
       if (
          parent instanceof TreeBranch &&
          parent.branchOptions.startCollapsed === true
@@ -296,6 +254,80 @@ export class TreeBranch<UserlandComponent>
    ): void {
       callback(this);
       this.treeNodeBase.traverse(callback);
+   }
+
+   private getContentCreatedSub(): Subscription {
+      const instance = this.contents.instance;
+      return instance.contentCreated.subscribe((userlandComponentInstance) => {
+         for (const [key, value] of Object.entries(
+            this.branchOptions.inputBindings ?? {}
+         )) {
+            (userlandComponentInstance as any)[key] = value;
+         }
+         for (const [key, value] of Object.entries(
+            this.branchOptions.outputBindings ?? {}
+         )) {
+            this.outputBindingSubscriptions.push(
+               (userlandComponentInstance as any)[key].subscribe(value)
+            );
+         }
+         (userlandComponentInstance as any).treeBranch = this;
+         const dropzones = instance.dropzones;
+         if (!dropzones) {
+            throw new Error("dropzones not defined");
+         }
+         dropzoneRenderer.registerDropzones(dropzones, this);
+      });
+   }
+
+   private getInstanceSubscriptions(): Array<Subscription> {
+      const droppedSub = this.contents.instance.dropped.subscribe(
+         (placement) => {
+            dropzoneRenderer.handleDrop(this, placement);
+         }
+      );
+      return [
+         this.getContentCreatedSub(),
+         this.getShowLowerZonesSub(),
+         this.getShowUpperZonesSub(),
+         droppedSub
+      ];
+   }
+
+   private getShowLowerZonesSub(): Subscription {
+      const instance = this.contents.instance;
+      return instance.showDropzones
+         .pipe(filter((direction) => direction === "lower"))
+         .subscribe(() => {
+            const currentDropzoneDisplayed =
+               dropzoneRenderer.getCurrentDisplay();
+            if (
+               currentDropzoneDisplayed?.treeBranch === this &&
+               currentDropzoneDisplayed.direction === "lower"
+            ) {
+               return;
+            }
+            dropzoneRenderer.showLowerZones(this);
+            instance.triggerChangeDetection();
+         });
+   }
+
+   private getShowUpperZonesSub(): Subscription {
+      const instance = this.contents.instance;
+      return instance.showDropzones
+         .pipe(filter((direction) => direction === "upper"))
+         .subscribe(() => {
+            const currentDropzoneDisplayed =
+               dropzoneRenderer.getCurrentDisplay();
+            if (
+               currentDropzoneDisplayed?.treeBranch === this &&
+               currentDropzoneDisplayed.direction === "upper"
+            ) {
+               return;
+            }
+            dropzoneRenderer.showUpperZones(this);
+            instance.triggerChangeDetection();
+         });
    }
 
    private reattachView(index?: number): void {

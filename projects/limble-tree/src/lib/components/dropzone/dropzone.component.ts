@@ -1,12 +1,13 @@
 import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { DragoverNoChangeDetectDirective } from "../branch/dragover-no-change-detect";
 
 @Component({
    standalone: true,
    selector: "dropzone",
    templateUrl: "./dropzone.component.html",
    styleUrls: ["./dropzone.component.scss"],
-   imports: [CommonModule]
+   imports: [CommonModule, DragoverNoChangeDetectDirective]
 })
 export class DropzoneComponent {
    @Input() placement?: "inner" | "lateral";

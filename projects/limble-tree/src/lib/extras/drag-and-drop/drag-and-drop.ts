@@ -9,6 +9,7 @@ import { DragStartEvent } from "../../events/drag/drag-start-event";
 import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { dragState, DragStates } from "./drag-state";
 import { DropEvent } from "../../events/drag/drop-event";
+import { assert } from "../../../shared/assert";
 
 class DragAndDrop {
    public readonly dragAborted$ = new Subject<DragEvent>();
@@ -83,7 +84,18 @@ class DragAndDrop {
                this.graftDraggedBranch(treeBranch, oldParent, oldIndex);
             }
             dragState.restart();
-            treeBranch.dispatch(new DragEndEvent(treeBranch));
+            const newParent = treeBranch.parent();
+            assert(newParent !== undefined);
+            const newIndex = treeBranch.index();
+            assert(newIndex !== undefined);
+            treeBranch.dispatch(
+               new DragEndEvent(treeBranch, {
+                  oldParent,
+                  oldIndex,
+                  newParent,
+                  newIndex
+               })
+            );
          },
          { once: true }
       );

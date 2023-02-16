@@ -3,6 +3,6 @@
    [ngClass]="{ active: active }"
    (dragenter)="dragenterHandler()"
    (dragleave)="dragleaveHandler()"
-   (dragover)="dragoverHandler($event)"
+   (dragoverNoChangeDetect)="dragoverHandler($event)"
    (drop)="dropHandler($event)"
 ></div>

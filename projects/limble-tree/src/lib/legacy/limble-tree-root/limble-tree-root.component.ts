@@ -15,7 +15,8 @@ import { LimbleTreeData } from "../legacy-tree-data.interface";
 import { LimbleTreeOptions } from "../legacy-tree-options.interface";
 import { TreeRoot } from "../../core";
 import { filter, Subscription } from "rxjs";
-import { DropEvent } from "../../events";
+import { DragEndEvent } from "../../events";
+import { assert } from "dist/limble-tree/shared/assert";
 
 /** @deprecated */
 @Component({
@@ -27,14 +28,14 @@ export class LimbleTreeRootComponent
    implements AfterViewInit, OnChanges, OnDestroy
 {
    @Input() data?: LimbleTreeData;
-   @Input() options?: LimbleTreeOptions;
-   @Input() itemsPerPage?: number;
-   @Input() page?: number;
+   @Input() options?: LimbleTreeOptions | undefined;
+   @Input() itemsPerPage: number = Infinity;
+   @Input() page: number = 1;
 
    @ViewChild("host", { read: ViewContainerRef }) host?: ViewContainerRef;
 
    @Output() readonly treeChange = new EventEmitter<void>();
-   @Output() readonly treeDrop = new EventEmitter<DropEvent<any>>();
+   @Output() readonly treeDrop = new EventEmitter<DragEndEvent<any>>();
 
    private dropSubscription?: Subscription;
    private readonly legacyTree: LegacyTree;
@@ -72,9 +73,10 @@ export class LimbleTreeRootComponent
       }
       this.root?.destroy();
       this.dropSubscription?.unsubscribe();
+      const dataSlice = this.paginatedData();
       this.root = this.legacyTree.createTreeFromLegacyArray(
          this.host,
-         this.data,
+         dataSlice,
          this.options
       );
       this.treeChange.emit();
@@ -82,9 +84,21 @@ export class LimbleTreeRootComponent
          .events()
          .pipe(
             filter(
-               (event): event is DropEvent<any> => event instanceof DropEvent
+               (event): event is DragEndEvent<any> =>
+                  event instanceof DragEndEvent
             )
          )
          .subscribe(this.treeDrop);
+   }
+
+   private paginatedData(): LimbleTreeData {
+      assert(this.data !== undefined);
+      if (this.options?.listMode !== true) {
+         return this.data;
+      }
+      return this.data.slice(
+         this.page * this.itemsPerPage,
+         (this.page + 1) * this.itemsPerPage
+      );
    }
 }

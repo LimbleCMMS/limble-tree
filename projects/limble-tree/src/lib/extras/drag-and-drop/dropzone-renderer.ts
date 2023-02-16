@@ -79,6 +79,14 @@ class DropzoneRenderer {
       }
    }
 
+   public getCurrentDisplay(): {
+      treeBranch: TreeBranch<any> | TreeRoot<any>;
+      direction: "upper" | "lower";
+   } | null {
+      if (this.currentDisplay === null) return null;
+      return { ...this.currentDisplay };
+   }
+
    public getDropzoneLocation<T>(
       dropzone: DropzoneComponent
    ): [TreeBranch<T> | TreeRoot<T>, "inner" | "lateral"] {
@@ -127,12 +135,6 @@ class DropzoneRenderer {
    }
 
    public showLowerZones<T>(treeNode: TreeBranch<T> | TreeRoot<T>): void {
-      if (
-         this.currentDisplay?.treeBranch === treeNode &&
-         this.currentDisplay.direction === "lower"
-      ) {
-         return;
-      }
       this.clearCurrentDisplay();
       this.showInnerZone(treeNode);
       if (treeNode.branches().length === 0) {
@@ -142,12 +144,6 @@ class DropzoneRenderer {
    }
 
    public showUpperZones<T>(treeBranch: TreeBranch<T>): void {
-      if (
-         this.currentDisplay?.treeBranch === treeBranch &&
-         this.currentDisplay.direction === "upper"
-      ) {
-         return;
-      }
       this.clearCurrentDisplay();
       this.loopThroughUpperZones(treeBranch);
       this.currentDisplay = { treeBranch, direction: "upper" };

@@ -1,10 +1,12 @@
 import { CommonModule } from "@angular/common";
 import {
    AfterViewInit,
+   ApplicationRef,
    Component,
    ComponentRef,
    EventEmitter,
    Input,
+   NgZone,
    OnDestroy,
    Output,
    QueryList,
@@ -18,13 +20,14 @@ import { TreeError } from "../../errors";
 import { DropzoneComponent } from "../dropzone/dropzone.component";
 import { HostComponent } from "../host-component.interface";
 import { NodeComponent } from "../node-component.interface";
+import { DragoverNoChangeDetectDirective } from "./dragover-no-change-detect";
 
 @Component({
    standalone: true,
    selector: "branch",
    templateUrl: "./branch.component.html",
    styleUrls: ["./branch.component.scss"],
-   imports: [CommonModule, DropzoneComponent]
+   imports: [CommonModule, DropzoneComponent, DragoverNoChangeDetectDirective]
 })
 export class BranchComponent<T>
    implements NodeComponent, HostComponent<T>, AfterViewInit, OnDestroy
@@ -47,6 +50,8 @@ export class BranchComponent<T>
    public showLateralDropzone: boolean = false;
 
    private hostedContent?: ComponentRef<T>;
+
+   public constructor(private readonly appRef: ApplicationRef) {}
 
    public ngAfterViewInit(): void {
       if (this.contentContainer === undefined) {
@@ -76,6 +81,12 @@ export class BranchComponent<T>
 
    public getHostedContent(): ComponentRef<T> | undefined {
       return this.hostedContent;
+   }
+
+   public triggerChangeDetection(): void {
+      if (!NgZone.isInAngularZone()) {
+         this.appRef.tick();
+      }
    }
 
    protected dragoverHandler(event: DragEvent): void {

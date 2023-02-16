@@ -10,10 +10,7 @@ import { treeCollapser } from "../extras/collapse/collapse";
  * @deprecated
  */
 export class LegacyTree {
-   /**
-    * Creates a v1 tree structure from a v0 data array and v0 tree options.
-    * Note: the `listMode` and `collapsible` options will be ignored.
-    */
+   /** Creates a v1 tree structure from a v0 data array and v0 tree options. */
    public createTreeFromLegacyArray<Component>(
       container: ViewContainerRef,
       data: LimbleTreeData,
@@ -31,6 +28,9 @@ export class LegacyTree {
       return {
          indentation: legacyOptions.indent,
          allowNesting: (branch): boolean => {
+            if (legacyOptions.listMode === true) {
+               return false;
+            }
             if (legacyOptions.allowNesting === undefined) {
                return true;
             }
