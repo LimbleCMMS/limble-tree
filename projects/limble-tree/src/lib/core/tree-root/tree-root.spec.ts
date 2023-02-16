@@ -1,13 +1,13 @@
 import { first } from "rxjs";
-import { TreeNode } from "../../structure/nodes/tree-node.interface";
+import { TreeNode } from "../../structure/tree-node.interface";
 import { TreeRoot } from "./tree-root";
-import { TreeEvent } from "../../events/tree-event.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
 import { ViewRef } from "@angular/core";
 import { getViewContainer } from "../../test-util/virtual";
 import { getStandardBranch } from "../../test-util/standard-branch";
 import { EmptyComponent } from "../../test-util/empty.component";
 import { createNullEvent } from "../../test-util/null-event";
+import { TreeEvent } from "../../structure";
 
 describe("TreeRoot", () => {
    it("should start with no branches", () => {

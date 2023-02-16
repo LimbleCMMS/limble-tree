@@ -4,14 +4,14 @@ import { GraftEvent } from "../../events/relational/graft-event";
 import { PruneEvent } from "../../events/relational/prune-event";
 import { TreeRoot } from "../tree-root/tree-root";
 import { TreeBranch } from "./tree-branch";
-import { TreeNode } from "../../structure/nodes/tree-node.interface";
+import { TreeNode } from "../../structure/tree-node.interface";
 import { BranchComponent } from "../../components/branch/branch.component";
-import { TreeEvent } from "../../events/tree-event.interface";
 import { getStandardBranch } from "../../test-util/standard-branch";
 import { getViewContainer } from "../../test-util/virtual";
 import { EmptyComponent } from "../../test-util/empty.component";
 import { TreeError } from "../../errors/tree-error";
 import { createNullEvent } from "../../test-util/null-event";
+import { TreeEvent } from "../../structure";
 
 describe("TreeBranch", () => {
    it("should start with no branches", () => {
