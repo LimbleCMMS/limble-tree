@@ -11,6 +11,10 @@ export class TreeDragAndDropService {
       dragAndDrop.dragStart(treeBranch, event);
    }
 
+   public clearDropzones(): void {
+      dropzoneRenderer.clearCurrentDisplay();
+   }
+
    public showRootDropzone<T>(root: TreeRoot<T>): void {
       dropzoneRenderer.showLowerZones(root);
    }
