@@ -1,5 +1,4 @@
 import {
-   ApplicationRef,
    Component,
    ComponentRef,
    ViewChild,
@@ -17,8 +16,6 @@ export class VirtualComponent implements NodeComponent {
    @ViewChild("container", { read: ViewContainerRef })
    public branchesContainer: ViewContainerRef | undefined;
    public showInnerDropzone: boolean = false;
-
-   public constructor(public readonly app: ApplicationRef) {}
 }
 
 function getVirtualComponent(): ComponentRef<VirtualComponent> {

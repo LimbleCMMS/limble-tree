@@ -97,8 +97,8 @@ export class LimbleTreeRootComponent
          return this.data;
       }
       return this.data.slice(
-         this.page * this.itemsPerPage,
-         (this.page + 1) * this.itemsPerPage
+         (this.page - 1) * this.itemsPerPage,
+         this.page * this.itemsPerPage
       );
    }
 }
