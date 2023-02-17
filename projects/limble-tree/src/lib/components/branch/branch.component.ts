@@ -20,7 +20,7 @@ import { TreeError } from "../../errors";
 import { DropzoneComponent } from "../dropzone/dropzone.component";
 import { HostComponent } from "../host-component.interface";
 import { NodeComponent } from "../node-component.interface";
-import { DragoverNoChangeDetectDirective } from "./dragover-no-change-detect";
+import { DragoverNoChangeDetectDirective } from "../../extras/drag-and-drop/dragover-no-change-detect";
 
 @Component({
    standalone: true,
