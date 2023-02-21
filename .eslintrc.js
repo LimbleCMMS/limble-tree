@@ -15,7 +15,7 @@ const angularEslintTemplateRules = require("./eslint/angular-eslint_template.js"
 
 /**
  * This object contains a combination of all the various rules files
- * for javascript and typescript and linting
+ * for javascript and typescript linting
  */
 const scriptRules = Object.assign(
    {},

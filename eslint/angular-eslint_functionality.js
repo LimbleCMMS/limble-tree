@@ -29,7 +29,7 @@ module.exports = {
     *
     * @remarks
     * This is off because I don't know why the attribute decorator is detrimental.
-    * It seems useful in certain circumstances.
+    * It seems useful in certain circumstances. We can revisit in the future.
     */
    "@angular-eslint/no-attribute-decorator": 0,
    /**
