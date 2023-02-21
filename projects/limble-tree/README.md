@@ -38,7 +38,3 @@ TODO
 -  Drag End
 -  Prune
 -  Graft
-
-## Legacy Shims
-
-TODO
