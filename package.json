@@ -11,6 +11,7 @@
       "format": "prettier ./ --write",
       "format:check": "prettier ./ --check",
       "lint": "eslint \"projects/limble-tree/src\" \"projects/sandbox/src\" --cache --cache-location eslint/.eslintcache --ext .js --ext .ts --ext .html",
+      "lint:strict": "eslint \"projects/limble-tree/src\" \"projects/sandbox/src\" --cache --cache-location eslint/.eslintcache --ext .js --ext .ts --ext .html --max-warnings=0",
       "ng": "ng",
       "publishPackage": "npm run build && cd dist/limble-tree && npm publish",
       "start": "ng serve",
