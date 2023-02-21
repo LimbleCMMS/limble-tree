@@ -37,12 +37,10 @@ module.exports = {
       /** Tells eslint whether to assume that the code is in a browser environment */
       browser: true,
       es2021: true,
-      jasmine: true,
-      worker: true,
-      serviceworker: true
+      jasmine: true
    },
    /** Files that eslint should ignore */
-   ignorePatterns: ["node_modules", "scripts", ".eslintrc.js", "eslint"],
+   ignorePatterns: ["node_modules", ".eslintrc.js", "eslint"],
    overrides: [
       {
          files: ["*.ts", "*.js"],
