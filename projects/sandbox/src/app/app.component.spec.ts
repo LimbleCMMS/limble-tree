@@ -1,11 +1,12 @@
 import { TestBed } from "@angular/core/testing";
 import { RouterTestingModule } from "@angular/router/testing";
+import { LimbleTreeModule } from "@limble/limble-tree";
 import { AppComponent } from "./app.component";
 
 describe("AppComponent", () => {
    beforeEach(async () => {
       await TestBed.configureTestingModule({
-         imports: [RouterTestingModule],
+         imports: [RouterTestingModule, LimbleTreeModule],
          declarations: [AppComponent]
       }).compileComponents();
    });

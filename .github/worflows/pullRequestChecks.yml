@@ -45,5 +45,9 @@ jobs:
            run: npm ci
          - name: Generate Routes
            run: npm run routes
-         - name: Test
-           run: npm run ng test -- --no-watch --no-progress --browsers=ChromeHeadless
+         - name: Build limble-tree
+           run: npm run ng build -- limble-tree
+         - name: Test limble-tree
+           run: npm run ng test -- limble-tree --no-watch --no-progress --browsers=ChromeHeadless
+         - name: Test sandbox
+           run: npm run ng test -- sandbox --no-watch --no-progress --browsers=ChromeHeadless
