@@ -1,6 +1,9 @@
 import { NgModule } from "@angular/core";
 import { TreeCollapseModule } from "./extras/collapse";
-import { TreeDragAndDropModule } from "./extras/drag-and-drop";
+import {
+   DragoverNoChangeDetectDirective,
+   TreeDragAndDropModule
+} from "./extras/drag-and-drop";
 import { TreeService } from "./core/tree-service/tree.service";
 import { LimbleTreeLegacyModule } from "./legacy";
 import { DraggableDirective } from "./extras/drag-and-drop/draggable.directive";
@@ -11,14 +14,16 @@ import { DraggableDirective } from "./extras/drag-and-drop/draggable.directive";
       LimbleTreeLegacyModule,
       TreeCollapseModule,
       TreeDragAndDropModule,
-      DraggableDirective
+      DraggableDirective,
+      DragoverNoChangeDetectDirective
    ],
    providers: [TreeService],
    exports: [
       LimbleTreeLegacyModule,
       TreeCollapseModule,
       TreeDragAndDropModule,
-      DraggableDirective
+      DraggableDirective,
+      DragoverNoChangeDetectDirective
    ]
 })
 export class LimbleTreeModule {}

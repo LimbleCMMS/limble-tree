@@ -7,12 +7,19 @@ import { dropzoneRenderer } from "./dropzone-renderer";
 
 @Injectable()
 export class TreeDragAndDropService {
+   public clearDropzones(): void {
+      dropzoneRenderer.clearCurrentDisplay();
+   }
+
    public dragStart<T>(treeBranch: TreeBranch<T>, event: DragEvent): void {
       dragAndDrop.dragStart(treeBranch, event);
    }
 
-   public clearDropzones(): void {
-      dropzoneRenderer.clearCurrentDisplay();
+   public getCurrentlyDisplayedDropzoneFamily(): {
+      treeBranch: TreeRoot<any> | TreeBranch<any>;
+      direction: "upper" | "lower";
+   } | null {
+      return dropzoneRenderer.getCurrentDisplay();
    }
 
    public showRootDropzone<T>(root: TreeRoot<T>): void {

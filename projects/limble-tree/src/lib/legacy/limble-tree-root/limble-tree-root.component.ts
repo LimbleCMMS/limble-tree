@@ -34,7 +34,7 @@ export class LimbleTreeRootComponent
 
    @ViewChild("host", { read: ViewContainerRef }) host?: ViewContainerRef;
 
-   @Output() readonly treeChange = new EventEmitter<void>();
+   @Output() readonly treeChange = new EventEmitter<TreeRoot<any>>();
    @Output() readonly treeDrop = new EventEmitter<DragEndEvent<any>>();
 
    private dropSubscription?: Subscription;
@@ -60,6 +60,10 @@ export class LimbleTreeRootComponent
       this.root?.destroy();
    }
 
+   public getRoot(): TreeRoot<any> | undefined {
+      return this.root;
+   }
+
    public update(): void {
       if (this.data === undefined) {
          throw new TreeError(
@@ -79,7 +83,6 @@ export class LimbleTreeRootComponent
          dataSlice,
          this.options
       );
-      this.treeChange.emit();
       this.dropSubscription = this.root
          .events()
          .pipe(
@@ -89,6 +92,7 @@ export class LimbleTreeRootComponent
             )
          )
          .subscribe(this.treeDrop);
+      this.treeChange.emit(this.root);
    }
 
    private paginatedData(): LimbleTreeData {
