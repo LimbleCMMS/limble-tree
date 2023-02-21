@@ -1,0 +1,6 @@
+# Generated code need not be formatted
+dist/*
+.angular/*
+
+# Third-party code need not be formatted
+node_modules/*
