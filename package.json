@@ -14,7 +14,7 @@
       "lint": "eslint \"projects/limble-tree/src\" \"projects/sandbox/src\" --cache --cache-location eslint/.eslintcache --ext .js --ext .ts --ext .html",
       "lint:strict": "eslint \"projects/limble-tree/src\" \"projects/sandbox/src\" --cache --cache-location eslint/.eslintcache --ext .js --ext .ts --ext .html --max-warnings=0",
       "ng": "ng",
-      "publishPackage": "npm run build && cd dist/limble-tree && npm publish",
+      "publishPackage": "npm run check && rm -rf dist/limble-tree && npm run build && cd dist/limble-tree && npm publish",
       "start": "ng serve",
       "test": "ng test --no-watch --no-progress",
       "test:limble-tree": "ng test limble-tree",
