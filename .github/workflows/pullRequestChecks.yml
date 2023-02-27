@@ -43,8 +43,6 @@ jobs:
               cache: "npm"
          - name: Install Modules
            run: npm ci
-         - name: Generate Routes
-           run: npm run routes
          - name: Build limble-tree
            run: npm run ng build -- limble-tree
          - name: Test limble-tree
