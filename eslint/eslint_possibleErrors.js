@@ -37,10 +37,9 @@ module.exports = {
     * disallow `await` inside of loops
     *
     * @remarks
-    * This is level 1 because there may be some very rare cases where
-    * breaking this rule is acceptable. However, most of the time it
-    * is either a mistake or an indication that the code should be
-    * rewritten to be more efficient.
+    * This is level 1 because it may be useful for simulations in
+    * development; but most of the time it is either a mistake or an
+    * indication that the code should be rewritten to be more efficient.
     */
    "no-await-in-loop": 1,
 
@@ -70,11 +69,11 @@ module.exports = {
     * disallow the use of `console`
     *
     * @remarks
-    * This is off mostly because developers didn't like it. We might
-    * turn it back on at level 1 in the future, and configure it to only
-    * disallow `console.log`.
+    * This is level 1 because it is often necessary to use `console` in
+    * development, but most console methods should not exist in production.
+    * Some possible exceptions are allowed.
     */
-   "no-console": 0,
+   "no-console": [1, { allow: ["assert", "debug", "error", "info", "warn"] }],
 
    /**
     * disallow constant expressions in conditions
@@ -331,30 +330,30 @@ module.exports = {
     * disallow template literal placeholder syntax in regular strings
     *
     * @remarks
-    * This is level 1 because such code is probably a mistake -- the author
-    * probably intended for the string to a template literal. However, it is
-    * not level 2 because there may be rare cases where this is intentional.
+    * Such code is usually a mistake -- the author probably intended for
+    * the string to be a template literal -- but there may be rare cases where
+    * this is intentional, so we have it turned off. Additionally, the IDE
+    * syntax highlights should already make it obvious if there is a problem.
     */
-   "no-template-curly-in-string": 1,
+   "no-template-curly-in-string": 0,
 
    /**
     * disallow confusing multiline expressions
     *
     * @remarks
-    * Prettier will usually take care of these cases, but we made this rule
-    * level 2 just to make sure prettier doesn't miss something. There is
-    * no reason to have a confusing multiline statement.
+    * Prettier already takes care of this.
     */
-   "no-unexpected-multiline": 2,
+   "no-unexpected-multiline": 0,
 
    /**
     * disallow unreachable code after `return`, `throw`, `continue`, and
     * `break` statements
     *
     * @remarks
-    * Obviously, unreachable code is useless and should be removed.
+    * Obviously, unreachable code is useless and should be removed. It is
+    * not level 2 because such code may exist temporarily during development.
     */
-   "no-unreachable": 2,
+   "no-unreachable": 1,
 
    /**
     * disallow loops with a body that allows only one iteration
@@ -397,19 +396,42 @@ module.exports = {
     * of `await` or `yield`
     *
     * @remarks
-    * This rule's documentation is incomplete. The rule actually flags a
-    * lot more code than the docs indicate. See the thread at
-    * https://github.com/eslint/eslint/issues/11899. A lot of people think
-    * this rule is broken, but it is actually really good at finding race
-    * conditions around `await` statements. But the fact that the docs are
-    * wrong and the fact that it doesn't find other kinds of race conditions
-    * (such as those in a .then() callback) makes it rather misleading.
+    * This rule's documentation is incomplete. The rule actually flags more
+    * code than the docs indicate. It will try to flag code when all of these
+    * conditions are met:
+    *
+    * 1. A variable or property is assigned or created before an await statement
+    * 2. That same variable or property is modified after the await statement
+    * 3. The parser cannot verify that the variable would not be accessible while the function is waiting.
+    *
+    * Following this rule reduces the risk of a race condition, such as
+    *
+    * ```typescript
+    * let x = 0;
+    * async function clickRedButton() {
+    *    if (typeof x === "number") {
+    *       const y = await someLongProcess(); //If the blue button is clicked while we are waiting...
+    *       x += y; //...then this line will error because x is now an object.
+    *    }
+    * }
+    * async function clickBlueButton() {
+    *    x = {num: 0};
+    * }
+    * ```
+    *
+    * However, this rule doesn't always flag code that meets the three conditions above.
+    * It is not consistent. It also doesn't apply to `.then()` callbacks, only `await`.
+    *
+    * Because the docs are incomplete and the rule doesn't catch all cases, a lot of people think
+    * this rule is broken (See the thread at https://github.com/eslint/eslint/issues/11899).
+    * But it is actually really useful for finding possible race
+    * conditions around `await` statements. Unfortunately, due to the problems mentioned
+    * above, it is a very confusing rule to implement (unless you are reading this comment!).
     *
     * Code flagged by this rule could easily lead to bugs, and indicates a poor
     * design. It should be refactored to avoid race conditions. However, because
-    * of the problems mentioned above, and because it would require a good
-    * amount of refactoring, we have it turned off for now. We should turn it on
-    * in the future.
+    * of the problems mentioned above, we have it turned off for now. We might revisit
+    * in the future if these problems are mitigated.
     */
    "require-atomic-updates": 0,
 

@@ -7,20 +7,20 @@
          "projectType": "library",
          "root": "projects/limble-tree",
          "sourceRoot": "projects/limble-tree/src",
-         "prefix": "",
+         "prefix": "limble-tree",
          "architect": {
             "build": {
                "builder": "@angular-devkit/build-angular:ng-packagr",
                "options": {
-                  "tsConfig": "projects/limble-tree/tsconfig.lib.json",
                   "project": "projects/limble-tree/ng-package.json"
                },
                "configurations": {
                   "production": {
-                     "tsConfig": "projects/limble-tree/tsconfig.lib.prod.json",
-                     "project": "projects/limble-tree/ng-package.json"
+                     "tsConfig": "projects/limble-tree/tsconfig.lib.prod.json"
                   },
-                  "development": {}
+                  "development": {
+                     "tsConfig": "projects/limble-tree/tsconfig.lib.json"
+                  }
                },
                "defaultConfiguration": "production"
             },
@@ -53,53 +53,49 @@
                   "main": "projects/sandbox/src/main.ts",
                   "polyfills": "projects/sandbox/src/polyfills.ts",
                   "tsConfig": "projects/sandbox/tsconfig.app.json",
+                  "inlineStyleLanguage": "scss",
                   "assets": [
                      "projects/sandbox/src/favicon.ico",
                      "projects/sandbox/src/assets"
                   ],
                   "styles": ["projects/sandbox/src/styles.scss"],
-                  "scripts": [],
-                  "vendorChunk": true,
-                  "extractLicenses": false,
-                  "buildOptimizer": false,
-                  "sourceMap": true,
-                  "optimization": false,
-                  "namedChunks": true
+                  "scripts": []
                },
                "configurations": {
                   "production": {
+                     "budgets": [
+                        {
+                           "type": "initial",
+                           "maximumWarning": "500kb",
+                           "maximumError": "1mb"
+                        },
+                        {
+                           "type": "anyComponentStyle",
+                           "maximumWarning": "2kb",
+                           "maximumError": "4kb"
+                        }
+                     ],
                      "fileReplacements": [
                         {
                            "replace": "projects/sandbox/src/environments/environment.ts",
                            "with": "projects/sandbox/src/environments/environment.prod.ts"
                         }
                      ],
-                     "optimization": true,
-                     "outputHashing": "all",
-                     "namedChunks": false,
-                     "extractLicenses": true,
-                     "vendorChunk": false,
-                     "buildOptimizer": true,
-                     "budgets": [
-                        {
-                           "type": "initial",
-                           "maximumWarning": "2mb",
-                           "maximumError": "5mb"
-                        },
-                        {
-                           "type": "anyComponentStyle",
-                           "maximumWarning": "6kb",
-                           "maximumError": "10kb"
-                        }
-                     ]
+                     "outputHashing": "all"
                   },
-                  "development": {}
+                  "development": {
+                     "buildOptimizer": false,
+                     "optimization": false,
+                     "vendorChunk": true,
+                     "extractLicenses": false,
+                     "sourceMap": true,
+                     "namedChunks": true
+                  }
                },
                "defaultConfiguration": "production"
             },
             "serve": {
                "builder": "@angular-devkit/build-angular:dev-server",
-               "options": {},
                "configurations": {
                   "production": {
                      "browserTarget": "sandbox:build:production"
@@ -123,6 +119,7 @@
                   "polyfills": "projects/sandbox/src/polyfills.ts",
                   "tsConfig": "projects/sandbox/tsconfig.spec.json",
                   "karmaConfig": "projects/sandbox/karma.conf.js",
+                  "inlineStyleLanguage": "scss",
                   "assets": [
                      "projects/sandbox/src/favicon.ico",
                      "projects/sandbox/src/assets"
@@ -130,21 +127,6 @@
                   "styles": ["projects/sandbox/src/styles.scss"],
                   "scripts": []
                }
-            },
-            "e2e": {
-               "builder": "@angular-devkit/build-angular:protractor",
-               "options": {
-                  "protractorConfig": "projects/sandbox/e2e/protractor.conf.js"
-               },
-               "configurations": {
-                  "production": {
-                     "devServerTarget": "sandbox:serve:production"
-                  },
-                  "development": {
-                     "devServerTarget": "sandbox:serve:development"
-                  }
-               },
-               "defaultConfiguration": "development"
             }
          }
       }

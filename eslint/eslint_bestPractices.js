@@ -48,21 +48,24 @@ module.exports = {
     * enforce a maximum cyclomatic complexity allowed in a program
     *
     * @remarks
-    * This is turned off because it marks large swaths of code, and that
-    * was bugging some of our developers. We will almost certainly turn
-    * this on slowly in the future.
+    * High complexity equals high number of bugs and low maintainability. We
+    * should keep complexity as low as possible. We have the `max` set extremely
+    * high for the time being to accommodate current code, but we should slowly
+    * lower it over time. The default is 20, which is probably a good goal.
     */
-   "complexity": 0,
+   "complexity": [1, { max: 261 }],
 
    /**
     * require `return` statements to either always or never specify values
     *
     * @remarks
-    * This is set to level 2 because code that doesn't follow the rule will
-    * not be typescript compliant when we make the switch. It is also just
-    * less consistent/clear.
+    * This is set to level 0 because typescript will already help ensure
+    * consistent return types, and this rule is not always smart enough
+    * to know that what appears inconsistent is actually fine: Eg, a function
+    * that has some empty return statements as well as a statement that
+    * returns a function call which returns `void`.
     */
-   "consistent-return": 2,
+   "consistent-return": 0,
 
    /**
     * enforce consistent brace style for all control statements
@@ -88,10 +91,11 @@ module.exports = {
     * enforce default clauses in switch statements to be last
     *
     * @remarks
-    * This is level 2 just to enforce consistency and readability.
-    * There is no reason not to do this.
+    * This is level 1 just to enforce consistency and readability.
+    * There may be some instances where we want the default case
+    * to fall through to one of the other cases, so it isn't level 2.
     */
-   "default-case-last": 2,
+   "default-case-last": 1,
 
    /**
     * enforce default parameters to be last
@@ -123,8 +127,10 @@ module.exports = {
     * require the use of `===` and `!==`
     *
     * @remarks
-    * We are not ready to implement this yet, but we should revisit it
-    * in the future (maybe after conversion to typescript).
+    * Greatly reduces confusion surrounding type coercion. We currently
+    * violate this rule a lot, and it is hard to fix without better typescript,
+    * so we are leaving it at level 0 until we can get on top of it.
+    * Revisit in the future.
     */
    "eqeqeq": 0,
 
@@ -162,9 +168,8 @@ module.exports = {
     *
     * @remarks
     * This is set to level 1 because these functions are generally a poor
-    * user experience. It is not level 2 because it isn't a huge priority
-    * right now, but we don't want new instances cropping up.  Revisit in
-    * the future.
+    * user experience. It is not level 2 because we might use them during
+    * development.
     */
    "no-alert": 1,
 
@@ -214,7 +219,7 @@ module.exports = {
     * This is level 1 because this rule leads to slightly cleaner and more
     * readable code, but it seems like overkill to say it is level 2.
     */
-   "no-else-return": 0,
+   "no-else-return": 1,
 
    /**
     * disallow empty functions
@@ -229,19 +234,16 @@ module.exports = {
     * disallow empty destructuring patterns
     *
     * @remarks
-    * This is level 1 because I don't know anything about destructuring,
-    * but eslint has it listed as one of the "recommended" rules. We
-    * should take another look in the future.
+    * This is level 2 because such code is pointless and is probably a
+    * mistake.
     */
-   "no-empty-pattern": 1,
+   "no-empty-pattern": 2,
 
    /**
     * disallow `null` comparisons without type-checking operators
     *
     * @remarks
-    * This is off because we are not ready to fix these problems yet.
-    * We should definitely turn this on in the future. Note that this
-    * rule would not be applicable when the `eqeqeq` rule is on.
+    * Not applicable when the `eqeqeq` rule is on.
     */
    "no-eq-null": 0,
 
@@ -286,11 +288,9 @@ module.exports = {
     * disallow fallthrough of `case` statements
     *
     * @remarks
-    * This is level 1 because fallthrough is usually a mistake. It
-    * is not level 2 because sometimes fallthrough cases are
-    * intended.
+    * This is off because sometimes fallthrough cases are intentional.
     */
-   "no-fallthrough": 1,
+   "no-fallthrough": 0,
 
    /**
     * disallow leading or trailing decimal points in numeric literals
@@ -404,7 +404,7 @@ module.exports = {
    "no-multi-spaces": 0,
 
    /**
-    * disallow multiple spaces
+    * disallows multi-line strings
     *
     * @remarks
     * This is level 0 because Prettier already takes care of it.
@@ -473,11 +473,9 @@ module.exports = {
     * disallow reassigning `function` parameters
     *
     * @remarks
-    * This is level 1 because such code can be confusing and bug-prone. It
-    * is not level 2 mostly because we don't follow it very well and it
-    * annoys some of the developers.
+    * This is level 2 because such code can be confusing and bug-prone.
     */
-   "no-param-reassign": 1,
+   "no-param-reassign": 2,
 
    /**
     * disallow the use of the `__proto__` property
@@ -501,68 +499,12 @@ module.exports = {
 
    /**
     * disallow certain properties on certain objects
+    *
+    * @remarks
+    * We don't have any restricted properties right now, but we have in
+    * the past and may again in the future.
     */
-   "no-restricted-properties": [
-      2,
-      {
-         object: "$q",
-         message: "Use native Promises or $http instead of the old $q library"
-      },
-      {
-         object: "$provide",
-         property: "provider",
-         message: "Avoid creating providers dynamically: use module.provider instead."
-      },
-      {
-         object: "$provide",
-         property: "constant",
-         message:
-            "Use ES6 imports/exports for constants that need to be accessed across multiple files"
-      },
-      {
-         object: "$provide",
-         property: "value",
-         message:
-            "Avoid creating angular values dynamically. Consider using ES6 imports/exports for values that need to be accessed across multiple files. If needed, use a service instead."
-      },
-      {
-         object: "$provide",
-         property: "factory",
-         message: "Use a service instead of a factory"
-      },
-      {
-         object: "$provide",
-         property: "service",
-         message: "Avoid creating services dynamically: use module.service instead."
-      },
-      {
-         object: "angular",
-         property: "identity",
-         message:
-            "Angular's 'identity' function simply returns whatever is passed into it; if such a function is needed, write a function literal instead."
-      },
-      {
-         object: "angular",
-         property: "copy",
-         message:
-            "Angular's 'copy' function is not very efficient. Use the rfdc library instead."
-      },
-      {
-         property: "$watch",
-         message:
-            "Watchers are inefficient and will not be available in Angular2+. Consider using an observable instead."
-      },
-      {
-         property: "$watchGroup",
-         message:
-            "Watchers are inefficient and will not be available in Angular2+. Consider using an observable instead."
-      },
-      {
-         property: "$watchCollection",
-         message:
-            "Watchers are inefficient and will not be available in Angular2+. Consider using an observable instead."
-      }
-   ],
+   "no-restricted-properties": [2],
 
    /**
     * disallow assignment operators in `return` statements
@@ -746,10 +688,10 @@ module.exports = {
     * @remarks
     * In addition to consistency and readability, rejecting with an error object
     * provides more benefits than rejecting with a literal, and there isn't a good
-    * reason not to use an error object. This is not level 2 because we want it to
+    * reason not to use an error object. This rule should
     * match the `no-throw-literal` rule. Revisit in the future.
     */
-   "prefer-promise-reject-errors": 1,
+   "prefer-promise-reject-errors": 2,
 
    /**
     * disallow use of the `RegExp` constructor in favor of regular expression
@@ -824,5 +766,14 @@ module.exports = {
     * This is turned off because strict mode is already enforced by both the
     * ES6 imports and the typescript compiler.
     */
-   "strict": 0
+   "strict": 0,
+
+   /**
+    * Prefer use of `Object.hasOwn()` over `Object.prototype.hasOwnProperty.call()`
+    *
+    * @remarks
+    * `hasOwn` is intended to replace `hasOwnProperty` see
+    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn
+    */
+   "prefer-object-has-own": 2
 };

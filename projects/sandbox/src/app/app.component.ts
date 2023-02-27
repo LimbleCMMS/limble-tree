@@ -1,98 +1,146 @@
-import { Component, ViewChild } from "@angular/core";
 import {
-   LimbleTreeRootComponent,
-   LimbleTreeData,
-   LimbleTreeOptions,
-   LimbleTreeNode,
-   TreeDrop
+   AfterViewInit,
+   Component,
+   ViewChild,
+   ViewContainerRef
+} from "@angular/core";
+import {
+   TreeDragAndDropService,
+   TreeRoot,
+   TreeService
 } from "@limble/limble-tree";
-import { TreeItemAltComponent } from "./tree-item-alt/tree-item-alt.component";
-import { TreeItemComponent } from "./tree-item/tree-item.component";
+import { EMPTY, map, Observable, scan } from "rxjs";
+import { CollapsibleComponent } from "./collapsible/collapsible.component";
+import { DraggableComponent } from "./draggable/draggable.component";
+import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
+import { TextRendererComponent } from "./text-renderer/text-renderer.component";
 
 @Component({
    selector: "app-root",
    templateUrl: "./app.component.html",
    styleUrls: ["./app.component.scss"]
 })
-export class AppComponent {
-   @ViewChild("tree") limbleTree: LimbleTreeRootComponent | undefined;
+export class AppComponent implements AfterViewInit {
+   @ViewChild("treeContainer", { read: ViewContainerRef })
+   treeContainer?: ViewContainerRef;
+   @ViewChild("treeContainer2", { read: ViewContainerRef })
+   treeContainer2?: ViewContainerRef;
 
-   public treeData1: LimbleTreeData = [
-      {
-         value1: "this thing",
-         collapsed: false,
-         component: {
-            class: TreeItemComponent,
-            bindings: { collapsible: true }
-         },
-         nodes: [
-            { value1: "other thing" },
-            {
-               value1:
-                  "another thing. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-               nodes: [{ value1: "his thing" }, { value1: "her thing" }]
-            }
-         ]
-      },
-      {
-         value1:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-      },
-      {
-         component: {
-            class: TreeItemAltComponent,
-            bindings: { bgColor: "#0070cc" }
-         },
-         value1: "these things",
-         nodes: [{ value1: "a thing" }]
-      },
-      {
-         component: {
-            class: TreeItemAltComponent,
-            bindings: { bgColor: "#00a329" }
-         },
-         value1: "those things"
+   protected events$?: Observable<Array<{ type: string }>>;
+   protected events2$?: Observable<Array<{ type: string }>>;
+
+   private root?: TreeRoot<
+      | LoremIpsumComponent
+      | TextRendererComponent
+      | CollapsibleComponent
+      | DraggableComponent
+   >;
+   private root2?: TreeRoot<
+      | LoremIpsumComponent
+      | TextRendererComponent
+      | CollapsibleComponent
+      | DraggableComponent
+   >;
+   private toggle = 1;
+
+   public constructor(
+      private readonly treeService: TreeService,
+      private readonly dragAndDrop: TreeDragAndDropService
+   ) {}
+
+   public toggleTrees = (): void => {
+      if (this.toggle === 0) {
+         this.root?.destroy();
+         this.root2?.destroy();
+         this.events$ = EMPTY;
+         this.events2$ = EMPTY;
+         this.toggle = 1;
+      } else {
+         const [root, root2] = this.buildTrees();
+         this.root = root;
+         this.root2 = root2;
+         this.toggle = 0;
       }
-   ];
-
-   public treeData2: LimbleTreeData = [
-      {
-         value1: "Test1",
-         nodes: [{ value1: "Test2" }]
-      },
-      {
-         value1: "Test3",
-         nodes: [{ value1: "Test4" }, { value1: "Test5" }]
-      }
-   ];
-
-   public treeOptions: LimbleTreeOptions = {
-      defaultComponent: { class: TreeItemComponent },
-      indent: 60
    };
 
-   public limbleTreeDataString: string;
-
-   constructor() {
-      this.limbleTreeDataString = JSON.stringify(this.treeData1, null, 2);
+   public ngAfterViewInit(): void {
+      this.toggleTrees();
    }
 
-   public addNode(node: LimbleTreeNode) {
-      this.treeData1.push(node);
-      this.reRenderTree();
+   public showRootDropzone(): void {
+      if (!this.root2) return;
+      if (this.root2.branches().length > 0) return;
+      this.dragAndDrop.showRootDropzone(this.root2);
    }
 
-   public treeChangeHandler() {
-      this.limbleTreeDataString = JSON.stringify(this.treeData1, null, 2);
-   }
-
-   public treeDropHandler(drop: TreeDrop) {
-      console.log("dropped!", drop);
-   }
-
-   private reRenderTree() {
-      if (this.limbleTree !== undefined) {
-         this.limbleTree.update();
+   private buildTrees(): [
+      TreeRoot<
+         | LoremIpsumComponent
+         | TextRendererComponent
+         | CollapsibleComponent
+         | DraggableComponent
+      >,
+      TreeRoot<
+         | LoremIpsumComponent
+         | TextRendererComponent
+         | CollapsibleComponent
+         | DraggableComponent
+      >
+   ] {
+      if (
+         this.treeContainer === undefined ||
+         this.treeContainer2 === undefined
+      ) {
+         throw new Error("cannot get tree containers");
       }
+      const root = this.treeService.createEmptyTree<
+         | LoremIpsumComponent
+         | TextRendererComponent
+         | CollapsibleComponent
+         | DraggableComponent
+      >(this.treeContainer);
+      const branch1 = root.grow(LoremIpsumComponent);
+      const branch2 = root.grow(LoremIpsumComponent);
+      const branch3 = root.grow(LoremIpsumComponent);
+      branch1.grow(TextRendererComponent, {
+         inputBindings: {
+            text1: "This is the first test string",
+            text2: "This is the second test string"
+         }
+      });
+      const branch1b = branch1.grow(CollapsibleComponent, {
+         startCollapsed: true
+      });
+      branch1.grow(DraggableComponent);
+      branch2.grow(LoremIpsumComponent);
+      branch3.grow(DraggableComponent);
+      branch1b.grow(LoremIpsumComponent);
+      const root2 = this.treeService.createEmptyTree<
+         | LoremIpsumComponent
+         | TextRendererComponent
+         | CollapsibleComponent
+         | DraggableComponent
+      >(this.treeContainer2);
+      root2.grow(LoremIpsumComponent);
+      root2.grow(DraggableComponent);
+      this.events$ = root.events().pipe(
+         map((event) => {
+            return { type: event.type() };
+         }),
+         scan((acc, curr) => {
+            acc.push(curr);
+            return acc;
+         }, [] as Array<{ type: string }>)
+      );
+      this.events2$ = root2.events().pipe(
+         map((event) => {
+            return { type: event.type() };
+         }),
+         scan((acc, curr) => {
+            acc.push(curr);
+            return acc;
+         }, [] as Array<{ type: string }>)
+      );
+      return [root, root2];
    }
 }

@@ -23,7 +23,10 @@ module.exports = {
     * https://angular.io/guide/styleguide#style-05-02, and
     * https://angular.io/guide/styleguide#style-05-03
     */
-   "@angular-eslint/component-selector": [2, { type: "element", style: "kebab-case" }],
+   "@angular-eslint/component-selector": [
+      2,
+      { type: "element", style: "kebab-case" }
+   ],
    /**
     * Classes decorated with @Directive must have suffix “Directive”
     * (or custom) in their name.
@@ -42,7 +45,10 @@ module.exports = {
     * https://angular.io/guide/styleguide#style-02-06 and
     * https://angular.io/guide/styleguide#style-02-08
     */
-   "@angular-eslint/directive-selector": [2, { type: "attribute", style: "camelCase" }],
+   "@angular-eslint/directive-selector": [
+      2,
+      { type: "attribute", style: "camelCase" }
+   ],
    /**
     * Disallows usage of the host metadata property
     *

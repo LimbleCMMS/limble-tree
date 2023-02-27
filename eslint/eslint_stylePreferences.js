@@ -50,8 +50,8 @@ module.exports = {
     * enforce camelcase naming convention
     *
     * @remarks
-    * This is turned off because it is not a priority right now compared
-    * to other rules. We will probably turn this on in the future.
+    * This is off right now because it would require some significant
+    * refactoring. But we should turn it on in the future.
     */
    "camelcase": 0,
 
@@ -412,35 +412,12 @@ module.exports = {
     * require constructor names to begin with a capital letter
     *
     * @remarks
-    * This is level 2 to enforce consistency and readability
+    * This is level 2 to enforce consistency and readability. We have the
+    * `capIsNew` option turned off because there are a lot of valid exceptions,
+    * such as Angular decorators, third-party code, and capital snake case
+    * functions.
     */
-   "new-cap": [
-      2,
-      {
-         capIsNewExceptions: [
-            /* Angular Decorators */
-            "NgModule",
-            "Injectable",
-            "Inject",
-            "Component",
-            "Input",
-            "Directive",
-            "Pipe",
-            "Output",
-            "HostBinding",
-            "HostListener",
-            "ContentChild",
-            "ContentChildren",
-            "ViewChild",
-            "ViewChildren",
-            "Attribute",
-            "SkipSelf",
-            "Host",
-            "Optional"
-            /* End of Angular Decorators */
-         ]
-      }
-   ],
+   "new-cap": [2, { capIsNew: false }],
 
    /**
     * enforce or disallow parentheses when invoking a constructor with no arguments
@@ -527,7 +504,7 @@ module.exports = {
     * lead to unexpected results and be difficult to read". Such
     * statements should be separated.
     */
-   "no-multi-assign": 2,
+   "no-multi-assign": [2, { ignoreNonDeclaration: true }],
 
    /**
     * disallow multiple empty lines
@@ -576,11 +553,23 @@ module.exports = {
     * disallow specified syntax
     *
     * @remarks
-    * This is turned off because we do not have any syntax we would
-    * like to restrict at this time beyond the other rules in this
-    * config.
+    * We have this turned off because it would require a lot of refactoring.
+    * Revisit in the future.
     */
-   "no-restricted-syntax": 0,
+   "no-restricted-syntax": [
+      0,
+      //Do not allow setTimeout to be called with multiple arguments. There are many
+      //ways to make code run "later", and setTimeout is almost always the worst option.
+      //Use observables, events, or callbacks instead. The one exception is when you want
+      //to simply put some code at the back of the macrotask queue, in which case you
+      //can use setTimeout without a second parameter.
+      {
+         selector:
+            "CallExpression[callee.name='setTimeout'][arguments.length>1]",
+         message:
+            "setTimeout should not be used with a delay. Use observables, events, or callbacks instead."
+      }
+   ],
 
    /**
     * disallow all tabs
@@ -723,7 +712,8 @@ module.exports = {
     * require or disallow padding lines between statements
     *
     * @remarks
-    * This is level 0 because Prettier already takes care of it.
+    * This is level 0 because there is a typescript extension rule
+    * that overrides it.
     */
    "padding-line-between-statements": 0,
 
@@ -806,7 +796,8 @@ module.exports = {
     * enforce consistent spacing before blocks
     *
     * @remarks
-    * This is level 0 because Prettier already takes care of it.
+    * This is level 0 because there is a typescript extension rule which
+    * overrides it.
     */
    "space-before-blocks": 0,
 

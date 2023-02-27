@@ -1,14 +1,26 @@
-import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
-
-import { AppComponent } from "./app.component";
+import { BrowserModule } from "@angular/platform-browser";
 import { LimbleTreeModule } from "@limble/limble-tree";
-import { TreeItemComponent } from "./tree-item/tree-item.component";
-import { TreeItemAltComponent } from "./tree-item-alt/tree-item-alt.component";
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
+import { ContentProjectorComponent } from "./content-projector/content-projector.component";
+import { TextRendererComponent } from "./text-renderer/text-renderer.component";
+import { BoxComponent } from "./box/box.component";
+import { CollapsibleComponent } from "./collapsible/collapsible.component";
+import { DraggableComponent } from "./draggable/draggable.component";
 
 @NgModule({
-   declarations: [AppComponent, TreeItemComponent, TreeItemAltComponent],
-   imports: [BrowserModule, LimbleTreeModule],
+   declarations: [
+      AppComponent,
+      ContentProjectorComponent,
+      LoremIpsumComponent,
+      TextRendererComponent,
+      BoxComponent,
+      CollapsibleComponent,
+      DraggableComponent
+   ],
+   imports: [BrowserModule, AppRoutingModule, LimbleTreeModule],
    providers: [],
    bootstrap: [AppComponent]
 })

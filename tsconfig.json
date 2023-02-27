@@ -1,3 +1,4 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
    "compileOnSave": false,
    "compilerOptions": {
@@ -5,7 +6,12 @@
       "outDir": "./dist/out-tsc",
       "forceConsistentCasingInFileNames": true,
       "strict": true,
+      "noImplicitOverride": true,
+      "noPropertyAccessFromIndexSignature": true,
       "noImplicitReturns": true,
+      "paths": {
+         "@limble/limble-tree": ["dist/limble-tree"]
+      },
       "noFallthroughCasesInSwitch": true,
       "sourceMap": true,
       "declaration": false,
@@ -15,12 +21,10 @@
       "importHelpers": true,
       "target": "es2020",
       "module": "ESNext",
-      "lib": ["es2018", "dom"],
-      "paths": {
-         "@limble/limble-tree": ["projects/limble-tree/src/public-api"]
-      }
+      "lib": ["ESNext", "dom"]
    },
    "angularCompilerOptions": {
+      "enableI18nLegacyMessageIdFormat": false,
       "strictInjectionParameters": true,
       "strictInputAccessModifiers": true,
       "strictTemplates": true

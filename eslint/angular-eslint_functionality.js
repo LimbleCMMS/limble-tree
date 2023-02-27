@@ -28,8 +28,9 @@ module.exports = {
     * Disallows use of `@Attribute()`
     *
     * @remarks
-    * This is off because I don't know anything about the Attribute decorator.
-    * We may want to revisit in the future.
+    * This rule is intended to prevent accidental misuse of the decorator; however, there
+    * are perfectly valid reasons to use the decorator, so we have the rule turned off.
+    * Any misuse is better addressed in code review than by a lint rule.
     */
    "@angular-eslint/no-attribute-decorator": 0,
    /**
@@ -81,7 +82,8 @@ module.exports = {
     * Ensures that classes decorated with `@Injectable()` use the "providedIn" property.
     *
     * @remarks
-    * Apparently this makes injectables tree shakeable? We should look into this in the
+    * This makes injectables subject to tree shaking. It is the recommended way to inject
+    * services since Angular 6, if I remember correctly. We should look into this in the
     * future. Right now it is not a high priority.
     */
    "@angular-eslint/use-injectable-provided-in": 0,

@@ -109,19 +109,11 @@ module.exports = {
 
    /**
     * disallow specified modules when loaded by `import`
+    *
+    * @remarks
+    * There is a typescript extension rule which overrides this.
     */
-   "no-restricted-imports": [
-      2,
-      {
-         paths: [
-            {
-               name: "axios",
-               message:
-                  "This is a CommonJS module and should be avoided for performance reasons. Import from `axios/dist/axios` instead."
-            }
-         ]
-      }
-   ],
+   "no-restricted-imports": 0,
 
    /**
     * disallow `this`/`super` before calling `super()` in constructors
@@ -163,11 +155,9 @@ module.exports = {
     * @remarks
     * let and const are more intuitive and less likely to cause name
     * conflicts or unintended shadowing. They are also more efficient
-    * and easier to minify. This is not level 2 yet because there
-    * are too many places where we violate the rule. We will make it
-    * level 2 near in the future.
+    * and easier to minify.
     */
-   "no-var": 1,
+   "no-var": 2,
 
    /**
     * require or disallow method and property shorthand syntax for object
@@ -194,8 +184,8 @@ module.exports = {
     * @remarks
     * const is more efficient and easier to minify. It is also an important
     * indicator of intent that future developers can use to better
-    * understand the code. It is not level 2 because sometimes intent for a
-    * variable is not known at the beginning of the development process.
+    * understand the code. It is not level 2 because sometimes it may be
+    * violated while the code is being written.
     */
    "prefer-const": 1,
 
@@ -203,8 +193,9 @@ module.exports = {
     * require destructuring from arrays and/or objects
     *
     * @remarks
-    * This is not a priority right now, but something we probably want to
-    * visit soon in the future.
+    * I don't see any benefit to enforcing this rule. Destructuring can be
+    * cleaner in some situations, but usually I think normal access and
+    * assignment are cleaner.
     */
    "prefer-destructuring": 0,
 

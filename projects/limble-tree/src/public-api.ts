@@ -2,12 +2,11 @@
  * Public API Surface of limble-tree
  */
 
-export {
-   LimbleTreeNode,
-   LimbleTreeData,
-   LimbleTreeOptions,
-   ComponentObj,
-   TreeDrop
-} from "./lib/limble-tree-root/tree.service";
-export { LimbleTreeRootComponent } from "./lib/limble-tree-root/limble-tree-root.component";
-export { LimbleTreeModule } from "./lib/limble-tree.module";
+export * from "./lib/limble-tree.module";
+export * from "./lib/core";
+export * from "./lib/errors";
+export * from "./lib/events";
+export * from "./lib/structure";
+export * from "./lib/extras/collapse";
+export * from "./lib/extras/drag-and-drop";
+export * from "./lib/legacy";

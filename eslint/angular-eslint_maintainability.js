@@ -12,7 +12,11 @@ module.exports = {
     * implementation, reducing readability and maintainability. See
     * https://angular.io/guide/styleguide#style-05-04
     */
-   "@angular-eslint/component-max-inline-declarations": [2, { styles: 3, template: 3 }],
+   "@angular-eslint/component-max-inline-declarations": [
+      2,
+      { styles: 3, template: 3 }
+   ],
+
    /**
     * Ensures that directives do not implement conflicting lifecycle interfaces.
     *
@@ -28,6 +32,7 @@ module.exports = {
     * the future.
     */
    "@angular-eslint/no-conflicting-lifecycle": 0,
+
    /**
     * Disallows usage of forwardRef references for DI
     *
@@ -39,6 +44,7 @@ module.exports = {
     * refactoring. Revisit in the future.
     */
    "@angular-eslint/no-forward-ref": 0,
+
    /**
     * Input names should not be prefixed by the configured disallowed prefixes.
     *
@@ -47,6 +53,7 @@ module.exports = {
     * But I don't think this is a priority.
     */
    "@angular-eslint/no-input-prefix": 0,
+
    /**
     * Disallows renaming directive inputs by providing a string to the decorator.
     *
@@ -55,6 +62,7 @@ module.exports = {
     * confusing and should be avoided.
     */
    "@angular-eslint/no-input-rename": 2,
+
    /**
     * Name events without the prefix `on`
     *
@@ -65,6 +73,7 @@ module.exports = {
     * See https://angular.io/guide/styleguide#dont-prefix-output-properties
     */
    "@angular-eslint/no-output-on-prefix": 2,
+
    /**
     * Disallows renaming directive outputs by providing a string to the decorator.
     *
@@ -75,6 +84,7 @@ module.exports = {
     * See https://angular.io/styleguide#style-05-13
     */
    "@angular-eslint/no-output-rename": 2,
+
    /**
     * Ensures @Output is declared as a readonly
     *
@@ -82,6 +92,7 @@ module.exports = {
     * Outputs are not supposed to be reassigned
     */
    "@angular-eslint/prefer-output-readonly": 2,
+
    /**
     * The ./ prefix is standard syntax for relative URLs
     *
@@ -90,6 +101,7 @@ module.exports = {
     * See https://angular.io/styleguide#style-05-04
     */
    "@angular-eslint/relative-url-prefix": 2,
+
    /**
     * Component selector must be declared
     *
@@ -98,6 +110,7 @@ module.exports = {
     * implicit selector would be.
     */
    "@angular-eslint/use-component-selector": 1,
+
    /**
     * Disallows using ViewEncapsulation.None
     *
@@ -106,6 +119,7 @@ module.exports = {
     * styles modular and contained.
     */
    "@angular-eslint/use-component-view-encapsulation": 2,
+
    /**
     * Ensures that classes decorated with `@Pipe()` implement
     * `PipeTransform` interface.
@@ -113,5 +127,26 @@ module.exports = {
     * @remarks
     * This should be done for type safety.
     */
-   "@angular-eslint/use-pipe-transform-interface": 2
+   "@angular-eslint/use-pipe-transform-interface": 2,
+
+   /**
+    * Ensures that services use the `providedIn` syntax recommended by Angular.
+    *
+    * @remarks
+    * See https://angular.io/guide/styleguide#providing-a-service and
+    * https://angular.io/guide/singleton-services#providing-a-singleton-service.
+    *
+    * We should definitely implement this, and it wouldn't be very hard, but it
+    * isn't a priority right now.
+    */
+   "@angular-eslint/use-injectable-provided-in": 0,
+
+   /**
+    * Ensures component's changeDetection is set to `ChangeDetectionStrategy.OnPush`
+    *
+    * @remarks
+    * This is a good idea, but we are a very long way from being able to turn
+    * it on.
+    */
+   "@angular-eslint/use-injectable-provided-in": 0
 };
