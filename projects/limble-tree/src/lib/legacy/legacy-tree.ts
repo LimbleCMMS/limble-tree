@@ -70,7 +70,7 @@ export class LegacyTree {
       const bindings = (node.component?.bindings ??
          options.defaultComponent?.bindings ??
          {}) as { [K in keyof T]?: T[K] | undefined };
-      const nodeData = { ...node };
+      const nodeData = node;
       delete nodeData.nodes;
       delete nodeData.collapsed;
       delete nodeData.component;
