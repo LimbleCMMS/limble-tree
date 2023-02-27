@@ -28,8 +28,9 @@ module.exports = {
     * Disallows use of `@Attribute()`
     *
     * @remarks
-    * This is off because I don't know why the attribute decorator is detrimental.
-    * It seems useful in certain circumstances. We can revisit in the future.
+    * This rule is intended to prevent accidental misuse of the decorator; however, there
+    * are perfectly valid reasons to use the decorator, so we have the rule turned off.
+    * Any misuse is better addressed in code review than by a lint rule.
     */
    "@angular-eslint/no-attribute-decorator": 0,
    /**
