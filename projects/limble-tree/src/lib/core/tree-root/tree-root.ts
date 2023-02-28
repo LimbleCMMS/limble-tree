@@ -11,12 +11,16 @@ import { NodeComponent } from "../../components/node-component.interface";
 import { BranchOptions } from "../branch-options.interface";
 import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
 import { config } from "../configuration/configuration";
+import { TreeError } from "../../errors";
+import { assert } from "../../../shared/assert";
+import { DestructionEvent } from "../../events/general";
 
 export class TreeRoot<UserlandComponent>
    implements
       TreeRootNode<ComponentRef<RootComponent>, TreeBranch<UserlandComponent>>
 {
    private readonly instanceSubscriptions: Array<Subscription>;
+   private destroyed: boolean = false;
    private readonly rootComponentRef: ComponentRef<RootComponent>;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
 
@@ -27,9 +31,7 @@ export class TreeRoot<UserlandComponent>
       const viewInitSub =
          this.rootComponentRef.instance.afterViewInit.subscribe(() => {
             const dropzone = this.rootComponentRef.instance.dropzone;
-            if (!dropzone) {
-               throw new Error("dropzone not defined");
-            }
+            assert(dropzone !== undefined);
             dropzoneRenderer.registerDropzone(dropzone, this);
          });
       const droppedSub = this.rootComponentRef.instance.dropped.subscribe(
@@ -45,11 +47,10 @@ export class TreeRoot<UserlandComponent>
       return this.treeNodeBase.branches();
    }
 
-   public deleteBranch(index?: number): void {
-      this.treeNodeBase.deleteBranch(index);
-   }
-
    public destroy(): void {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot destroy a destroyed tree root");
+      }
       dropzoneRenderer.clearTreeFromRegistry(this);
       this.branches().forEach((branch) => {
          branch.destroy();
@@ -60,6 +61,8 @@ export class TreeRoot<UserlandComponent>
       });
       this.viewContainerRef.clear();
       config.delete(this);
+      this.destroyed = true;
+      this.dispatch(new DestructionEvent(this));
    }
 
    public dispatch(event: TreeEvent): void {
@@ -75,6 +78,9 @@ export class TreeRoot<UserlandComponent>
    }
 
    public getContents(): ComponentRef<RootComponent> {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot get contents of destroyed tree root");
+      }
       return this.rootComponentRef;
    }
 
@@ -82,7 +88,14 @@ export class TreeRoot<UserlandComponent>
       component: Type<UserlandComponent>,
       options?: BranchOptions<UserlandComponent>
    ): TreeBranch<UserlandComponent> {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot grow a branch on a destroyed tree root");
+      }
       return new TreeBranch(this, { component, ...options });
+   }
+
+   public isDestroyed(): boolean {
+      return this.destroyed;
    }
 
    public plot(): TreePlot {

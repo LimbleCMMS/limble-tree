@@ -7,4 +7,5 @@ export interface TreeNode<Children> extends EventConduit, Branchable<Children> {
    plot: () => TreePlot;
    traverse: (callback: (node: Branchable<Children>) => void) => void;
    root: () => TreeRoot<any> | undefined;
+   isDestroyed: () => boolean;
 }

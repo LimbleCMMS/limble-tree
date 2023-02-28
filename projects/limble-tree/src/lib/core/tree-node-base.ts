@@ -35,14 +35,6 @@ export class TreeNodeBase<UserlandComponent>
       return [...this._branches];
    }
 
-   public deleteBranch(index?: number): void {
-      if (index === undefined) {
-         this._branches.pop();
-         return;
-      }
-      this._branches.splice(index, 1);
-   }
-
    public destroy(): void {
       this.subscriptions.forEach((sub) => {
          sub.unsubscribe();
@@ -84,7 +76,7 @@ export class TreeNodeBase<UserlandComponent>
       child: TreeBranch<UserlandComponent>
    ): void {
       const index = this.branches().findIndex((branch) => branch === child);
-      this.deleteBranch(index);
+      this._branches.splice(index, 1);
    }
 
    private graftsToSelf(): Observable<

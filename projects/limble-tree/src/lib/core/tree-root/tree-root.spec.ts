@@ -8,6 +8,9 @@ import { getStandardBranch } from "../../test-util/standard-branch";
 import { EmptyComponent } from "../../test-util/empty.component";
 import { createNullEvent } from "../../test-util/null-event";
 import { TreeEvent } from "../../structure";
+import { RootComponent } from "../../components/root/root.component";
+import { TreeError } from "../../errors";
+import { DestructionEvent } from "../../events/general";
 
 describe("TreeRoot", () => {
    it("should start with no branches", () => {
@@ -15,12 +18,55 @@ describe("TreeRoot", () => {
       expect(root.branches()).toEqual([]);
    });
 
-   it("should allow new branches to graft themselves onto it", () => {
-      const branch = getStandardBranch();
+   it("should immediately render a RootComponent", () => {
+      const root = new TreeRoot(getViewContainer());
+      expect(root.getContents().componentType).toBe(RootComponent);
+      const rootComponents = document.getElementsByTagName("root");
+      expect(rootComponents.length).toBe(1);
+   });
+
+   it("should allow a new branch to graft itself onto the root", () => {
       const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      const branch = getStandardBranch();
       branch.graftTo(root);
       expect(branch.parent()).toBe(root);
       expect(root.branches()).toEqual([branch]);
+      expect(
+         root
+            .getContents()
+            .location.nativeElement.getElementsByTagName("branch").length
+      ).toBe(1);
+   });
+
+   it("should allow multiple new branches to graft themselves onto the root", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      const branch1 = getStandardBranch();
+      const branch2 = getStandardBranch();
+      const branch3 = getStandardBranch();
+      branch1.graftTo(root);
+      branch2.graftTo(root);
+      branch3.graftTo(root);
+      expect(branch1.parent()).toBe(root);
+      expect(branch2.parent()).toBe(root);
+      expect(branch3.parent()).toBe(root);
+      expect(root.branches()).toEqual([branch1, branch2, branch3]);
+      const branchComponents = root
+         .getContents()
+         .location.nativeElement.getElementsByTagName("branch");
+      expect(branchComponents.length).toBe(3);
+   });
+
+   it("should get the branch at the specified index", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      const branch1 = getStandardBranch();
+      const branch2 = getStandardBranch();
+      const branch3 = getStandardBranch();
+      branch1.graftTo(root);
+      branch2.graftTo(root);
+      branch3.graftTo(root);
+      expect(root.getBranch(0)).toBe(branch1);
+      expect(root.getBranch(1)).toBe(branch2);
+      expect(root.getBranch(2)).toBe(branch3);
    });
 
    it("should remove branches that pruned themselves", () => {
@@ -30,6 +76,10 @@ describe("TreeRoot", () => {
       branch.prune();
       expect(branch.parent()).not.toBe(root);
       expect(root.branches()).toEqual([]);
+      const branchComponents = root
+         .getContents()
+         .location.nativeElement.getElementsByTagName("branch");
+      expect(branchComponents.length).toBe(0);
    });
 
    it("should emit any events it receives from descendants", () => {
@@ -160,17 +210,70 @@ describe("TreeRoot", () => {
       const self = new TreeRoot(getViewContainer());
       self.grow(EmptyComponent);
       expect(self.plot()).toEqual(new Map([[0, new Map()]]));
-      expect(
-         Array.from(document.getElementsByTagName("empty-component")).length
-      ).toBe(1);
+      expect(document.getElementsByTagName("branch").length).toBe(1);
+      expect(document.getElementsByTagName("empty-component").length).toBe(1);
    });
 
-   it("should grow a child branch with bindings", () => {
+   it("should destroy all descendant branches and its own RootComponent when destroyed", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      const branch1 = getStandardBranch();
+      const branch2 = getStandardBranch();
+      const branch3 = getStandardBranch();
+      const branch3a = getStandardBranch();
+      const branch3b = getStandardBranch();
+      branch1.graftTo(root);
+      branch2.graftTo(root);
+      branch3.graftTo(root);
+      branch3a.graftTo(branch3);
+      branch3b.graftTo(branch3);
+      root.destroy();
+      expect(root.isDestroyed()).toBe(true);
+      expect(branch1.isDestroyed()).toBe(true);
+      expect(branch2.isDestroyed()).toBe(true);
+      expect(branch3.isDestroyed()).toBe(true);
+      expect(branch3a.isDestroyed()).toBe(true);
+      expect(branch3b.isDestroyed()).toBe(true);
+      setTimeout(() => {
+         expect(document.getElementsByTagName("root").length).toBe(0);
+      });
+   });
+
+   it("should throw an error when getContents is called after destruction", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      root.destroy();
+      expect(() => root.getContents()).toThrowError(TreeError);
+   });
+
+   it("should throw an error when grow is called after destruction", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      root.destroy();
+      expect(() => root.grow(EmptyComponent)).toThrowError(TreeError);
+   });
+
+   it("should throw an error when destroy is called after destruction", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      root.destroy();
+      expect(() => {
+         root.destroy();
+      }).toThrowError(TreeError);
+   });
+
+   it("should return itself when root is called", () => {
       const self = new TreeRoot<EmptyComponent>(getViewContainer());
-      self.grow(EmptyComponent, { inputBindings: { testInput: "testing" } });
-      expect(self.plot()).toEqual(new Map([[0, new Map()]]));
-      expect(
-         Array.from(document.getElementsByTagName("empty-component")).length
-      ).toBe(1);
+      expect(self.root()).toBe(self);
+   });
+
+   it("should dispatch a destruction event when destroyed", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      let subscriptionWasRun = false;
+      root
+         .events()
+         .pipe(first())
+         .subscribe((event) => {
+            subscriptionWasRun = true;
+            expect(event).toBeInstanceOf(DestructionEvent);
+         });
+      root.destroy();
+      expect(subscriptionWasRun).toBe(true);
    });
 });

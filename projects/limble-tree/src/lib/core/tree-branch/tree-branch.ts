@@ -22,6 +22,7 @@ import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
 import { config } from "../configuration/configuration";
 import { TreeRoot } from "..";
 import { treeCollapser } from "../../extras/collapse/collapse";
+import { DestructionEvent } from "../../events/general";
 
 export class TreeBranch<UserlandComponent>
    implements
@@ -32,7 +33,9 @@ export class TreeBranch<UserlandComponent>
       >
 {
    private readonly contents: ComponentRef<BranchComponent<UserlandComponent>>;
+   private detachedView: ViewRef | null = null;
    private readonly instanceSubscriptions: Array<Subscription>;
+   private destroyed: boolean = false;
    private readonly outputBindingSubscriptions: Array<Subscription>;
    private _parent:
       | ContainerTreeNode<
@@ -42,7 +45,6 @@ export class TreeBranch<UserlandComponent>
       | undefined;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
    private readonly userlandComponent: Type<UserlandComponent>;
-   private detachedView: ViewRef | null = null;
 
    public constructor(
       parent: ContainerTreeNode<
@@ -91,11 +93,11 @@ export class TreeBranch<UserlandComponent>
       return this.treeNodeBase.branches();
    }
 
-   public deleteBranch(index?: number): void {
-      this.treeNodeBase.deleteBranch(index);
-   }
-
    public destroy(): void {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot destroy a destroyed tree branch");
+      }
+      this.prune();
       if (treeCollapser.isCollapsed(this)) {
          treeCollapser.expand(this);
          dropzoneRenderer.clearTreeFromRegistry(this);
@@ -103,14 +105,7 @@ export class TreeBranch<UserlandComponent>
       this.branches().forEach((branch) => {
          branch.destroy();
       });
-      const parent = this._parent;
-      const index = this.index();
-      if (index !== undefined && parent !== undefined) {
-         const container = parent.getContents().instance.branchesContainer;
-         assert(container !== undefined);
-         container.remove(index);
-         parent.deleteBranch(index);
-      }
+      this.getContents().hostView.destroy();
       this.treeNodeBase.destroy();
       this.instanceSubscriptions.forEach((sub) => {
          sub.unsubscribe();
@@ -118,6 +113,8 @@ export class TreeBranch<UserlandComponent>
       this.outputBindingSubscriptions.forEach((sub) => {
          sub.unsubscribe();
       });
+      this.destroyed = true;
+      this.dispatch(new DestructionEvent(this));
    }
 
    public dispatch(event: TreeEvent): void {
@@ -134,6 +131,9 @@ export class TreeBranch<UserlandComponent>
    }
 
    public getContents(): ComponentRef<BranchComponent<UserlandComponent>> {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot get contents of destroyed tree branch");
+      }
       return this.contents;
    }
 
@@ -144,6 +144,12 @@ export class TreeBranch<UserlandComponent>
       >,
       index?: number
    ): number {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot graft a destroyed tree branch");
+      }
+      if (newParent.isDestroyed()) {
+         throw new TreeError("Cannot graft a destroyed tree branch");
+      }
       const ownIndex = this.index();
       if (ownIndex !== undefined) {
          this.prune();
@@ -165,6 +171,9 @@ export class TreeBranch<UserlandComponent>
       component: Type<UserlandComponent>,
       options?: BranchOptions<UserlandComponent>
    ): TreeBranch<UserlandComponent> {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot grow a branch on a destroyed tree branch");
+      }
       return new TreeBranch(this, { component, ...options });
    }
 
@@ -177,6 +186,10 @@ export class TreeBranch<UserlandComponent>
          .findIndex((branch) => branch === this);
       assert(index >= 0);
       return index;
+   }
+
+   public isDestroyed(): boolean {
+      return this.destroyed;
    }
 
    public meta(): Record<string, any> {
@@ -211,6 +224,9 @@ export class TreeBranch<UserlandComponent>
    }
 
    public prune(): this | undefined {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot prune a destroyed tree branch");
+      }
       const parent = this._parent;
       const index = this.index();
       if (index === undefined || parent === undefined) return;
