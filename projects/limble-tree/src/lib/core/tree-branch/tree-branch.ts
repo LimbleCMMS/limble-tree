@@ -35,7 +35,6 @@ export class TreeBranch<UserlandComponent>
    private readonly contents: ComponentRef<BranchComponent<UserlandComponent>>;
    private detachedView: ViewRef | null = null;
    private readonly instanceSubscriptions: Array<Subscription>;
-   private destroyed: boolean = false;
    private readonly outputBindingSubscriptions: Array<Subscription>;
    private _parent:
       | ContainerTreeNode<
@@ -98,13 +97,8 @@ export class TreeBranch<UserlandComponent>
          throw new TreeError("Cannot destroy a destroyed tree branch");
       }
       this.prune();
-      if (treeCollapser.isCollapsed(this)) {
-         treeCollapser.expand(this);
-         dropzoneRenderer.clearTreeFromRegistry(this);
-      }
-      this.branches().forEach((branch) => {
-         branch.destroy();
-      });
+      treeCollapser.expand(this);
+      dropzoneRenderer.clearTreeFromRegistry(this);
       this.getContents().hostView.destroy();
       this.treeNodeBase.destroy();
       this.instanceSubscriptions.forEach((sub) => {
@@ -113,7 +107,6 @@ export class TreeBranch<UserlandComponent>
       this.outputBindingSubscriptions.forEach((sub) => {
          sub.unsubscribe();
       });
-      this.destroyed = true;
       this.dispatch(new DestructionEvent(this));
    }
 
@@ -148,7 +141,7 @@ export class TreeBranch<UserlandComponent>
          throw new TreeError("Cannot graft a destroyed tree branch");
       }
       if (newParent.isDestroyed()) {
-         throw new TreeError("Cannot graft a destroyed tree branch");
+         throw new TreeError("Cannot graft to a destroyed tree branch");
       }
       const ownIndex = this.index();
       if (ownIndex !== undefined) {
@@ -189,7 +182,7 @@ export class TreeBranch<UserlandComponent>
    }
 
    public isDestroyed(): boolean {
-      return this.destroyed;
+      return this.treeNodeBase.isDestroyed();
    }
 
    public meta(): Record<string, any> {
@@ -248,16 +241,11 @@ export class TreeBranch<UserlandComponent>
 
    public root(): TreeRoot<UserlandComponent> | undefined {
       const parent = this.parent();
-      if (parent === undefined) {
-         return undefined;
-      }
       if (parent instanceof TreeBranch) {
          return parent.root();
       }
-      if (parent instanceof TreeRoot) {
-         return parent;
-      }
-      throw new Error("unexpected parent type");
+      assert(parent instanceof TreeRoot || parent === undefined);
+      return parent;
    }
 
    public traverse(
@@ -275,19 +263,20 @@ export class TreeBranch<UserlandComponent>
    private getContentCreatedSub(): Subscription {
       const instance = this.contents.instance;
       return instance.contentCreated.subscribe((userlandComponentInstance) => {
-         for (const [key, value] of Object.entries(
-            this.branchOptions.inputBindings ?? {}
-         )) {
-            (userlandComponentInstance as any)[key] = value;
-         }
-         for (const [key, value] of Object.entries(
-            this.branchOptions.outputBindings ?? {}
-         )) {
-            this.outputBindingSubscriptions.push(
-               (userlandComponentInstance as any)[key].subscribe(value)
-            );
-         }
-         (userlandComponentInstance as any).treeBranch = this;
+         const component = userlandComponentInstance as any;
+         Object.entries(this.branchOptions.inputBindings ?? {}).forEach(
+            ([key, value]) => {
+               component[key] = value;
+            }
+         );
+         Object.entries(this.branchOptions.outputBindings ?? {}).forEach(
+            ([key, value]) => {
+               this.outputBindingSubscriptions.push(
+                  component[key].subscribe(value)
+               );
+            }
+         );
+         component.treeBranch = this;
          const dropzones = instance.dropzones;
          if (!dropzones) {
             throw new Error("dropzones not defined");

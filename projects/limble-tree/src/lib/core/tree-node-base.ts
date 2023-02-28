@@ -16,6 +16,7 @@ export class TreeNodeBase<UserlandComponent>
 {
    private readonly _branches: Array<TreeBranch<UserlandComponent>>;
    private readonly events$: Subject<TreeEvent>;
+   private destroyed: boolean = false;
    private readonly subscriptions: Array<Subscription>;
 
    public constructor() {
@@ -36,9 +37,13 @@ export class TreeNodeBase<UserlandComponent>
    }
 
    public destroy(): void {
+      this.branches().forEach((branch) => {
+         branch.destroy();
+      });
       this.subscriptions.forEach((sub) => {
          sub.unsubscribe();
       });
+      this.destroyed = true;
    }
 
    public dispatch(event: TreeEvent): void {
@@ -51,6 +56,10 @@ export class TreeNodeBase<UserlandComponent>
 
    public getBranch(index: number): TreeBranch<UserlandComponent> | undefined {
       return this._branches[index];
+   }
+
+   public isDestroyed(): boolean {
+      return this.destroyed;
    }
 
    public plot(): TreePlot {

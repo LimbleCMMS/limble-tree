@@ -20,7 +20,6 @@ export class TreeRoot<UserlandComponent>
       TreeRootNode<ComponentRef<RootComponent>, TreeBranch<UserlandComponent>>
 {
    private readonly instanceSubscriptions: Array<Subscription>;
-   private destroyed: boolean = false;
    private readonly rootComponentRef: ComponentRef<RootComponent>;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
 
@@ -52,16 +51,12 @@ export class TreeRoot<UserlandComponent>
          throw new TreeError("Cannot destroy a destroyed tree root");
       }
       dropzoneRenderer.clearTreeFromRegistry(this);
-      this.branches().forEach((branch) => {
-         branch.destroy();
-      });
       this.treeNodeBase.destroy();
       this.instanceSubscriptions.forEach((sub) => {
          sub.unsubscribe();
       });
       this.viewContainerRef.clear();
       config.delete(this);
-      this.destroyed = true;
       this.dispatch(new DestructionEvent(this));
    }
 
@@ -95,7 +90,7 @@ export class TreeRoot<UserlandComponent>
    }
 
    public isDestroyed(): boolean {
-      return this.destroyed;
+      return this.treeNodeBase.isDestroyed();
    }
 
    public plot(): TreePlot {
