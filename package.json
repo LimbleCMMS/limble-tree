@@ -5,7 +5,7 @@
       "node": "^16.16.0"
    },
    "scripts": {
-      "build": "ng build",
+      "build": "ng build limble-tree",
       "check": "npm run lint:strict && npm run format:check && npm run test",
       "dev:limble-tree": "rm -rf dist/limble-tree && npx ng build limble-tree --watch",
       "dev:sandbox": "rm -rf dist/sandbox && npx ng serve sandbox --open",
@@ -16,9 +16,9 @@
       "ng": "ng",
       "publishPackage": "npm run check && rm -rf dist/limble-tree && npm run build && cd dist/limble-tree && npm publish",
       "start": "ng serve",
-      "test": "ng test --no-watch --no-progress",
+      "test": "ng build limble-tree && ng test --no-watch --no-progress",
       "test:limble-tree": "ng test limble-tree --code-coverage",
-      "test:sandbox": "ng test sandbox"
+      "test:sandbox": "ng build limble-tree && ng test sandbox"
    },
    "private": true,
    "dependencies": {
