@@ -27,32 +27,38 @@ export class LegacyTree {
    public upgradeOptions(legacyOptions: LegacyLimbleTreeOptions): TreeOptions {
       return {
          indentation: legacyOptions.indent,
-         allowNesting: (branch): boolean => {
-            if (legacyOptions.listMode === true) {
-               return false;
+         dragAndDrop: {
+            allowNesting: (branch): boolean => {
+               if (legacyOptions.listMode === true) {
+                  return false;
+               }
+               if (legacyOptions.allowNesting === undefined) {
+                  return true;
+               }
+               if (typeof legacyOptions.allowNesting === "boolean") {
+                  return legacyOptions.allowNesting;
+               }
+               return legacyOptions.allowNesting(branch as any);
+            },
+            allowDragging: (branch): boolean => {
+               if (legacyOptions.allowDragging === undefined) {
+                  return true;
+               }
+               if (typeof legacyOptions.allowDragging === "boolean") {
+                  return legacyOptions.allowDragging;
+               }
+               return legacyOptions.allowDragging(branch as any);
+            },
+            allowDrop: (source, parent, index): boolean => {
+               if (legacyOptions.allowDrop === undefined) {
+                  return true;
+               }
+               return legacyOptions.allowDrop(
+                  source as any,
+                  parent as any,
+                  index
+               );
             }
-            if (legacyOptions.allowNesting === undefined) {
-               return true;
-            }
-            if (typeof legacyOptions.allowNesting === "boolean") {
-               return legacyOptions.allowNesting;
-            }
-            return legacyOptions.allowNesting(branch as any);
-         },
-         allowDragging: (branch): boolean => {
-            if (legacyOptions.allowDragging === undefined) {
-               return true;
-            }
-            if (typeof legacyOptions.allowDragging === "boolean") {
-               return legacyOptions.allowDragging;
-            }
-            return legacyOptions.allowDragging(branch as any);
-         },
-         allowDrop: (source, parent, index): boolean => {
-            if (legacyOptions.allowDrop === undefined) {
-               return true;
-            }
-            return legacyOptions.allowDrop(source as any, parent as any, index);
          }
       };
    }

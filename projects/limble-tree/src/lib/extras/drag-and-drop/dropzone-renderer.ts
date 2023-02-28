@@ -191,7 +191,7 @@ class DropzoneRenderer {
       }
       if (treeNode instanceof TreeBranch) {
          const allowNesting =
-            config.getConfig(treeNode.root())?.allowNesting ??
+            config.getConfig(treeNode.root())?.dragAndDrop?.allowNesting ??
             ((): true => true);
          return allowNesting(treeNode);
       }
@@ -203,12 +203,14 @@ class DropzoneRenderer {
       assert(sourceNode instanceof TreeBranch);
       if (parent instanceof TreeRoot) {
          const allowDrop =
-            config.getConfig(parent)?.allowDrop ?? ((): true => true);
+            config.getConfig(parent)?.dragAndDrop?.allowDrop ??
+            ((): true => true);
          return allowDrop(sourceNode, parent, index);
       }
       if (parent instanceof TreeBranch) {
          const allowDrop =
-            config.getConfig(parent.root())?.allowDrop ?? ((): true => true);
+            config.getConfig(parent.root())?.dragAndDrop?.allowDrop ??
+            ((): true => true);
          return allowDrop(sourceNode, parent, index);
       }
       throw new Error("unsupported treeNode type");

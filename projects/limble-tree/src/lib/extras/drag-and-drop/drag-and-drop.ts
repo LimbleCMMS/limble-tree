@@ -103,7 +103,7 @@ class DragAndDrop {
 
    private draggingAllowed<T>(treeBranch: TreeBranch<T>): boolean {
       const allowDragging =
-         config.getConfig(treeBranch.root())?.allowDragging ??
+         config.getConfig(treeBranch.root())?.dragAndDrop?.allowDragging ??
          ((): true => true);
       return allowDragging(treeBranch);
    }
