@@ -40,4 +40,23 @@ describe("TreeService", () => {
             .item(0).style.marginLeft
       ).toBe("10px");
    });
+
+   it("should render descendent branches (other than the first generation) in an element whose left margin is equal to 16 in the absence of a specified indentation", () => {
+      const treeService = new TreeService();
+      const container = getViewContainer();
+      const tree = treeService.createEmptyTree(container);
+      const branch = tree.grow(EmptyComponent);
+      expect(
+         tree
+            .getContents()
+            .location.nativeElement.getElementsByClassName("branches-container")
+            .item(0).style.marginLeft
+      ).toBe("");
+      expect(
+         branch
+            .getContents()
+            .location.nativeElement.getElementsByClassName("branches-container")
+            .item(0).style.marginLeft
+      ).toBe("16px");
+   });
 });
