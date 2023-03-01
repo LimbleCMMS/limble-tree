@@ -18,7 +18,7 @@ export class CollapsibleComponent implements OnInit {
       if (this.treeBranch === undefined) {
          throw new Error();
       }
-      this.collapsed = this.treeBranch.branchOptions.startCollapsed ?? false;
+      this.collapsed = this.treeBranch.branchOptions.defaultCollapsed ?? false;
    }
 
    protected toggle(): void {

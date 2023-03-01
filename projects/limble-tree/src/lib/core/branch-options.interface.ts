@@ -9,7 +9,7 @@ export interface BranchOptions<Component> {
          ? (value: T) => void
          : never;
    };
-   startCollapsed?: boolean;
+   defaultCollapsed?: boolean;
    meta?: Record<string, any>;
 }
 

@@ -48,7 +48,7 @@ export class TreeBranch<UserlandComponent>
       this.setIndentation(parent);
       if (
          parent instanceof TreeBranch &&
-         parent.branchOptions.startCollapsed === true
+         parent.branchOptions.defaultCollapsed === true
       ) {
          treeCollapser.storePrecollapsedNode(parent, this);
          this.detachedView = this.branchController.getHostView();

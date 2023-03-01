@@ -109,7 +109,7 @@ export class AppComponent implements AfterViewInit {
          }
       });
       const branch1b = branch1.grow(CollapsibleComponent, {
-         startCollapsed: true
+         defaultCollapsed: true
       });
       branch1.grow(DraggableComponent);
       branch2.grow(LoremIpsumComponent);
