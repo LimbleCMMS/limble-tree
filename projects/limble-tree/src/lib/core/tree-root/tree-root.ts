@@ -12,7 +12,7 @@ import { config } from "../configuration/configuration";
 import { TreeError } from "../../errors";
 import { DestructionEvent } from "../../events/general";
 import { TreeNode } from "../../structure";
-import { RootController } from "./root-controller/root-controller";
+import { RootController } from "./root-controller";
 
 export class TreeRoot<UserlandComponent>
    implements TreeNode<TreeBranch<UserlandComponent>, RootComponent>

@@ -17,7 +17,7 @@ import { TreeRoot } from "..";
 import { treeCollapser } from "../../extras/collapse/collapse";
 import { DestructionEvent } from "../../events/general";
 import { TreeNode } from "../../structure";
-import { BranchController } from "./branch-controller/branch-controller";
+import { BranchController } from "./branch-controller";
 
 export class TreeBranch<UserlandComponent>
    implements

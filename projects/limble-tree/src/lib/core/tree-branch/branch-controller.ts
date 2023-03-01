@@ -6,10 +6,10 @@ import {
    ViewRef
 } from "@angular/core";
 import { filter, Subscription } from "rxjs";
-import { BranchComponent } from "../../../components/branch/branch.component";
-import { dropzoneRenderer } from "../../../extras/drag-and-drop/dropzone-renderer";
-import { ComponentContainer } from "../../../structure";
-import { TreeBranch } from "../tree-branch";
+import { BranchComponent } from "../../components/branch/branch.component";
+import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
+import { ComponentContainer } from "../../structure";
+import { TreeBranch } from "./tree-branch";
 
 /**
  * A wrapper around the BranchComponent that helps instantiate it and handles its events.
