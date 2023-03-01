@@ -151,12 +151,7 @@ export class TreeBranch<UserlandComponent>
       newParent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
       index?: number
    ): number {
-      if (this.isDestroyed()) {
-         throw new TreeError("Cannot graft a destroyed tree branch");
-      }
-      if (newParent.isDestroyed()) {
-         throw new TreeError("Cannot graft to a destroyed tree branch");
-      }
+      this.checkGraftLocationValidity(newParent, index);
       const ownIndex = this.index();
       if (ownIndex !== undefined) {
          this.prune();
@@ -266,6 +261,40 @@ export class TreeBranch<UserlandComponent>
    ): void {
       callback(this);
       this.treeNodeBase.traverse(callback);
+   }
+
+   private checkGraftLocationValidity(
+      newParent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
+      index?: number
+   ): void {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot graft a destroyed tree branch");
+      }
+      if (newParent.isDestroyed()) {
+         throw new TreeError("Cannot graft to a destroyed tree branch");
+      }
+      if (
+         typeof index === "number" &&
+         this.indexIsOutOfRange(newParent, index)
+      ) {
+         throw new TreeError(
+            `Cannot graft branch at index ${index} of the parent. Out of range.`
+         );
+      }
+      this.traverse((node) => {
+         if (node === newParent) {
+            throw new TreeError(
+               "Cannot graft a branch to itself or any of its own descendants"
+            );
+         }
+      });
+   }
+
+   private indexIsOutOfRange(
+      parent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
+      index: number
+   ): boolean {
+      return index < 0 || index > parent.branches().length;
    }
 
    private reattachView(index?: number): void {

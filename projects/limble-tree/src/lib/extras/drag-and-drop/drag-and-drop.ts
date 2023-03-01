@@ -57,9 +57,7 @@ class DragAndDrop {
       event: DragEvent
    ): void {
       const dataTransfer = event.dataTransfer;
-      if (!(dataTransfer instanceof DataTransfer)) {
-         throw new Error("bad drag event");
-      }
+      assert(dataTransfer instanceof DataTransfer);
       const nativeElement = treeBranch.getNativeElement();
       const [xOffset, yOffset] = this.getDragImageOffsets(event, nativeElement);
       dataTransfer.setDragImage(nativeElement, xOffset, yOffset);
@@ -71,9 +69,7 @@ class DragAndDrop {
    ): void {
       const oldParent = treeBranch.parent();
       const oldIndex = treeBranch.index();
-      if (oldParent === undefined || oldIndex === undefined) {
-         throw new Error("branch must have a parent");
-      }
+      assert(oldParent !== undefined && oldIndex !== undefined);
       event.target?.addEventListener(
          "dragend",
          (dragend) => {

@@ -5,6 +5,7 @@ import {
    ViewContainerRef,
    ViewRef
 } from "@angular/core";
+import { assert } from "../../../shared/assert";
 import { filter, Subscription } from "rxjs";
 import { BranchComponent } from "../../components/branch/branch.component";
 import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
@@ -95,9 +96,7 @@ export class BranchController<UserlandComponent>
          });
          component.treeBranch = this.treeBranch;
          const dropzones = instance.dropzones;
-         if (!dropzones) {
-            throw new Error("dropzones not defined");
-         }
+         assert(dropzones !== undefined);
          dropzoneRenderer.registerDropzones(dropzones, this.treeBranch);
       });
    }

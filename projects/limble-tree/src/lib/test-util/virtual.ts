@@ -5,8 +5,8 @@ import {
    ViewContainerRef
 } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
+import { assert } from "../../shared/assert";
 import { NodeComponent } from "../components/node-component.interface";
-import { TreeError } from "../errors";
 
 @Component({
    selector: "N/A",
@@ -27,8 +27,6 @@ function getVirtualComponent(): ComponentRef<VirtualComponent> {
 export function getViewContainer(): ViewContainerRef {
    const fixture = getVirtualComponent();
    const container = fixture.instance.branchesContainer;
-   if (container === undefined) {
-      throw new TreeError("container is not available");
-   }
+   assert(container !== undefined);
    return container;
 }

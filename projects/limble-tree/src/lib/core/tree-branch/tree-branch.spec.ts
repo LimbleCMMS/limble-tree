@@ -608,4 +608,51 @@ describe("TreeBranch", () => {
          (branch.getUserlandComponentRef()?.instance as any).treeBranch
       ).toBe(branch);
    });
+
+   it("should throw an error when attempting to graft at an index that is negative", () => {
+      const parent = getStandardBranch();
+      const child = getStandardBranch();
+      expect(() => {
+         child.graftTo(parent, -1);
+      }).toThrowError(TreeError);
+      expect(() => {
+         child.graftTo(parent, -100);
+      }).toThrowError(TreeError);
+      expect(() => {
+         child.graftTo(parent, -Infinity);
+      }).toThrowError(TreeError);
+   });
+
+   it("should throw an error when attempting to graft at an index that is higher than the number of branches on the parent", () => {
+      const parent = getStandardBranch();
+      const child = getStandardBranch();
+      expect(() => {
+         child.graftTo(parent, 2);
+      }).toThrowError(TreeError);
+      expect(() => {
+         child.graftTo(parent, 200);
+      }).toThrowError(TreeError);
+      expect(() => {
+         child.graftTo(parent, Infinity);
+      }).toThrowError(TreeError);
+   });
+
+   it("should throw a TreeError when attempting to graft onto itself", () => {
+      const self = getStandardBranch();
+      expect(() => {
+         self.graftTo(self);
+      }).toThrowError(TreeError);
+   });
+
+   it("should throw a TreeError when attempting to graft onto one of its own descendants", () => {
+      const self = getStandardBranch();
+      const child = self.grow(EmptyComponent);
+      const grandchild = child.grow(EmptyComponent);
+      expect(() => {
+         self.graftTo(child);
+      }).toThrowError(TreeError);
+      expect(() => {
+         self.graftTo(grandchild);
+      }).toThrowError(TreeError);
+   });
 });
