@@ -1,19 +1,12 @@
 import { assert } from "../../../shared/assert";
 import { TreePlot } from "../../structure/tree-plot";
-import { filter, Observable, Subscription } from "rxjs";
+import { Observable } from "rxjs";
 import { GraftEvent } from "../../events/relational/graft-event";
 import { PruneEvent } from "../../events/relational/prune-event";
 import { TreeEvent } from "../../structure/tree-event.interface";
 import { TreeBranchNode } from "../../structure/tree-branch-node.interface";
-import {
-   ComponentRef,
-   createComponent,
-   EnvironmentInjector,
-   Type,
-   ViewRef
-} from "@angular/core";
+import { ComponentRef, Type, ViewContainerRef, ViewRef } from "@angular/core";
 import { BranchComponent } from "../../components/branch/branch.component";
-import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeNodeBase } from "../tree-node-base";
 import { TreeError } from "../../errors/tree-error";
@@ -23,60 +16,45 @@ import { config } from "../configuration/configuration";
 import { TreeRoot } from "..";
 import { treeCollapser } from "../../extras/collapse/collapse";
 import { DestructionEvent } from "../../events/general";
+import { TreeNode } from "../../structure";
+import { BranchController } from "./branch-controller/branch-controller";
 
 export class TreeBranch<UserlandComponent>
    implements
       TreeBranchNode<
-         ComponentRef<BranchComponent<UserlandComponent>>,
+         BranchComponent<UserlandComponent>,
          TreeBranch<UserlandComponent>,
-         ComponentRef<NodeComponent>
+         NodeComponent
       >
 {
-   private readonly contents: ComponentRef<BranchComponent<UserlandComponent>>;
+   private readonly branchController: BranchController<UserlandComponent>;
    private detachedView: ViewRef | null = null;
-   private readonly instanceSubscriptions: Array<Subscription>;
-   private readonly outputBindingSubscriptions: Array<Subscription>;
    private _parent:
-      | ContainerTreeNode<
-           ComponentRef<NodeComponent>,
-           TreeBranch<UserlandComponent>
-        >
+      | TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
       | undefined;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
-   private readonly userlandComponent: Type<UserlandComponent>;
 
    public constructor(
-      parent: ContainerTreeNode<
-         ComponentRef<NodeComponent>,
-         TreeBranch<UserlandComponent>
-      >,
+      parent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
       public readonly branchOptions: FullBranchOptions<UserlandComponent>
    ) {
       this.treeNodeBase = new TreeNodeBase();
-      this.userlandComponent = this.branchOptions.component;
-      const parentBranchesContainer =
-         parent.getContents().instance.branchesContainer;
+      const parentBranchesContainer = parent.getBranchesContainer();
       assert(parentBranchesContainer !== undefined);
-      this.contents = createComponent<BranchComponent<UserlandComponent>>(
-         BranchComponent,
-         {
-            environmentInjector:
-               parentBranchesContainer.injector.get(EnvironmentInjector)
-         }
+      this.branchController = new BranchController(
+         this,
+         parentBranchesContainer
       );
-      this.contents.instance.contentToHost = this.userlandComponent;
       this.setIndentation(parent);
-      this.outputBindingSubscriptions = [];
-      this.instanceSubscriptions = this.getInstanceSubscriptions();
       if (
          parent instanceof TreeBranch &&
          parent.branchOptions.startCollapsed === true
       ) {
          treeCollapser.storePrecollapsedNode(parent, this);
-         this.detachedView = this.contents.hostView;
+         this.detachedView = this.branchController.getHostView();
       } else {
-         parentBranchesContainer.insert(this.contents.hostView);
-         this.contents.changeDetectorRef.detectChanges();
+         parentBranchesContainer.insert(this.branchController.getHostView());
+         this.detectChanges();
          this._parent = parent;
          this.dispatch(
             new GraftEvent(this, {
@@ -99,15 +77,14 @@ export class TreeBranch<UserlandComponent>
       this.prune();
       treeCollapser.expand(this);
       dropzoneRenderer.clearTreeFromRegistry(this);
-      this.getContents().hostView.destroy();
+      this.branchController.getHostView().destroy();
       this.treeNodeBase.destroy();
-      this.instanceSubscriptions.forEach((sub) => {
-         sub.unsubscribe();
-      });
-      this.outputBindingSubscriptions.forEach((sub) => {
-         sub.unsubscribe();
-      });
+      this.branchController.destroy();
       this.dispatch(new DestructionEvent(this));
+   }
+
+   public detectChanges(): void {
+      this.branchController.detectChanges();
    }
 
    public dispatch(event: TreeEvent): void {
@@ -123,18 +100,55 @@ export class TreeBranch<UserlandComponent>
       return this.treeNodeBase.getBranch(index);
    }
 
-   public getContents(): ComponentRef<BranchComponent<UserlandComponent>> {
+   public getBranchesContainer(): ViewContainerRef | undefined {
       if (this.isDestroyed()) {
-         throw new TreeError("Cannot get contents of destroyed tree branch");
+         throw new TreeError(
+            "Cannot get branches container from a destroyed tree branch"
+         );
       }
-      return this.contents;
+      return this.branchController.getBranchesContainer();
+   }
+
+   public getComponentInstance(): BranchComponent<UserlandComponent> {
+      if (this.isDestroyed()) {
+         throw new TreeError(
+            "Cannot get component instance from a destroyed tree branch"
+         );
+      }
+      return this.branchController.getComponentInstance();
+   }
+
+   public getHostView(): ViewRef {
+      if (this.isDestroyed()) {
+         throw new TreeError(
+            "Cannot get component host view from a destroyed tree branch"
+         );
+      }
+      return this.branchController.getHostView();
+   }
+
+   public getNativeElement(): HTMLElement {
+      if (this.isDestroyed()) {
+         throw new TreeError(
+            "Cannot get native element from a destroyed tree branch"
+         );
+      }
+      return this.branchController.getNativeElement();
+   }
+
+   public getUserlandComponentRef():
+      | ComponentRef<UserlandComponent>
+      | undefined {
+      if (this.isDestroyed()) {
+         throw new TreeError(
+            "Cannot get userland component from a destroyed tree branch"
+         );
+      }
+      return this.branchController.getUserlandComponentRef();
    }
 
    public graftTo(
-      newParent: ContainerTreeNode<
-         ComponentRef<NodeComponent>,
-         TreeBranch<UserlandComponent>
-      >,
+      newParent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
       index?: number
    ): number {
       if (this.isDestroyed()) {
@@ -190,10 +204,7 @@ export class TreeBranch<UserlandComponent>
    }
 
    public parent():
-      | ContainerTreeNode<
-           ComponentRef<NodeComponent>,
-           TreeBranch<UserlandComponent>
-        >
+      | TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
       | undefined {
       return this._parent;
    }
@@ -223,7 +234,7 @@ export class TreeBranch<UserlandComponent>
       const parent = this._parent;
       const index = this.index();
       if (index === undefined || parent === undefined) return;
-      const container = parent.getContents().instance.branchesContainer;
+      const container = parent.getBranchesContainer();
       assert(container !== undefined);
       this.detachedView = container.detach(index);
       assert(this.detachedView !== null);
@@ -250,95 +261,17 @@ export class TreeBranch<UserlandComponent>
 
    public traverse(
       callback: (
-         node: ContainerTreeNode<
-            ComponentRef<NodeComponent>,
-            TreeBranch<UserlandComponent>
-         >
+         node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
       ) => void
    ): void {
       callback(this);
       this.treeNodeBase.traverse(callback);
    }
 
-   private getContentCreatedSub(): Subscription {
-      const instance = this.contents.instance;
-      return instance.contentCreated.subscribe((userlandComponentInstance) => {
-         const component = userlandComponentInstance as any;
-         Object.entries(this.branchOptions.inputBindings ?? {}).forEach(
-            ([key, value]) => {
-               component[key] = value;
-            }
-         );
-         Object.entries(this.branchOptions.outputBindings ?? {}).forEach(
-            ([key, value]) => {
-               this.outputBindingSubscriptions.push(
-                  component[key].subscribe(value)
-               );
-            }
-         );
-         component.treeBranch = this;
-         const dropzones = instance.dropzones;
-         if (!dropzones) {
-            throw new Error("dropzones not defined");
-         }
-         dropzoneRenderer.registerDropzones(dropzones, this);
-      });
-   }
-
-   private getInstanceSubscriptions(): Array<Subscription> {
-      const droppedSub = this.contents.instance.dropped.subscribe(
-         (placement) => {
-            dropzoneRenderer.handleDrop(this, placement);
-         }
-      );
-      return [
-         this.getContentCreatedSub(),
-         this.getShowLowerZonesSub(),
-         this.getShowUpperZonesSub(),
-         droppedSub
-      ];
-   }
-
-   private getShowLowerZonesSub(): Subscription {
-      const instance = this.contents.instance;
-      return instance.showDropzones
-         .pipe(filter((direction) => direction === "lower"))
-         .subscribe(() => {
-            const currentDropzoneDisplayed =
-               dropzoneRenderer.getCurrentDisplay();
-            if (
-               currentDropzoneDisplayed?.treeBranch === this &&
-               currentDropzoneDisplayed.direction === "lower"
-            ) {
-               return;
-            }
-            dropzoneRenderer.showLowerZones(this);
-            instance.triggerChangeDetection();
-         });
-   }
-
-   private getShowUpperZonesSub(): Subscription {
-      const instance = this.contents.instance;
-      return instance.showDropzones
-         .pipe(filter((direction) => direction === "upper"))
-         .subscribe(() => {
-            const currentDropzoneDisplayed =
-               dropzoneRenderer.getCurrentDisplay();
-            if (
-               currentDropzoneDisplayed?.treeBranch === this &&
-               currentDropzoneDisplayed.direction === "upper"
-            ) {
-               return;
-            }
-            dropzoneRenderer.showUpperZones(this);
-            instance.triggerChangeDetection();
-         });
-   }
-
    private reattachView(index?: number): void {
       assert(this._parent !== undefined);
       assert(this.detachedView !== null);
-      const container = this._parent.getContents().instance.branchesContainer;
+      const container = this._parent.getBranchesContainer();
       assert(container !== undefined);
       this.detachedView.reattach();
       container.insert(this.detachedView, index);
@@ -346,15 +279,13 @@ export class TreeBranch<UserlandComponent>
    }
 
    private setIndentation(
-      parent: ContainerTreeNode<
-         ComponentRef<NodeComponent>,
-         TreeBranch<UserlandComponent>
-      >
+      parent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
    ): void {
       const root = parent.root();
       assert(root !== undefined);
       const options = config.getConfig(root);
-      const branchesContainerEl = this.contents.location.nativeElement
+      const branchesContainerEl = this.branchController
+         .getNativeElement()
          .getElementsByClassName("branches-container")
          .item(0);
       assert(branchesContainerEl instanceof HTMLElement);

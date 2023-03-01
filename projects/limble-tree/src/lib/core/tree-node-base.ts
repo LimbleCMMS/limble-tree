@@ -1,18 +1,16 @@
-import { ComponentRef } from "@angular/core";
 import { filter, Observable, Subject, Subscription } from "rxjs";
 import { NodeComponent } from "../components/node-component.interface";
 import { TreeError } from "../errors";
 import { GraftEvent } from "../events/relational/graft-event";
 import { PruneEvent } from "../events/relational/prune-event";
 import { TreeEvent } from "../structure/tree-event.interface";
-import { ContainerTreeNode } from "../structure/container-tree-node.interface";
 import { TreeNode } from "../structure/tree-node.interface";
 import { TreePlot } from "../structure/tree-plot";
 import { Relationship } from "./relationship.interface";
 import { TreeBranch } from "./tree-branch/tree-branch";
 
 export class TreeNodeBase<UserlandComponent>
-   implements Partial<TreeNode<TreeBranch<UserlandComponent>>>
+   implements Partial<TreeNode<TreeBranch<UserlandComponent>, NodeComponent>>
 {
    private readonly _branches: Array<TreeBranch<UserlandComponent>>;
    private readonly events$: Subject<TreeEvent>;
@@ -70,10 +68,7 @@ export class TreeNodeBase<UserlandComponent>
 
    public traverse(
       callback: (
-         node: ContainerTreeNode<
-            ComponentRef<NodeComponent>,
-            TreeBranch<UserlandComponent>
-         >
+         node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
       ) => void
    ): void {
       this.branches().forEach((branch) => {

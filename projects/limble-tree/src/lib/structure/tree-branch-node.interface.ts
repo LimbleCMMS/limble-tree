@@ -1,8 +1,10 @@
 import { Graftable } from "./graftable.interface";
-import { ContainerTreeNode } from "./container-tree-node.interface";
+import { TreeNode } from "./tree-node.interface";
 
-export type TreeBranchNode<Contents, Children, ParentContents> =
-   ContainerTreeNode<Contents, Children> &
-      Graftable<ContainerTreeNode<ParentContents, Children>> & {
-         position: () => Array<number>;
-      };
+export type TreeBranchNode<Contents, Children, ParentContents> = TreeNode<
+   Children,
+   Contents
+> &
+   Graftable<TreeNode<Children, ParentContents>> & {
+      position: () => Array<number>;
+   };

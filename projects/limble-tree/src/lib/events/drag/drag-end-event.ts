@@ -1,35 +1,22 @@
-import { ComponentRef } from "@angular/core";
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
-import { ContainerTreeNode } from "../../structure";
+import { TreeNode } from "../../structure";
 import { EventConduit } from "../../structure/event-conduit.interface";
 import { TreeEvent } from "../../structure/tree-event.interface";
 
 export class DragEndEvent<T> implements TreeEvent {
    private readonly _source: EventConduit;
-   private readonly _newParent: ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<T>
-   >;
+   private readonly _newParent: TreeNode<TreeBranch<T>, NodeComponent>;
    private readonly _newIndex: number;
-   private readonly _oldParent: ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<T>
-   >;
+   private readonly _oldParent: TreeNode<TreeBranch<T>, NodeComponent>;
    private readonly _oldIndex: number;
 
    public constructor(
       source: EventConduit,
       endpoints: {
-         oldParent: ContainerTreeNode<
-            ComponentRef<NodeComponent>,
-            TreeBranch<T>
-         >;
+         oldParent: TreeNode<TreeBranch<T>, NodeComponent>;
          oldIndex: number;
-         newParent: ContainerTreeNode<
-            ComponentRef<NodeComponent>,
-            TreeBranch<T>
-         >;
+         newParent: TreeNode<TreeBranch<T>, NodeComponent>;
          newIndex: number;
       }
    ) {
@@ -52,10 +39,7 @@ export class DragEndEvent<T> implements TreeEvent {
       return this._newIndex;
    }
 
-   public newParent(): ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<T>
-   > {
+   public newParent(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._newParent;
    }
 
@@ -63,10 +47,7 @@ export class DragEndEvent<T> implements TreeEvent {
       return this._oldIndex;
    }
 
-   public oldParent(): ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<T>
-   > {
+   public oldParent(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._oldParent;
    }
 }

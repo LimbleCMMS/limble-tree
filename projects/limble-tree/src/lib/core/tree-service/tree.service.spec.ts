@@ -1,3 +1,4 @@
+import { assert } from "../../../shared/assert";
 import { TreeRoot } from "../../core/tree-root/tree-root";
 import { EmptyComponent } from "../../test-util/empty.component";
 import { getViewContainer } from "../../test-util/virtual";
@@ -27,18 +28,18 @@ describe("TreeService", () => {
          indentation: 10
       });
       const branch = tree.grow(EmptyComponent);
-      expect(
-         tree
-            .getContents()
-            .location.nativeElement.getElementsByClassName("branches-container")
-            .item(0).style.marginLeft
-      ).toBe("");
-      expect(
-         branch
-            .getContents()
-            .location.nativeElement.getElementsByClassName("branches-container")
-            .item(0).style.marginLeft
-      ).toBe("10px");
+      const treeBranchesContainerElement = tree
+         .getNativeElement()
+         .getElementsByClassName("branches-container")
+         .item(0);
+      const branchBranchesContainerElement = branch
+         .getNativeElement()
+         .getElementsByClassName("branches-container")
+         .item(0);
+      assert(treeBranchesContainerElement instanceof HTMLElement);
+      assert(branchBranchesContainerElement instanceof HTMLElement);
+      expect(treeBranchesContainerElement.style.marginLeft).toBe("");
+      expect(branchBranchesContainerElement.style.marginLeft).toBe("10px");
    });
 
    it("should render descendent branches (other than the first generation) in an element whose left margin is equal to 16 in the absence of a specified indentation", () => {
@@ -46,17 +47,17 @@ describe("TreeService", () => {
       const container = getViewContainer();
       const tree = treeService.createEmptyTree(container);
       const branch = tree.grow(EmptyComponent);
-      expect(
-         tree
-            .getContents()
-            .location.nativeElement.getElementsByClassName("branches-container")
-            .item(0).style.marginLeft
-      ).toBe("");
-      expect(
-         branch
-            .getContents()
-            .location.nativeElement.getElementsByClassName("branches-container")
-            .item(0).style.marginLeft
-      ).toBe("16px");
+      const treeBranchesContainerElement = tree
+         .getNativeElement()
+         .getElementsByClassName("branches-container")
+         .item(0);
+      const branchBranchesContainerElement = branch
+         .getNativeElement()
+         .getElementsByClassName("branches-container")
+         .item(0);
+      assert(treeBranchesContainerElement instanceof HTMLElement);
+      assert(branchBranchesContainerElement instanceof HTMLElement);
+      expect(treeBranchesContainerElement.style.marginLeft).toBe("");
+      expect(branchBranchesContainerElement.style.marginLeft).toBe("16px");
    });
 });

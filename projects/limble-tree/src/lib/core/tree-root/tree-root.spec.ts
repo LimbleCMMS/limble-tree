@@ -2,7 +2,7 @@ import { first } from "rxjs";
 import { TreeNode } from "../../structure/tree-node.interface";
 import { TreeRoot } from "./tree-root";
 import { TreeBranch } from "../tree-branch/tree-branch";
-import { ViewRef } from "@angular/core";
+import { ViewContainerRef, ViewRef } from "@angular/core";
 import { getViewContainer } from "../../test-util/virtual";
 import { getStandardBranch } from "../../test-util/standard-branch";
 import { EmptyComponent } from "../../test-util/empty.component";
@@ -11,6 +11,7 @@ import { TreeEvent } from "../../structure";
 import { RootComponent } from "../../components/root/root.component";
 import { TreeError } from "../../errors";
 import { DestructionEvent } from "../../events/general";
+import { NodeComponent } from "../../components/node-component.interface";
 
 describe("TreeRoot", () => {
    it("should start with no branches", () => {
@@ -20,7 +21,7 @@ describe("TreeRoot", () => {
 
    it("should immediately render a RootComponent", () => {
       const root = new TreeRoot(getViewContainer());
-      expect(root.getContents().componentType).toBe(RootComponent);
+      expect(root.getComponentInstance()).toBeInstanceOf(RootComponent);
       const rootComponents = document.getElementsByTagName("root");
       expect(rootComponents.length).toBe(1);
    });
@@ -32,9 +33,7 @@ describe("TreeRoot", () => {
       expect(branch.parent()).toBe(root);
       expect(root.branches()).toEqual([branch]);
       expect(
-         root
-            .getContents()
-            .location.nativeElement.getElementsByTagName("branch").length
+         root.getNativeElement().getElementsByTagName("branch").length
       ).toBe(1);
    });
 
@@ -51,8 +50,8 @@ describe("TreeRoot", () => {
       expect(branch3.parent()).toBe(root);
       expect(root.branches()).toEqual([branch1, branch2, branch3]);
       const branchComponents = root
-         .getContents()
-         .location.nativeElement.getElementsByTagName("branch");
+         .getNativeElement()
+         .getElementsByTagName("branch");
       expect(branchComponents.length).toBe(3);
    });
 
@@ -77,8 +76,8 @@ describe("TreeRoot", () => {
       expect(branch.parent()).not.toBe(root);
       expect(root.branches()).toEqual([]);
       const branchComponents = root
-         .getContents()
-         .location.nativeElement.getElementsByTagName("branch");
+         .getNativeElement()
+         .getElementsByTagName("branch");
       expect(branchComponents.length).toBe(0);
    });
 
@@ -180,7 +179,8 @@ describe("TreeRoot", () => {
       branch3b.graftTo(branch3);
       branch3a1.graftTo(branch3a);
       branch3ab.graftTo(branch3a);
-      const nodes: Array<TreeNode<TreeBranch<EmptyComponent>>> = [];
+      const nodes: Array<TreeNode<TreeBranch<EmptyComponent>, NodeComponent>> =
+         [];
       root.traverse((node) => {
          nodes.push(node);
       });
@@ -201,9 +201,7 @@ describe("TreeRoot", () => {
    it("Should have a componentRef whose component is rendered in the passed view container", () => {
       const viewContainerRef = getViewContainer();
       const self = new TreeRoot(viewContainerRef);
-      expect(self.getContents().hostView).toBe(
-         viewContainerRef.get(0) as ViewRef
-      );
+      expect(self.getHostView()).toBe(viewContainerRef.get(0) as ViewRef);
    });
 
    it("should grow a child branch", () => {
@@ -238,10 +236,10 @@ describe("TreeRoot", () => {
       });
    });
 
-   it("should throw an error when getContents is called after destruction", () => {
+   it("should throw an error when getComponentInstance is called after destruction", () => {
       const root = new TreeRoot<EmptyComponent>(getViewContainer());
       root.destroy();
-      expect(() => root.getContents()).toThrowError(TreeError);
+      expect(() => root.getComponentInstance()).toThrowError(TreeError);
    });
 
    it("should throw an error when grow is called after destruction", () => {
@@ -275,5 +273,39 @@ describe("TreeRoot", () => {
          });
       root.destroy();
       expect(subscriptionWasRun).toBe(true);
+   });
+
+   it("should get its own branches container", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      expect(root.getBranchesContainer()).toBeInstanceOf(ViewContainerRef);
+   });
+
+   it("should throw an error when getBranchesContainer is called after destruction", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      root.destroy();
+      expect(() => root.getBranchesContainer()).toThrowError(TreeError);
+   });
+
+   it("should get its own host view", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      expect(root.getHostView()).toBeDefined();
+   });
+
+   it("should throw an error when getHostView is called after destruction", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      root.destroy();
+      expect(() => root.getHostView()).toThrowError(TreeError);
+   });
+
+   it("should get the native element it is hosting", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      expect(root.getNativeElement()).toBeInstanceOf(HTMLElement);
+      expect(root.getNativeElement().tagName).toBe("ROOT");
+   });
+
+   it("should throw an error when getNativeElement is called after destruction", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      root.destroy();
+      expect(() => root.getNativeElement()).toThrowError(TreeError);
    });
 });

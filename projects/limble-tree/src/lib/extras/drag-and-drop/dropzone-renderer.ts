@@ -1,16 +1,15 @@
-import { ComponentRef } from "@angular/core";
 import { assert } from "../../../shared/assert";
 import { BranchComponent } from "../../components/branch/branch.component";
 import { DropzoneComponent } from "../../components/dropzone/dropzone.component";
 import { NodeComponent } from "../../components/node-component.interface";
 import { dragAndDrop } from "./drag-and-drop";
-import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { TreeBranch } from "../../core/tree-branch/tree-branch";
 import { TreeRoot } from "../../core/tree-root/tree-root";
 import { dragState, DragStates } from "./drag-state";
 import { filter, first } from "rxjs";
 import { config } from "../../core/configuration/configuration";
 import { PruneEvent } from "../../events";
+import { TreeNode } from "../../structure";
 
 class DropzoneRenderer {
    private currentDisplay: {
@@ -58,7 +57,7 @@ class DropzoneRenderer {
    public clearCurrentDisplay(): void {
       if (this.currentDisplay === null) return;
       for (const branch of this.registry.values()) {
-         const instance = branch.getContents().instance;
+         const instance = branch.getComponentInstance();
          instance.showInnerDropzone = false;
          if (instance instanceof BranchComponent) {
             instance.showLateralDropzone = false;
@@ -68,9 +67,7 @@ class DropzoneRenderer {
    }
 
    public clearTreeFromRegistry(tree: TreeRoot<any> | TreeBranch<any>): void {
-      const nodes: Array<
-         ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<any>>
-      > = [];
+      const nodes: Array<TreeNode<TreeBranch<any>, NodeComponent>> = [];
       tree.traverse((node) => nodes.push(node));
       for (const [dropzoneComponent, treeNode] of this.registry) {
          if (nodes.includes(treeNode)) {
@@ -152,9 +149,7 @@ class DropzoneRenderer {
    private loopThroughLowerZones<T>(
       treeNode: TreeBranch<T> | TreeRoot<T>
    ): void {
-      let cursor:
-         | ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<T>>
-         | undefined = treeNode;
+      let cursor: TreeNode<TreeBranch<T>, NodeComponent> | undefined = treeNode;
       while (cursor instanceof TreeBranch) {
          this.showLateralZone(cursor);
          const parent = cursor.parent();
@@ -219,14 +214,14 @@ class DropzoneRenderer {
    private showInnerZone<T>(treeNode: TreeBranch<T> | TreeRoot<T>): void {
       if (!this.nestingAllowed(treeNode) || !this.dropAllowed(treeNode, 0))
          return;
-      treeNode.getContents().instance.showInnerDropzone = true;
+      treeNode.getComponentInstance().showInnerDropzone = true;
    }
 
    private showLateralZone<T>(treeBranch: TreeBranch<T>): void {
       const index = treeBranch.index();
       assert(index !== undefined);
       if (!this.dropAllowed(treeBranch.parent(), index + 1)) return;
-      treeBranch.getContents().instance.showLateralDropzone = true;
+      treeBranch.getComponentInstance().showLateralDropzone = true;
    }
 }
 

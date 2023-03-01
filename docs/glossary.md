@@ -1,0 +1,5 @@
+-
+-  **Branch**: May refer to a TreeBranch, BranchComponent, or a Userland Component, depending on the level of abstraction.
+-  **Branches Container**: An element and/or its associated viewContainerRef of a ComponentContainer whose purpose is to render child branches.
+-  **Tree**: A RootComponent, its parent view container, and all of its descendent elements, as well as all of the objects and utilities that manage and support that structure.
+-  **Userland Component**: A component supplied to the library by the user, which is dynamically rendered inside a BranchComponent.
