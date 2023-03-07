@@ -13,7 +13,7 @@ import { TreeDragAndDropService } from "./drag-and-drop.service";
    standalone: true
 })
 export class DraggableDirective {
-   @Input() limbleTreeDraggable?: TreeBranch<any>;
+   @Input() limbleTreeDraggable?: TreeBranch<any> | undefined;
 
    public constructor(
       private readonly dragAndDropService: TreeDragAndDropService,

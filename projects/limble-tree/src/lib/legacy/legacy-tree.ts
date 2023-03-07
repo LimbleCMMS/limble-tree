@@ -77,9 +77,6 @@ export class LegacyTree {
          options.defaultComponent?.bindings ??
          {}) as { [K in keyof T]?: T[K] | undefined };
       const nodeData = node;
-      delete nodeData.nodes;
-      delete nodeData.collapsed;
-      delete nodeData.component;
       const branch = parent.grow(component as Type<T>, {
          inputBindings: bindings,
          meta: { nodeData }
