@@ -15,8 +15,6 @@ Features:
 -  No limit on tree depth or size.
 -  Recently redesigned to allow better performance with large/complex trees.
 
-TODO: Add image or gif
-
 ## Installation
 
 ```bash
@@ -263,7 +261,7 @@ You can check if a branch can be expanded using the collapse service's `isCollap
 Branches can be moved around, both within a single tree and between different trees.
 
 ```typescript
-   public ngAfterViewInit(): void {
+public ngAfterViewInit(): void {
    this.tree1 = this.treeService.createEmptyTree<MyTreeContentComponent>(
       this.treeContainer1
    );
@@ -333,8 +331,6 @@ Drag and drop functionality is easy to use. Simply add the `[limbleTreeDraggable
 
 As the user drags the branch over other branches of the tree, dropzones will appear to indicate where the dragged branch may be placed. Dropping into a dropzone will graft the dragged branch at that location.
 
-TODO: image here
-
 ### Configurable Restrictions For Drag-And-Drop
 
 A tree can be configured to disallow certain branches from...
@@ -397,7 +393,56 @@ Each event contains applicable information about the event, such as the nodes in
 
 ## Traversing The Tree
 
-TODO
+### Parents and Children
+
+Trees are doubly-linked, meaning that each node in the tree holds a pointer to its parent and a pointer to each of its children. These pointers are accessed using the `parent()` and `branches()` methods, respectively. The order of child branches is maintained. The `getBranch()` method takes an index as an argument and returns the branch at that index. A branch's position relative to its siblings is obtained using the `index()` method.
+
+Unlike TreeBranch instances, a TreeRoot does not have a `parent()` or `index()` method, but it does have a `branches()` and `getBranch()` methods.
+
+TreeBranch instances have a method `root()`, which returns the root of their current tree. TreeRoot instances also have this method, and in that case it always returns itself.
+
+```typescript
+public ngAfterViewInit(): void {
+   this.tree = this.treeService.createEmptyTree<MyTreeContentComponent>(
+      this.treeContainer
+   );
+   this.tree.events().subscribe((event) => {
+      console.log(event.type());
+   });
+   const branch1 = this.tree.grow(MyTreeContentComponent);
+   const branch2 = this.tree.grow(MyTreeContentComponent);
+   const branch2a = branch2.grow(MyTreeContentComponent);
+   const branch2b = branch2.grow(MyTreeContentComponent);
+   const branch2a1 = branch2a.grow(MyTreeContentComponent);
+   const branch2a1 = branch2a.grow(MyTreeContentComponent);
+
+   //All of these expressions are true
+   assert(branch2b.parent() === branch2);
+   assert(branch2b.index() === 1);
+   assert(branch2.branches()[1] === branch2b);
+   assert(branch2a1.branches().length === 0);
+   assert(branch1.parent() === this.tree);
+   assert(this.tree.getBranch(2) === branch2);
+   assert(branch2a1.root() === this.tree);
+}
+```
+
+### Traversal Utility Methods
+
+There are a couple other methods used to traverse the tree.
+
+-  `traverse()` traverses the tree in [depth-first pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR) and executes a provided callback on each node.
+-  `plot()` traverses the tree and returns a many-dimensional [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)representing the shape of the tree.
+
+### Get Branch's Current Location in the Tree
+
+You can call `position()` on a TreeBranch to get an array of indexes, indicating the path from the root to that branch.
+
+Example: If `position()` returns [2, 2, 4], that means the branch is a great-grandchild of the root (three elements == three levels deep), and the branch could be accessed like so:
+
+```typescript
+root.getBranch(2).getBranch(2).getBranch(4);
+```
 
 ## Destroying Trees And Branches
 
@@ -406,6 +451,20 @@ The `destroy()` method must be called on a TreeRoot in order for its resources t
 Branches also have a `destroy()` method. Calling `destroy()` on the TreeRoot will automatically call the `destroy()` method of each branch in the tree, including branches that have been collapsed.
 
 Branches that have been otherwise pruned are not part of any tree; their `destroy()` method must be called manually in order to release their resources. Calling a branch's `destroy()` method will automatically call the `destroy()` method of each descendant branch, including descendants that are collapsed.
+
+Destroyed roots and branches have very limited functionality. Many methods will simply throw an error if the instance has been previously destroyed. You can check if a node is destroyed with the `isDestroyed()` method.
+
+## Accessing Underlying Structures
+
+There are methods on TreeBranch and TreeRoot instances which grant access to underlying structures. We recommend only using these in advanced scenarios. They are not fully documented here at this time.
+
+-  detectChanges()
+-  dispatch()
+-  getBranchesContainer()
+-  getComponentInstance()
+-  getHostView()
+-  getNativeElement()
+-  getUserlandComponentRef()
 
 ## Development and Contributions
 
