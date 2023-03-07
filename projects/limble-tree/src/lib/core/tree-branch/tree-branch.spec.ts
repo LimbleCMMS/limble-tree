@@ -519,8 +519,6 @@ describe("TreeBranch", () => {
       }).toThrowError(TreeError);
    });
 
-   //FIXME: Any more methods that should fail after destruction?
-
    it("should dispatch a destruction event when destroyed", () => {
       const self = getStandardBranch();
       let subscriptionWasRun = false;
