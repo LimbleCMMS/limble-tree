@@ -1,21 +1,15 @@
-import { ComponentRef } from "@angular/core";
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
-import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
-import { EventConduit } from "../../structure/event-conduit.interface";
-import { TreeEvent } from "../../structure/tree-event.interface";
+import { TreeNode, EventConduit, TreeEvent } from "../../structure";
 
 export class DropEvent<T> implements TreeEvent {
    private readonly _source: EventConduit;
-   private readonly _parent: ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<T>
-   >;
+   private readonly _parent: TreeNode<TreeBranch<T>, NodeComponent>;
    private readonly _index: number;
 
    public constructor(
       source: EventConduit,
-      parent: ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<T>>,
+      parent: TreeNode<TreeBranch<T>, NodeComponent>,
       index: number
    ) {
       this._source = source;
@@ -35,10 +29,7 @@ export class DropEvent<T> implements TreeEvent {
       return this._index;
    }
 
-   public parent(): ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<T>
-   > {
+   public parent(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._parent;
    }
 }

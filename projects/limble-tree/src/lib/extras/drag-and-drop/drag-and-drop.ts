@@ -1,4 +1,3 @@
-import { ComponentRef } from "@angular/core";
 import { Subject } from "rxjs";
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
@@ -6,10 +5,10 @@ import { config } from "../../core/configuration/configuration";
 import { TreeError } from "../../errors";
 import { DragEndEvent } from "../../events/drag/drag-end-event";
 import { DragStartEvent } from "../../events/drag/drag-start-event";
-import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { dragState, DragStates } from "./drag-state";
 import { DropEvent } from "../../events/drag/drop-event";
 import { assert } from "../../../shared/assert";
+import { TreeNode } from "../../structure";
 
 class DragAndDrop {
    public readonly dragAborted$ = new Subject<DragEvent>();
@@ -32,7 +31,7 @@ class DragAndDrop {
    }
 
    public drop<T>(
-      parent: ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<T>>,
+      parent: TreeNode<TreeBranch<T>, NodeComponent>,
       index: number
    ): void {
       const treeBranch = dragState.getDragData<T>();
@@ -58,10 +57,8 @@ class DragAndDrop {
       event: DragEvent
    ): void {
       const dataTransfer = event.dataTransfer;
-      if (!(dataTransfer instanceof DataTransfer)) {
-         throw new Error("bad drag event");
-      }
-      const nativeElement = treeBranch.getContents().location.nativeElement;
+      assert(dataTransfer instanceof DataTransfer);
+      const nativeElement = treeBranch.getNativeElement();
       const [xOffset, yOffset] = this.getDragImageOffsets(event, nativeElement);
       dataTransfer.setDragImage(nativeElement, xOffset, yOffset);
    }
@@ -72,9 +69,7 @@ class DragAndDrop {
    ): void {
       const oldParent = treeBranch.parent();
       const oldIndex = treeBranch.index();
-      if (oldParent === undefined || oldIndex === undefined) {
-         throw new Error("branch must have a parent");
-      }
+      assert(oldParent !== undefined && oldIndex !== undefined);
       event.target?.addEventListener(
          "dragend",
          (dragend) => {
@@ -103,20 +98,18 @@ class DragAndDrop {
 
    private draggingAllowed<T>(treeBranch: TreeBranch<T>): boolean {
       const allowDragging =
-         config.getConfig(treeBranch.root())?.allowDragging ??
+         config.getConfig(treeBranch.root())?.dragAndDrop?.allowDragging ??
          ((): true => true);
       return allowDragging(treeBranch);
    }
 
    private graftDraggedBranch<T>(
       treeBranch: TreeBranch<T>,
-      parent: ContainerTreeNode<ComponentRef<NodeComponent>, TreeBranch<T>>,
+      parent: TreeNode<TreeBranch<T>, NodeComponent>,
       index: number
    ): void {
       treeBranch.graftTo(parent, index);
-      (
-         treeBranch.getContents().location.nativeElement as HTMLElement
-      ).style.display = "block";
+      treeBranch.getNativeElement().style.display = "block";
       dragState.dropped();
    }
 }

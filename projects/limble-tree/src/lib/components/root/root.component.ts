@@ -7,6 +7,7 @@ import {
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
+import { assert } from "../../../shared/assert";
 import { DropzoneComponent } from "../dropzone/dropzone.component";
 import { NodeComponent } from "../node-component.interface";
 
@@ -30,9 +31,7 @@ export class RootComponent implements NodeComponent, AfterViewInit {
 
    public ngAfterViewInit(): void {
       this.afterViewInit.emit();
-      if (this.dropzone === undefined) {
-         throw new Error("dropzone is not defined");
-      }
+      assert(this.dropzone !== undefined);
       this.dropzone.dropped.subscribe(this.dropped);
    }
 }

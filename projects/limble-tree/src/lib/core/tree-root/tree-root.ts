@@ -1,65 +1,49 @@
 import { TreePlot } from "../../structure/tree-plot";
-import { Observable, Subscription } from "rxjs";
+import { Observable } from "rxjs";
 import { TreeEvent } from "../../structure/tree-event.interface";
 import { TreeBranch } from "../tree-branch/tree-branch";
-import { ComponentRef, Type, ViewContainerRef } from "@angular/core";
+import { Type, ViewContainerRef, ViewRef } from "@angular/core";
 import { RootComponent } from "../../components/root/root.component";
 import { TreeNodeBase } from "../tree-node-base";
-import { TreeRootNode } from "../../structure/tree-root.node.interface";
-import { ContainerTreeNode } from "../../structure/container-tree-node.interface";
 import { NodeComponent } from "../../components/node-component.interface";
 import { BranchOptions } from "../branch-options.interface";
 import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
 import { config } from "../configuration/configuration";
+import { TreeError } from "../../errors";
+import { DestructionEvent } from "../../events/general";
+import { TreeNode } from "../../structure";
+import { RootController } from "./root-controller";
 
 export class TreeRoot<UserlandComponent>
-   implements
-      TreeRootNode<ComponentRef<RootComponent>, TreeBranch<UserlandComponent>>
+   implements TreeNode<TreeBranch<UserlandComponent>, RootComponent>
 {
-   private readonly instanceSubscriptions: Array<Subscription>;
-   private readonly rootComponentRef: ComponentRef<RootComponent>;
+   private readonly rootController: RootController<UserlandComponent>;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
 
    public constructor(private readonly viewContainerRef: ViewContainerRef) {
       this.treeNodeBase = new TreeNodeBase();
-      this.rootComponentRef =
-         this.viewContainerRef.createComponent(RootComponent);
-      const viewInitSub =
-         this.rootComponentRef.instance.afterViewInit.subscribe(() => {
-            const dropzone = this.rootComponentRef.instance.dropzone;
-            if (!dropzone) {
-               throw new Error("dropzone not defined");
-            }
-            dropzoneRenderer.registerDropzone(dropzone, this);
-         });
-      const droppedSub = this.rootComponentRef.instance.dropped.subscribe(
-         () => {
-            dropzoneRenderer.handleDrop(this, "inner");
-         }
-      );
-      this.instanceSubscriptions = [viewInitSub, droppedSub];
-      this.rootComponentRef.changeDetectorRef.detectChanges();
+      this.rootController = new RootController(this, viewContainerRef);
+      this.detectChanges();
    }
 
    public branches(): Array<TreeBranch<UserlandComponent>> {
       return this.treeNodeBase.branches();
    }
 
-   public deleteBranch(index?: number): void {
-      this.treeNodeBase.deleteBranch(index);
-   }
-
    public destroy(): void {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot destroy a destroyed tree root");
+      }
       dropzoneRenderer.clearTreeFromRegistry(this);
-      this.branches().forEach((branch) => {
-         branch.destroy();
-      });
       this.treeNodeBase.destroy();
-      this.instanceSubscriptions.forEach((sub) => {
-         sub.unsubscribe();
-      });
+      this.rootController.destroy();
       this.viewContainerRef.clear();
       config.delete(this);
+      this.dispatch(new DestructionEvent(this));
+   }
+
+   public detectChanges(): void {
+      this.rootController.detectChanges();
    }
 
    public dispatch(event: TreeEvent): void {
@@ -74,15 +58,54 @@ export class TreeRoot<UserlandComponent>
       return this.treeNodeBase.getBranch(index);
    }
 
-   public getContents(): ComponentRef<RootComponent> {
-      return this.rootComponentRef;
+   public getBranchesContainer(): ViewContainerRef | undefined {
+      if (this.isDestroyed()) {
+         throw new TreeError(
+            "Cannot get branches container from a destroyed tree root"
+         );
+      }
+      return this.rootController.getBranchesContainer();
+   }
+
+   public getComponentInstance(): RootComponent {
+      if (this.isDestroyed()) {
+         throw new TreeError(
+            "Cannot get component instance from a destroyed tree root"
+         );
+      }
+      return this.rootController.getComponentInstance();
+   }
+
+   public getHostView(): ViewRef {
+      if (this.isDestroyed()) {
+         throw new TreeError(
+            "Cannot get component host view from a destroyed tree root"
+         );
+      }
+      return this.rootController.getHostView();
+   }
+
+   public getNativeElement(): HTMLElement {
+      if (this.isDestroyed()) {
+         throw new TreeError(
+            "Cannot get native element from a destroyed tree root"
+         );
+      }
+      return this.rootController.getNativeElement();
    }
 
    public grow(
       component: Type<UserlandComponent>,
       options?: BranchOptions<UserlandComponent>
    ): TreeBranch<UserlandComponent> {
+      if (this.isDestroyed()) {
+         throw new TreeError("Cannot grow a branch on a destroyed tree root");
+      }
       return new TreeBranch(this, { component, ...options });
+   }
+
+   public isDestroyed(): boolean {
+      return this.treeNodeBase.isDestroyed();
    }
 
    public plot(): TreePlot {
@@ -95,10 +118,7 @@ export class TreeRoot<UserlandComponent>
 
    public traverse(
       callback: (
-         node: ContainerTreeNode<
-            ComponentRef<NodeComponent>,
-            TreeBranch<UserlandComponent>
-         >
+         node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
       ) => void
    ): void {
       callback(this);

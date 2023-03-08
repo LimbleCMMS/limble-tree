@@ -29,7 +29,10 @@
                "options": {
                   "main": "projects/limble-tree/src/test.ts",
                   "tsConfig": "projects/limble-tree/tsconfig.spec.json",
-                  "karmaConfig": "projects/limble-tree/karma.conf.js"
+                  "karmaConfig": "projects/limble-tree/karma.conf.js",
+                  "codeCoverageExclude": [
+                     "projects/limble-tree/src/lib/test-util/**/*"
+                  ]
                }
             }
          }

@@ -1,13 +1,9 @@
-import { ComponentRef } from "@angular/core";
 import { NodeComponent } from "../components/node-component.interface";
-import { ContainerTreeNode } from "../structure/container-tree-node.interface";
+import { TreeNode } from "../structure";
 import { TreeRelationship } from "../structure/tree-relationship.interface";
 import { TreeBranch } from "./tree-branch/tree-branch";
 
 export type Relationship<UserlandComponent> = TreeRelationship<
-   ContainerTreeNode<
-      ComponentRef<NodeComponent>,
-      TreeBranch<UserlandComponent>
-   >,
+   TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
    TreeBranch<UserlandComponent>
 >;

@@ -1,21 +1,20 @@
-import { ComponentRef } from "@angular/core";
 import { filter, Observable, Subject, Subscription } from "rxjs";
 import { NodeComponent } from "../components/node-component.interface";
 import { TreeError } from "../errors";
 import { GraftEvent } from "../events/relational/graft-event";
 import { PruneEvent } from "../events/relational/prune-event";
 import { TreeEvent } from "../structure/tree-event.interface";
-import { ContainerTreeNode } from "../structure/container-tree-node.interface";
 import { TreeNode } from "../structure/tree-node.interface";
 import { TreePlot } from "../structure/tree-plot";
 import { Relationship } from "./relationship.interface";
 import { TreeBranch } from "./tree-branch/tree-branch";
 
 export class TreeNodeBase<UserlandComponent>
-   implements Partial<TreeNode<TreeBranch<UserlandComponent>>>
+   implements Partial<TreeNode<TreeBranch<UserlandComponent>, NodeComponent>>
 {
    private readonly _branches: Array<TreeBranch<UserlandComponent>>;
    private readonly events$: Subject<TreeEvent>;
+   private destroyed: boolean = false;
    private readonly subscriptions: Array<Subscription>;
 
    public constructor() {
@@ -35,18 +34,14 @@ export class TreeNodeBase<UserlandComponent>
       return [...this._branches];
    }
 
-   public deleteBranch(index?: number): void {
-      if (index === undefined) {
-         this._branches.pop();
-         return;
-      }
-      this._branches.splice(index, 1);
-   }
-
    public destroy(): void {
+      this.branches().forEach((branch) => {
+         branch.destroy();
+      });
       this.subscriptions.forEach((sub) => {
          sub.unsubscribe();
       });
+      this.destroyed = true;
    }
 
    public dispatch(event: TreeEvent): void {
@@ -61,6 +56,10 @@ export class TreeNodeBase<UserlandComponent>
       return this._branches[index];
    }
 
+   public isDestroyed(): boolean {
+      return this.destroyed;
+   }
+
    public plot(): TreePlot {
       return new Map(
          this.branches().map((branch, index) => [index, branch.plot()])
@@ -69,10 +68,7 @@ export class TreeNodeBase<UserlandComponent>
 
    public traverse(
       callback: (
-         node: ContainerTreeNode<
-            ComponentRef<NodeComponent>,
-            TreeBranch<UserlandComponent>
-         >
+         node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
       ) => void
    ): void {
       this.branches().forEach((branch) => {
@@ -84,7 +80,7 @@ export class TreeNodeBase<UserlandComponent>
       child: TreeBranch<UserlandComponent>
    ): void {
       const index = this.branches().findIndex((branch) => branch === child);
-      this.deleteBranch(index);
+      this._branches.splice(index, 1);
    }
 
    private graftsToSelf(): Observable<

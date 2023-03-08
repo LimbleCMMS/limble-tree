@@ -17,7 +17,7 @@
       "publishPackage": "npm run check && rm -rf dist/limble-tree && npm run build && cd dist/limble-tree && npm publish",
       "start": "ng serve",
       "test": "ng build limble-tree && ng test --no-watch --no-progress",
-      "test:limble-tree": "ng test limble-tree",
+      "test:limble-tree": "ng test limble-tree --code-coverage",
       "test:sandbox": "ng build limble-tree && ng test sandbox"
    },
    "private": true,

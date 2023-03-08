@@ -4,3 +4,4 @@ dist/*
 
 # Third-party code need not be formatted
 node_modules/*
+coverage/*

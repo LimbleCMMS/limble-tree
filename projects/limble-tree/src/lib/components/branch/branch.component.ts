@@ -16,11 +16,11 @@ import {
    ViewContainerRef
 } from "@angular/core";
 import { map, merge } from "rxjs";
-import { TreeError } from "../../errors";
 import { DropzoneComponent } from "../dropzone/dropzone.component";
 import { HostComponent } from "../host-component.interface";
 import { NodeComponent } from "../node-component.interface";
 import { DragoverNoChangeDetectDirective } from "../../extras/drag-and-drop/dragover-no-change-detect";
+import { assert } from "../../../shared/assert";
 
 @Component({
    standalone: true,
@@ -54,24 +54,16 @@ export class BranchComponent<T>
    public constructor(private readonly appRef: ApplicationRef) {}
 
    public ngAfterViewInit(): void {
-      if (this.contentContainer === undefined) {
-         throw new TreeError("Cannot get contentContainer");
-      }
-      if (this.contentToHost === undefined) {
-         throw new TreeError("'content' is a required input");
-      }
+      assert(this.contentContainer !== undefined);
+      assert(this.contentToHost !== undefined);
       this.hostedContent = this.contentContainer.createComponent(
          this.contentToHost
       );
       this.contentCreated.emit(this.hostedContent.instance);
-      if (this.dropzones === undefined) {
-         throw new Error("querylist not defined");
-      }
+      assert(this.dropzones !== undefined);
       const inner = this.dropzones.get(0);
       const lateral = this.dropzones.get(1);
-      if (inner === undefined || lateral == undefined) {
-         throw new Error("dropzones not defined");
-      }
+      assert(inner !== undefined && lateral !== undefined);
       merge(
          inner.dropped.pipe(map(() => "inner" as const)),
          lateral.dropped.pipe(map(() => "lateral" as const))
