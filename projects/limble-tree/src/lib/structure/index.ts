@@ -1,6 +1,5 @@
 export * from "./branchable.interface";
 export * from "./component-container.interface";
-export * from "./event-conduit.interface";
 export * from "./graftable.interface";
 export * from "./tree-branch-node.interface";
 export * from "./tree-event.interface";

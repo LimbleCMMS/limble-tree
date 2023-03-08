@@ -1,14 +1,14 @@
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
-import { TreeNode, EventConduit, TreeEvent } from "../../structure";
+import { TreeNode, TreeEvent } from "../../structure";
 
 export class DropEvent<T> implements TreeEvent {
-   private readonly _source: EventConduit;
+   private readonly _source: TreeNode<TreeBranch<T>, NodeComponent>;
    private readonly _parent: TreeNode<TreeBranch<T>, NodeComponent>;
    private readonly _index: number;
 
    public constructor(
-      source: EventConduit,
+      source: TreeNode<TreeBranch<T>, NodeComponent>,
       parent: TreeNode<TreeBranch<T>, NodeComponent>,
       index: number
    ) {
@@ -21,7 +21,7 @@ export class DropEvent<T> implements TreeEvent {
       return "drag end";
    }
 
-   public source(): EventConduit {
+   public source(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._source;
    }
 
