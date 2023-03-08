@@ -1,9 +1,8 @@
-import { NodeComponent } from "../../components/node-component.interface";
-import { TreeBranch } from "../../core";
-import { TreeNode } from "../../structure";
-import { EventConduit } from "../../structure/event-conduit.interface";
-import { TreeEvent } from "../../structure/tree-event.interface";
+import type { NodeComponent } from "../../components/node-component.interface";
+import type { TreeBranch } from "../../core";
+import type { TreeNode, EventConduit, TreeEvent } from "../../structure";
 
+/** Emitted when a drag-and-drop operation has completed */
 export class DragEndEvent<T> implements TreeEvent {
    private readonly _source: EventConduit;
    private readonly _newParent: TreeNode<TreeBranch<T>, NodeComponent>;
@@ -27,27 +26,27 @@ export class DragEndEvent<T> implements TreeEvent {
       this._newIndex = endpoints.newIndex;
    }
 
-   public type(): "drag end" {
-      return "drag end";
-   }
-
-   public source(): EventConduit {
-      return this._source;
-   }
-
+   /** Gets the new index of the dropped branch */
    public newIndex(): number {
       return this._newIndex;
    }
 
+   /** Gets the new parent of the dropped branch */
    public newParent(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._newParent;
    }
 
+   /** Gets the index of the dropped branch before it was dragged */
    public oldIndex(): number {
       return this._oldIndex;
    }
 
+   /** Gets the parent of the dropped branch before it was dragged */
    public oldParent(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._oldParent;
+   }
+
+   public source(): EventConduit {
+      return this._source;
    }
 }

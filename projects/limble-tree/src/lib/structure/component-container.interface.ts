@@ -1,4 +1,4 @@
-import { ViewContainerRef, ViewRef } from "@angular/core";
+import type { ViewContainerRef, ViewRef } from "@angular/core";
 
 export interface ComponentContainer<Component> {
    detectChanges: () => void;

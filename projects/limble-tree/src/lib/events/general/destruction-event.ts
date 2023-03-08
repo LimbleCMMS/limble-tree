@@ -1,15 +1,11 @@
-import { EventConduit } from "../../structure/event-conduit.interface";
-import { TreeEvent } from "../../structure/tree-event.interface";
+import type { EventConduit, TreeEvent } from "../../structure";
 
+/** Emitted when a node is destroyed */
 export class DestructionEvent implements TreeEvent {
    private readonly _source: EventConduit;
 
    public constructor(source: EventConduit) {
       this._source = source;
-   }
-
-   public type(): "destruction" {
-      return "destruction";
    }
 
    public source(): EventConduit {

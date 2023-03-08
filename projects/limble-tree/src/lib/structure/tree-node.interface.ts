@@ -1,8 +1,8 @@
-import { Branchable } from "./branchable.interface";
-import { EventConduit } from "./event-conduit.interface";
-import { TreePlot } from "./tree-plot";
-import { TreeRoot } from "../core";
-import { ComponentContainer } from "./component-container.interface";
+import type { Branchable } from "./branchable.interface";
+import type { EventConduit } from "./event-conduit.interface";
+import type { TreePlot } from "./tree-plot";
+import type { TreeRoot } from "../core";
+import type { ComponentContainer } from "./component-container.interface";
 
 export interface TreeNode<Children, Component>
    extends EventConduit,

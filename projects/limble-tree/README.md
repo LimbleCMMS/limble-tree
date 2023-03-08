@@ -331,6 +331,10 @@ Drag and drop functionality is easy to use. Simply add the `[limbleTreeDraggable
 
 As the user drags the branch over other branches of the tree, dropzones will appear to indicate where the dragged branch may be placed. Dropping into a dropzone will graft the dragged branch at that location.
 
+### Dragging Into Empty Trees
+
+Dropzones appear automatically as a branch is dragged over other branches. But what if the target tree has no other branches? In this case, a dropzone will not appear automatically. You will have to manually tell the tree when to render its dropzone using the `TreeDragAndDropService`.
+
 ### Configurable Restrictions For Drag-And-Drop
 
 A tree can be configured to disallow certain branches from...

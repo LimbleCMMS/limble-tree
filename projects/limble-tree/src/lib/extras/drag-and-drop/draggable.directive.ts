@@ -5,9 +5,10 @@ import {
    Input,
    Renderer2
 } from "@angular/core";
-import { TreeBranch } from "../../core";
-import { TreeDragAndDropService } from "./drag-and-drop.service";
+import type { TreeBranch } from "../../core";
+import { dragAndDrop } from "./drag-and-drop";
 
+/** Makes an TreeBranch draggable when the host element is dragged */
 @Directive({
    selector: "[limbleTreeDraggable]",
    standalone: true
@@ -16,7 +17,6 @@ export class DraggableDirective {
    @Input() limbleTreeDraggable?: TreeBranch<any> | undefined;
 
    public constructor(
-      private readonly dragAndDropService: TreeDragAndDropService,
       renderer: Renderer2,
       hostElement: ElementRef<HTMLElement>
    ) {
@@ -28,6 +28,6 @@ export class DraggableDirective {
       event: DragEvent
    ): void {
       if (this.limbleTreeDraggable === undefined) return;
-      this.dragAndDropService.dragStart(this.limbleTreeDraggable, event);
+      dragAndDrop.dragStart(this.limbleTreeDraggable, event);
    }
 }

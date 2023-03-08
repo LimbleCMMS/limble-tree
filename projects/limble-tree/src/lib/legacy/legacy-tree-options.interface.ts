@@ -1,5 +1,5 @@
-import { TreeBranch, TreeRoot } from "../core";
-import { ComponentObj } from "./legacy-component-obj.interface";
+import type { TreeBranch, TreeRoot } from "../core";
+import type { ComponentObj } from "./legacy-component-obj.interface";
 
 /**
  * A group of settings for changing the functionality of the tree

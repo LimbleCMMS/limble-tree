@@ -1,5 +1,5 @@
-import { TreeRoot } from "../tree-root/tree-root";
-import { TreeOptions } from "./tree-options.interface";
+import type { TreeRoot } from "../tree-root/tree-root";
+import type { TreeOptions } from "./tree-options.interface";
 
 class Configuration {
    private readonly configStorage = new Map<TreeRoot<any>, TreeOptions>();

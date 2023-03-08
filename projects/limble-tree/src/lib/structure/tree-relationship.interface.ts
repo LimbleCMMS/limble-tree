@@ -1,5 +1,5 @@
-import { Branchable } from "./branchable.interface";
-import { Graftable } from "./graftable.interface";
+import type { Branchable } from "./branchable.interface";
+import type { Graftable } from "./graftable.interface";
 
 export interface TreeRelationship<
    Parent extends Branchable<Child>,

@@ -1,20 +1,20 @@
 import {
-   AfterViewInit,
+   type AfterViewInit,
    Component,
    EventEmitter,
    Input,
-   OnChanges,
-   OnDestroy,
+   type OnChanges,
+   type OnDestroy,
    Output,
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
 import { LegacyTree } from "../legacy-tree";
 import { TreeError } from "../../errors";
-import { LimbleTreeData } from "../legacy-tree-data.interface";
-import { LimbleTreeOptions } from "../legacy-tree-options.interface";
-import { TreeRoot } from "../../core";
-import { filter, Subscription } from "rxjs";
+import type { LimbleTreeData } from "../legacy-tree-data.interface";
+import type { LimbleTreeOptions } from "../legacy-tree-options.interface";
+import type { TreeRoot } from "../../core";
+import { filter, type Subscription } from "rxjs";
 import { DragEndEvent } from "../../events";
 import { assert } from "../../../shared/assert";
 

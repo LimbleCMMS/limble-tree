@@ -1,13 +1,13 @@
-import { TreeBranch } from "../tree-branch/tree-branch";
-import { TreeRoot } from "../tree-root/tree-root";
+import type { TreeBranch } from "../tree-branch/tree-branch";
+import type { TreeRoot } from "../tree-root/tree-root";
 
+/** The configuration options for a tree, as identified by a TreeRoot */
 export interface TreeOptions {
    dragAndDrop?: {
       /**
        * A function to indicate whether to allow a node to be dragged. The node in
        * question is passed in. Defaults to a function that always returns true. This
-       * function runs when DragAndDropService.dragStart runs, and before the branch
-       * is pruned from the tree.
+       * function runs when a drag begins, but before the branch is pruned from the tree.
        */
       allowDragging?: <T>(treeBranch: TreeBranch<T>) => boolean;
 

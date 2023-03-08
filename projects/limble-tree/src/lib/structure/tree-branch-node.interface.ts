@@ -1,5 +1,5 @@
-import { Graftable } from "./graftable.interface";
-import { TreeNode } from "./tree-node.interface";
+import type { Graftable } from "./graftable.interface";
+import type { TreeNode } from "./tree-node.interface";
 
 export type TreeBranchNode<Contents, Children, ParentContents> = TreeNode<
    Children,

@@ -1,10 +1,15 @@
-import { Injectable, ViewContainerRef } from "@angular/core";
+import { Injectable, type ViewContainerRef } from "@angular/core";
 import { config } from "../configuration/configuration";
-import { TreeOptions } from "../configuration/tree-options.interface";
+import type { TreeOptions } from "../configuration/tree-options.interface";
 import { TreeRoot } from "../tree-root/tree-root";
 
+/** Responsible for the creation of new trees. */
 @Injectable({ providedIn: "root" })
 export class TreeService {
+   /**
+    * Creates a new, empty tree structure inside the provided container. Returns a
+    * `TreeRoot` representing the base of the new tree.
+    */
    public createEmptyTree<Component>(
       container: ViewContainerRef,
       options: TreeOptions = {}

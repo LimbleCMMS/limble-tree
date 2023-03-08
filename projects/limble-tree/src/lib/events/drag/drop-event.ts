@@ -1,7 +1,8 @@
-import { NodeComponent } from "../../components/node-component.interface";
-import { TreeBranch } from "../../core";
-import { TreeNode, EventConduit, TreeEvent } from "../../structure";
+import type { NodeComponent } from "../../components/node-component.interface";
+import type { TreeBranch } from "../../core";
+import type { TreeNode, EventConduit, TreeEvent } from "../../structure";
 
+/** Emitted when a TreeBranch is dropped into a valid Dropzone */
 export class DropEvent<T> implements TreeEvent {
    private readonly _source: EventConduit;
    private readonly _parent: TreeNode<TreeBranch<T>, NodeComponent>;
@@ -15,10 +16,6 @@ export class DropEvent<T> implements TreeEvent {
       this._source = source;
       this._parent = parent;
       this._index = index;
-   }
-
-   public type(): "drag end" {
-      return "drag end";
    }
 
    public source(): EventConduit {

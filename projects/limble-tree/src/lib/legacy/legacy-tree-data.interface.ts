@@ -1,4 +1,4 @@
-import { ComponentObj } from "./legacy-component-obj.interface";
+import type { ComponentObj } from "./legacy-component-obj.interface";
 
 /**
  * An object describing a node of the tree
