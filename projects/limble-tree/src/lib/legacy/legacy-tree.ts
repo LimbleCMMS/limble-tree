@@ -1,5 +1,5 @@
 import type { Type, ViewContainerRef } from "@angular/core";
-import { TreeRoot, type TreeBranch, type TreeOptions, config } from "../core";
+import { TreeRoot, type TreeBranch, type TreeOptions } from "../core";
 import type { LimbleTreeOptions as LegacyLimbleTreeOptions } from "./legacy-tree-options.interface";
 import type {
    LimbleTreeData,
@@ -7,6 +7,7 @@ import type {
 } from "./legacy-tree-data.interface";
 import { TreeError } from "../errors";
 import { treeCollapser } from "../extras/collapse/collapse";
+import { config } from "../core/configuration/configuration";
 
 /**
  * A shim to help with the transition from v0 to v1.
