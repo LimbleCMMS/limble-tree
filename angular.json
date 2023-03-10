@@ -62,8 +62,8 @@
                      "projects/sandbox/src/assets"
                   ],
                   "styles": [
-                    "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
-                    "projects/sandbox/src/styles.scss"
+                     "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+                     "projects/sandbox/src/styles.scss"
                   ],
                   "scripts": []
                },
@@ -131,8 +131,8 @@
                      "projects/sandbox/src/assets"
                   ],
                   "styles": [
-                    "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
-                    "projects/sandbox/src/styles.scss"
+                     "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+                     "projects/sandbox/src/styles.scss"
                   ],
                   "scripts": []
                }
