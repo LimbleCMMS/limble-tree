@@ -1,18 +1,17 @@
 import { NodeComponent } from "../../components/node-component.interface";
 import { TreeBranch } from "../../core";
 import { TreeNode } from "../../structure";
-import { EventConduit } from "../../structure/event-conduit.interface";
 import { TreeEvent } from "../../structure/tree-event.interface";
 
 export class DragEndEvent<T> implements TreeEvent {
-   private readonly _source: EventConduit;
+   private readonly _source: TreeNode<TreeBranch<T>, NodeComponent>;
    private readonly _newParent: TreeNode<TreeBranch<T>, NodeComponent>;
    private readonly _newIndex: number;
    private readonly _oldParent: TreeNode<TreeBranch<T>, NodeComponent>;
    private readonly _oldIndex: number;
 
    public constructor(
-      source: EventConduit,
+      source: TreeNode<TreeBranch<T>, NodeComponent>,
       endpoints: {
          oldParent: TreeNode<TreeBranch<T>, NodeComponent>;
          oldIndex: number;
@@ -31,7 +30,7 @@ export class DragEndEvent<T> implements TreeEvent {
       return "drag end";
    }
 
-   public source(): EventConduit {
+   public source(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._source;
    }
 

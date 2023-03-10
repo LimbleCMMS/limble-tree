@@ -1,6 +1,6 @@
 {
    "name": "@limble/limble-tree",
-   "version": "1.0.0-alpha.1",
+   "version": "1.0.0-alpha.2",
    "peerDependencies": {
       "@angular/common": "^14.2.0",
       "@angular/core": "^14.2.0",
