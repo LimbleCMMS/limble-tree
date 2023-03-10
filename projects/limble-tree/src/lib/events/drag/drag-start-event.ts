@@ -1,14 +1,16 @@
-import type { EventConduit, TreeEvent } from "../../structure";
+import type { NodeComponent } from "../../components/node-component.interface";
+import type { TreeNode } from "../../structure";
+import type { TreeEvent } from "../../structure/tree-event.interface";
 
 /** Emitted when a TreeBranch begins being dragged */
 export class DragStartEvent implements TreeEvent {
-   private readonly _source: EventConduit;
+   private readonly _source: TreeNode<unknown, NodeComponent>;
 
-   public constructor(source: EventConduit) {
+   public constructor(source: TreeNode<unknown, NodeComponent>) {
       this._source = source;
    }
 
-   public source(): EventConduit {
+   public source(): TreeNode<unknown, NodeComponent> {
       return this._source;
    }
 }

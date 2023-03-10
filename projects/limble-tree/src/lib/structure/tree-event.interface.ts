@@ -1,7 +1,6 @@
-import type { EventConduit } from "./event-conduit.interface";
+import type { TreeNode } from "./tree-node.interface";
 
 /** An event emitted by a node in the tree */
 export interface TreeEvent {
-   /**  Gets the source of the event */
-   source: () => EventConduit;
+   source: () => TreeNode<unknown, unknown>;
 }
