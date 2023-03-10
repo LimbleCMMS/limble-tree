@@ -1,6 +1,5 @@
-import { TreeEvent } from "../structure";
-import { EventConduit } from "../structure/event-conduit.interface";
+import type { TreeEvent, TreeNode } from "../structure";
 
-export function createNullEvent(source: EventConduit): TreeEvent {
+export function createNullEvent(source: TreeNode<unknown, unknown>): TreeEvent {
    return { source: () => source, type: () => "test" };
 }

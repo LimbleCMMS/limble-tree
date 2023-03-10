@@ -1,6 +1,6 @@
-import { EventConduit } from "./event-conduit.interface";
+import { TreeNode } from "./tree-node.interface";
 
 export interface TreeEvent {
    type: () => string;
-   source: () => EventConduit;
+   source: () => TreeNode<unknown, unknown>;
 }

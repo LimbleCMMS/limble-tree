@@ -1,15 +1,17 @@
 import { Branchable } from "./branchable.interface";
-import { EventConduit } from "./event-conduit.interface";
 import { TreePlot } from "./tree-plot";
 import { TreeRoot } from "../core";
 import { ComponentContainer } from "./component-container.interface";
+import { Observable } from "rxjs";
+import { TreeEvent } from "./tree-event.interface";
 
 export interface TreeNode<Children, Component>
-   extends EventConduit,
-      Branchable<Children>,
+   extends Branchable<Children>,
       ComponentContainer<Component> {
-   plot: () => TreePlot;
-   traverse: (callback: (node: Branchable<Children>) => void) => void;
-   root: () => TreeRoot<any> | undefined;
+   dispatch: (event: TreeEvent) => void;
+   events: () => Observable<TreeEvent>;
    isDestroyed: () => boolean;
+   plot: () => TreePlot;
+   root: () => TreeRoot<any> | undefined;
+   traverse: (callback: (node: Branchable<Children>) => void) => void;
 }

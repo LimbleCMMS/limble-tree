@@ -1,10 +1,11 @@
-import { EventConduit } from "../../structure/event-conduit.interface";
+import { NodeComponent } from "../../components/node-component.interface";
+import { TreeNode } from "../../structure";
 import { TreeEvent } from "../../structure/tree-event.interface";
 
 export class DragStartEvent implements TreeEvent {
-   private readonly _source: EventConduit;
+   private readonly _source: TreeNode<unknown, NodeComponent>;
 
-   public constructor(source: EventConduit) {
+   public constructor(source: TreeNode<unknown, NodeComponent>) {
       this._source = source;
    }
 
@@ -12,7 +13,7 @@ export class DragStartEvent implements TreeEvent {
       return "drag start";
    }
 
-   public source(): EventConduit {
+   public source(): TreeNode<unknown, NodeComponent> {
       return this._source;
    }
 }
