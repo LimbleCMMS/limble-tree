@@ -1,3 +1,4 @@
+import { CommonModule } from "@angular/common";
 import {
    AfterViewInit,
    Component,
@@ -5,6 +6,7 @@ import {
    ViewContainerRef
 } from "@angular/core";
 import {
+   LimbleTreeModule,
    TreeDragAndDropService,
    TreeRoot,
    TreeService
@@ -14,11 +16,22 @@ import { CollapsibleComponent } from "./collapsible/collapsible.component";
 import { DraggableComponent } from "./draggable/draggable.component";
 import { LoremIpsumComponent } from "./lorem-ipsum/lorem-ipsum.component";
 import { TextRendererComponent } from "./text-renderer/text-renderer.component";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from "@angular/material/button";
 
 @Component({
+   standalone: true,
    selector: "app-root",
    templateUrl: "./app.component.html",
-   styleUrls: ["./app.component.scss"]
+   styleUrls: ["./app.component.scss"],
+   imports: [
+      CommonModule,
+      LimbleTreeModule,
+      MatToolbarModule,
+      MatIconModule,
+      MatButtonModule
+   ]
 })
 export class AppComponent implements AfterViewInit {
    @ViewChild("treeContainer", { read: ViewContainerRef })
@@ -41,30 +54,24 @@ export class AppComponent implements AfterViewInit {
       | CollapsibleComponent
       | DraggableComponent
    >;
-   private toggle = 1;
 
    public constructor(
       private readonly treeService: TreeService,
       private readonly dragAndDrop: TreeDragAndDropService
    ) {}
 
-   public toggleTrees = (): void => {
-      if (this.toggle === 0) {
-         this.root?.destroy();
-         this.root2?.destroy();
-         this.events$ = EMPTY;
-         this.events2$ = EMPTY;
-         this.toggle = 1;
-      } else {
-         const [root, root2] = this.buildTrees();
-         this.root = root;
-         this.root2 = root2;
-         this.toggle = 0;
-      }
+   public resetTrees = (): void => {
+      this.root?.destroy();
+      this.root2?.destroy();
+      this.events$ = EMPTY;
+      this.events2$ = EMPTY;
+      const [root, root2] = this.buildTrees();
+      this.root = root;
+      this.root2 = root2;
    };
 
    public ngAfterViewInit(): void {
-      this.toggleTrees();
+      this.resetTrees();
    }
 
    public showRootDropzone(): void {

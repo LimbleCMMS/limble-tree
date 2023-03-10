@@ -1,7 +1,15 @@
+<mat-toolbar color="primary">
+   <span class="toolbar-icon">
+      <mat-icon fontIcon="account_tree"></mat-icon>
+   </span>
+   <span>Limble Tree Sandbox</span>
+   <div class="toolbar-spacer"></div>
+   <span class="toolbar-icon">
+      <mat-icon fontIcon="github"></mat-icon>
+   </span>
+</mat-toolbar>
 <div class="page-container">
-   <h1>Limble Tree Sandbox</h1>
-   <button (click)="toggleTrees()">Toggle all trees</button>
-   <br /><br />
+   <h2>Tree 1</h2>
    <div class="tree-container">
       <div class="divider">
          <div class="tree">
@@ -15,6 +23,7 @@
          </div>
       </div>
    </div>
+   <h2>Tree 2</h2>
    <div class="tree-container" (dragover)="showRootDropzone()">
       <div class="divider">
          <div class="tree">
@@ -28,4 +37,7 @@
          </div>
       </div>
    </div>
+   <button mat-raised-button color="primary" (click)="resetTrees()">
+      Reset all trees
+   </button>
 </div>
