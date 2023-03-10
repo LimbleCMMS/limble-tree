@@ -6,8 +6,7 @@ import { AppComponent } from "./app.component";
 describe("AppComponent", () => {
    beforeEach(async () => {
       await TestBed.configureTestingModule({
-         imports: [RouterTestingModule, LimbleTreeModule],
-         declarations: [AppComponent]
+         imports: [RouterTestingModule, LimbleTreeModule, AppComponent]
       }).compileComponents();
    });
 
