@@ -7,8 +7,9 @@ import { TreeRoot } from "../tree-root/tree-root";
 @Injectable({ providedIn: "root" })
 export class TreeService {
    /**
-    * Creates a new, empty tree structure inside the provided container. Returns a
-    * `TreeRoot` representing the base of the new tree.
+    * Creates a new, empty tree structure inside the provided container.
+    *
+    * @returns A `TreeRoot` representing the base of the new tree.
     */
    public createEmptyTree<Component>(
       container: ViewContainerRef,

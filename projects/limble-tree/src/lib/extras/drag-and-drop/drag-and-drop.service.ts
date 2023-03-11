@@ -12,7 +12,7 @@ export class TreeDragAndDropService {
    }
 
    /**
-    * Returns an object that indicates which dropzones are currently being displayed.
+    * @returns An object that indicates which dropzones are currently being displayed.
     * If no dropzones are being displayed, then null is returned.
     */
    public getCurrentlyDisplayedDropzoneFamily(): {
@@ -23,15 +23,22 @@ export class TreeDragAndDropService {
    }
 
    /**
-    * Causes the dropzone of the TreeRoot to be displayed. This is a useful function
-    * when you want to show the dropzone of a TreeRoot that has no child branches.
+    * Causes the dropzone of the TreeRoot to be displayed.
+    *
+    * @remarks
+    * This is a useful function when you want to show the dropzone of a TreeRoot
+    * that has no child branches.
+    *
+    * @param root - The TreeRoot whose dropzone you want to show.
     */
    public showRootDropzone<T>(root: TreeRoot<T>): void {
       dropzoneRenderer.showLowerZones(root);
    }
 
    /**
-    * Returns an observable that emits a number whenever the drag state changes.
+    * @returns An observable that emits a number whenever the drag state changes.
+    *
+    * @remarks
     * See the `DragStates` enum for a list of possible states.
     */
    public state(): Observable<DragStates> {

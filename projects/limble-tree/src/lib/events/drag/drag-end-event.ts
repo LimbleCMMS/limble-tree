@@ -27,22 +27,22 @@ export class DragEndEvent<T> implements TreeEvent {
       this._newIndex = endpoints.newIndex;
    }
 
-   /** Gets the new index of the dropped branch */
+   /** @returns The new index of the dropped branch */
    public newIndex(): number {
       return this._newIndex;
    }
 
-   /** Gets the new parent of the dropped branch */
+   /** @returns The new parent of the dropped branch */
    public newParent(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._newParent;
    }
 
-   /** Gets the index of the dropped branch before it was dragged */
+   /** @returns The index of the dropped branch before it was dragged */
    public oldIndex(): number {
       return this._oldIndex;
    }
 
-   /** Gets the parent of the dropped branch before it was dragged */
+   /** @returns The parent of the dropped branch before it was dragged */
    public oldParent(): TreeNode<TreeBranch<T>, NodeComponent> {
       return this._oldParent;
    }

@@ -27,14 +27,14 @@ import type {
 } from "../../structure";
 import { BranchController } from "./branch-controller";
 
-/** Represents a standard node in a tree. Renders a BranchComponent, which does
- * the following:
+/** Represents a standard node in a tree. Renders a BranchComponent.
+ *
+ * @remarks
+ * This class renders a branch component, which does the following:
  * 1. Renders a component provided by the user
  * 2. Provides a container in which child branches may be rendered
  * 3. Contains two Dropzones: one for dropping branches below this branch (as a
- * sibling), and one for dropping branches as a first child of this branch
- *
- * Provides all the same methods as a TreeRoot, as well as some additional methods.
+ * sibling), and one for dropping branches as a first child of this branch.
  */
 export class TreeBranch<UserlandComponent>
    implements
@@ -83,7 +83,7 @@ export class TreeBranch<UserlandComponent>
       }
    }
 
-   /** Returns all child branches as an array of TreeBranch instances */
+   /** @returns All child branches as an array of TreeBranch instances, in order. */
    public branches(): Array<TreeBranch<UserlandComponent>> {
       return this.treeNodeBase.branches();
    }
@@ -92,6 +92,7 @@ export class TreeBranch<UserlandComponent>
     * Recursively destroys all descendant branches, as well as itself. This
     * releases all resources held or consumed by this branch and its descendants.
     *
+    * @remarks
     * It is important to call this method when a branch is discarded, otherwise
     * the branch will remain in memory and continue to consume resources.
     */
@@ -116,12 +117,15 @@ export class TreeBranch<UserlandComponent>
    /**
     * Emits the specified TreeEvent.
     *
+    * @remarks
     * Caution: It is not recommended to manually emit TreeEvents that are already
     * provided by the library. For example, it is not recommended to emit a
     * `GraftEvent`, `DestructionEvent`, etc. These events may be used by the tree,
     * and emitting them manually may cause unexpected behavior. Instead, we
     * recommend implementing the TreeEvent interface with your own custom events
     * and dispatching those.
+    *
+    * @param event - The TreeEvent that will be emitted.
     */
    public dispatch(event: TreeEvent): void {
       this.treeNodeBase.dispatch(event);
@@ -129,7 +133,8 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
-    * Returns an observable that emits TreeEvents whenever an event is dispatched
+    * @returns
+    * An observable that emits TreeEvents whenever an event is dispatched
     * in this branch or any of its descendant branches.
     */
    public events(): Observable<TreeEvent> {
@@ -137,14 +142,17 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
-    * Get the child branch at the specified index. Returns undefined if there is
+    * @param index - The index of the child branch to retrieve.
+    *
+    * @returns
+    * The child branch at the specified index, or undefined if there is
     * no child branch at the specified index.
     */
    public getBranch(index: number): TreeBranch<UserlandComponent> | undefined {
       return this.treeNodeBase.getBranch(index);
    }
 
-   /** Retrieves the ViewContainerRef in which child branches are rendered */
+   /** @returns The ViewContainerRef in which child branches are rendered */
    public getBranchesContainer(): ViewContainerRef | undefined {
       if (this.isDestroyed()) {
          throw new TreeError(
@@ -154,11 +162,7 @@ export class TreeBranch<UserlandComponent>
       return this.branchController.getBranchesContainer();
    }
 
-   /**
-    * Retrieves the instance of RootComponent that is rendered by this class.
-    * The RootComponent holds the BranchesContainer, as well as a single Dropzone
-    * for drag-and-drop operations.
-    */
+   /** @returns The instance of BranchComponent that is rendered by this class. */
    public getComponentInstance(): BranchComponent<UserlandComponent> {
       if (this.isDestroyed()) {
          throw new TreeError(
@@ -168,7 +172,7 @@ export class TreeBranch<UserlandComponent>
       return this.branchController.getComponentInstance();
    }
 
-   /** Retrieves the Host View in which the RootComponent is rendered */
+   /** @returns The Host View in which the BranchComponent is rendered */
    public getHostView(): ViewRef {
       if (this.isDestroyed()) {
          throw new TreeError(
@@ -178,7 +182,7 @@ export class TreeBranch<UserlandComponent>
       return this.branchController.getHostView();
    }
 
-   /** Retrieves the RootComponent as a native HTML Element */
+   /** @returns The BranchComponent as a native HTML Element */
    public getNativeElement(): HTMLElement {
       if (this.isDestroyed()) {
          throw new TreeError(
@@ -189,7 +193,8 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
-    * Retrieves a ComponentRef containing the instance of the user-provided
+    * @returns
+    * A ComponentRef containing the instance of the user-provided
     * component which is rendered by this branch.
     */
    public getUserlandComponentRef():
@@ -204,12 +209,21 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
+    * Attaches a branch to a new parent node.
+    *
+    * @remarks
     * If not already pruned, this method prunes (removes) this branch from its
     * current position in the tree; then grafts (reattaches) it as a child of the
     * specified parent branch at the specified index. If no index is specified,
     * the branch is appended as the last child of the parent. This causes this
     * branch's associated BranchComponent to be re-rendered in the DOM at the
     * new location.
+    *
+    * @param newParent - The new parent branch unto which this branch will be grafted.
+    * @param index - The index at which this branch will be grafted. If not specified,
+    * this branch will be appended as the last child of the new parent.
+    *
+    * @returns The index at which this branch was grafted.
     */
    public graftTo(
       newParent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
@@ -236,6 +250,12 @@ export class TreeBranch<UserlandComponent>
    /**
     * Appends a new child branch to this branch. The child branch will render
     * the specified component according to the (optional) configuration parameter.
+    *
+    * @param component - The component to render in the new child branch.
+    * @param options - Configuration options for the new child branch.
+    *
+    * @returns
+    * The newly-created child branch.
     */
    public grow(
       component: Type<UserlandComponent>,
@@ -248,12 +268,17 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
-    * Returns this branch's index in relation to its sibling branches. For example,
-    * if it is the first child of its parent, this method will return 0. If it is
-    * the second child of its parent, this method will return 1.
+    * Determines this branch's index in relation to its sibling branches.
+    *
+    * @remarks
+    * For example, if it is the first child of its parent, this method will return
+    * 0. If it is the second child of its parent, this method will return 1.
     *
     * If this branch has no parent, (eg, if this branch has been pruned) this
     * method will return undefined.
+    *
+    * @returns
+    * The index of this branch in relation to its sibling branches, or undefined.
     */
    public index(): number | undefined {
       if (!this._parent) {
@@ -266,13 +291,14 @@ export class TreeBranch<UserlandComponent>
       return index;
    }
 
-   /** Returns true if the tree is destroyed, false otherwise */
+   /** @returns `true` if the branch is destroyed, `false` otherwise */
    public isDestroyed(): boolean {
       return this.treeNodeBase.isDestroyed();
    }
 
    /**
-    * Returns the data that was passing into the `branchOptions`' `meta` property
+    * @returns
+    * The data that was passed into the `branchOptions`' `meta` property
     * at construction.
     */
    public meta(): Record<string, any> {
@@ -280,7 +306,8 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
-    * Returns this branch's parent node (which may be a TreeBranch or TreeRoot).
+    * @returns
+    * This branch's parent node (which may be a TreeBranch or TreeRoot).
     * If this branch has no parent, (eg, if this branch has been pruned) this
     * method will return undefined.
     */
@@ -291,10 +318,14 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
-    * Returns a multi-dimensional Map which describes the shape of this branch's
+    * Provides a model describing this branch's descendants.
+    *
+    * @returns
+    * A multi-dimensional Map which describes the shape of this branch's
     * descendants.
     *
-    * For example, a branch with no children will return an empty Map. A branch with
+    * @example
+    * A branch with no children will return an empty Map. A branch with
     * a single child will return a Map with a single entry, where the key is the index
     * of the branch (zero) and the value is an empty Map. A Tree like this:
     *
@@ -319,8 +350,11 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
-    * Returns an array of numbers which describe the branch's position in
-    * the tree relative to the Root.
+    * Calculates the branch's position in the tree relative to the Root.
+    *
+    * @remarks
+    * The position is described as an array of numbers, where each number
+    * represents the index of the branch at that level of the tree.
     *
     * For example, if this branch is the first child of the Root, this method
     * will return [0]. If this branch is the second child of the first child
@@ -328,6 +362,10 @@ export class TreeBranch<UserlandComponent>
     *
     * If the branch is not related to a TreeRoot, (such as when it has been
     * pruned,) this method will throw an error.
+    *
+    * @returns
+    * An array of numbers which describe the branch's position in the tree
+    * relative to the Root.
     */
    public position(): Array<number> {
       const index = this.index();
@@ -344,11 +382,17 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
+    * Removes a branch from its tree without destroying it.
+    *
+    * @remarks
     * Removes this branch from its parent and detaches its associated
     * BranchComponent from the DOM. This puts the branch in a "pruned" state,
-    * which may affect the behavior of other methods. A pruned branch
-    * can be reattached to any other node (TreeBranch or TreeRoot) using the
-    * `graftTo` method.
+    * which may affect the behavior of other methods.
+    *
+    * A pruned branch can be reattached to any other node using the `graftTo` method.
+    *
+    * @returns
+    * Itself, or undefined if it is already in a pruned state.
     */
    public prune(): this | undefined {
       if (this.isDestroyed()) {
@@ -374,7 +418,10 @@ export class TreeBranch<UserlandComponent>
    }
 
    /**
-    * Returns the TreeRoot of the tree this branch is in. If this branch is
+    * Get the root of the tree to which this Branch is attached.
+    *
+    * @returns
+    * The TreeRoot of the tree this branch is in. If this branch is
     * does not have a root (such as when it has been pruned) this method will
     * return undefined.
     */
@@ -390,6 +437,8 @@ export class TreeBranch<UserlandComponent>
    /**
     * Traverses this branch's descendants in depth-first pre-order, executing
     * the provided callback function on each node. Traversal includes this branch.
+    *
+    * @param callback - A function to execute on each node.
     */
    public traverse(
       callback: (
