@@ -61,7 +61,10 @@
                      "projects/sandbox/src/favicon.ico",
                      "projects/sandbox/src/assets"
                   ],
-                  "styles": ["projects/sandbox/src/styles.scss"],
+                  "styles": [
+                     "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+                     "projects/sandbox/src/styles.scss"
+                  ],
                   "scripts": []
                },
                "configurations": {
@@ -127,7 +130,10 @@
                      "projects/sandbox/src/favicon.ico",
                      "projects/sandbox/src/assets"
                   ],
-                  "styles": ["projects/sandbox/src/styles.scss"],
+                  "styles": [
+                     "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+                     "projects/sandbox/src/styles.scss"
+                  ],
                   "scripts": []
                }
             }

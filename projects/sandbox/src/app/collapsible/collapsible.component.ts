@@ -1,10 +1,15 @@
+import { CommonModule } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
+import { MatIconModule } from "@angular/material/icon";
 import { TreeBranch, TreeCollapseService } from "@limble/limble-tree";
+import { TreeNodeComponent } from "../tree-node/tree-node.component";
 
 @Component({
+   standalone: true,
    selector: "collapsible",
    templateUrl: "./collapsible.component.html",
-   styleUrls: ["./collapsible.component.scss"]
+   styleUrls: ["./collapsible.component.scss"],
+   imports: [CommonModule, TreeNodeComponent, MatIconModule]
 })
 export class CollapsibleComponent implements OnInit {
    @Input() treeBranch?: TreeBranch<CollapsibleComponent>;
