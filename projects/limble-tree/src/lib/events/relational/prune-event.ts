@@ -1,6 +1,7 @@
-import { RelationalTreeEvent } from "./relational-tree-event.interface";
-import { TreeRelationship } from "../../structure/tree-relationship.interface";
+import type { RelationalTreeEvent } from "./relational-tree-event.interface";
+import type { TreeRelationship } from "../../structure/tree-relationship.interface";
 
+/** Emitted when a branch is pruned from its parent branch */
 export class PruneEvent<T extends TreeRelationship<any, any>>
    implements RelationalTreeEvent<T["parent"], T["child"]>
 {
@@ -18,10 +19,6 @@ export class PruneEvent<T extends TreeRelationship<any, any>>
 
    public child(): T["child"] {
       return this._child;
-   }
-
-   public type(): "prune" {
-      return "prune";
    }
 
    public index(): number {

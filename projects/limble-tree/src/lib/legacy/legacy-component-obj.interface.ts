@@ -1,4 +1,4 @@
-import { Type } from "@angular/core";
+import type { Type } from "@angular/core";
 
 /**
  * An object that references the component to be rendered and its bindings

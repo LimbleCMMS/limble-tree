@@ -1,6 +1,6 @@
-import { TreeNode } from "./tree-node.interface";
+import type { TreeNode } from "./tree-node.interface";
 
+/** An event emitted by a node in the tree */
 export interface TreeEvent {
-   type: () => string;
    source: () => TreeNode<unknown, unknown>;
 }

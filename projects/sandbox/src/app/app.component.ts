@@ -125,7 +125,7 @@ export class AppComponent implements AfterViewInit {
       root2.grow(DraggableComponent);
       this.events$ = root.events().pipe(
          map((event) => {
-            return { type: event.type() };
+            return { type: event.constructor.name };
          }),
          scan((acc, curr) => {
             acc.push(curr);
@@ -134,7 +134,7 @@ export class AppComponent implements AfterViewInit {
       );
       this.events2$ = root2.events().pipe(
          map((event) => {
-            return { type: event.type() };
+            return { type: event.constructor.name };
          }),
          scan((acc, curr) => {
             acc.push(curr);

@@ -4,13 +4,18 @@ import {
    EventEmitter,
    Input,
    NgZone,
-   OnDestroy,
-   OnInit,
+   type OnDestroy,
+   type OnInit,
    Output
 } from "@angular/core";
-import { fromEvent, Subscription } from "rxjs";
+import { fromEvent, type Subscription } from "rxjs";
 import { throttleTime } from "rxjs/operators";
 
+/**
+ * Works just like Angular's built-in `(dragover)` event binding, but is much
+ * more performant. It throttles the event to a configurable rate (default once
+ * every 25ms) and runs outside of Angular's change detection.
+ */
 @Directive({
    standalone: true,
    selector: "[dragoverNoChangeDetect]"

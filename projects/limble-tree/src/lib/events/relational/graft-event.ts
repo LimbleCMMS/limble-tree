@@ -1,6 +1,7 @@
-import { RelationalTreeEvent } from "./relational-tree-event.interface";
-import { TreeRelationship } from "../../structure/tree-relationship.interface";
+import type { RelationalTreeEvent } from "./relational-tree-event.interface";
+import type { TreeRelationship } from "../../structure/tree-relationship.interface";
 
+/** Emits when a branch is grafted to another tree node */
 export class GraftEvent<T extends TreeRelationship<any, any>>
    implements RelationalTreeEvent<T["parent"], T["child"]>
 {
@@ -18,10 +19,6 @@ export class GraftEvent<T extends TreeRelationship<any, any>>
 
    public child(): T["child"] {
       return this._child;
-   }
-
-   public type(): "graft" {
-      return "graft";
    }
 
    public index(): number {

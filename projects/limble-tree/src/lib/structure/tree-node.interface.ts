@@ -1,9 +1,9 @@
-import { Branchable } from "./branchable.interface";
-import { TreePlot } from "./tree-plot";
-import { TreeRoot } from "../core";
-import { ComponentContainer } from "./component-container.interface";
-import { Observable } from "rxjs";
-import { TreeEvent } from "./tree-event.interface";
+import type { Branchable } from "./branchable.interface";
+import type { TreePlot } from "./tree-plot";
+import type { TreeRoot } from "../core";
+import type { ComponentContainer } from "./component-container.interface";
+import type { Observable } from "rxjs";
+import type { TreeEvent } from "./tree-event.interface";
 
 export interface TreeNode<Children, Component>
    extends Branchable<Children>,
