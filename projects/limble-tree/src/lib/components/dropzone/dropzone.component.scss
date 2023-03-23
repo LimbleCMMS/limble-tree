@@ -1,16 +1,18 @@
+$--limble-tree-dropzone-height: 36px;
+
 .dropzone {
    border-radius: 8px;
    border: 1px dashed #727374;
    background-color: #ededed;
-   height: 20px;
+   height: $--limble-tree-dropzone-height;
    margin: 8px 0 8px 0;
-   transition: height 0.2s ease-out;
-   animation: animation 0.2s ease-out;
+   transition: height 0.3s ease-out;
+   animation: animation 0.3s ease-out;
    &.active {
       border-color: #289e49;
       border-width: 2px;
       background-color: #d0e8d6;
-      height: 48px;
+      height: calc($--limble-tree-dropzone-height * 2);
    }
 }
 
@@ -20,7 +22,7 @@
       opacity: 0;
    }
    to {
-      height: 20px;
+      height: $--limble-tree-dropzone-height;
       opacity: 1;
    }
 }

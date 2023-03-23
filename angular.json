@@ -110,6 +110,9 @@
                      "browserTarget": "sandbox:build:development"
                   }
                },
+               "options": {
+                  "port": 4400
+               },
                "defaultConfiguration": "development"
             },
             "extract-i18n": {
