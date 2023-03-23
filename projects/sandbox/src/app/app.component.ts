@@ -119,7 +119,13 @@ export class AppComponent implements AfterViewInit {
          defaultCollapsed: true
       });
       branch1.grow(DraggableComponent);
-      branch2.grow(LoremIpsumComponent);
+      branch2
+         .grow(LoremIpsumComponent)
+         .grow(DraggableComponent)
+         .grow(DraggableComponent)
+         .grow(DraggableComponent)
+         .grow(DraggableComponent)
+         .grow(DraggableComponent);
       branch3.grow(DraggableComponent);
       branch1b.grow(LoremIpsumComponent);
       const root2 = this.treeService.createEmptyTree<
