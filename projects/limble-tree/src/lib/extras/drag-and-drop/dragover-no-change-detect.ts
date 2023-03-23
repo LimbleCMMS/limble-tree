@@ -38,11 +38,9 @@ export class DragoverNoChangeDetectDirective implements OnInit, OnDestroy {
          this.eventSubscription = fromEvent<DragEvent>(
             this.el.nativeElement,
             "dragover"
-         )
-            .pipe(throttleTime(this.dragoverEventThrottle))
-            .subscribe(($event) => {
-               this.dragoverNoChangeDetect.emit($event);
-            });
+         ).subscribe(($event) => {
+            this.dragoverNoChangeDetect.emit($event);
+         });
       });
    }
 
