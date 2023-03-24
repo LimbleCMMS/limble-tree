@@ -62,16 +62,16 @@ export class TreeBranch<UserlandComponent>
          this,
          parentBranchesContainer
       );
+      const hostView = this.branchController.getHostView();
       this.setIndentation(parent);
       if (
          parent instanceof TreeBranch &&
          parent.branchOptions.defaultCollapsed === true
       ) {
          treeCollapser.storePrecollapsedNode(parent, this);
-         this.detachedView = this.branchController.getHostView();
+         this.detachedView = hostView;
       } else {
-         parentBranchesContainer.insert(this.branchController.getHostView());
-         this.detectChanges();
+         parentBranchesContainer.insert(hostView);
          this._parent = parent;
          this.dispatch(
             new GraftEvent(this, {
@@ -80,6 +80,7 @@ export class TreeBranch<UserlandComponent>
                index: this._parent.branches().length
             })
          );
+         this.detectChanges();
       }
    }
 
@@ -264,7 +265,11 @@ export class TreeBranch<UserlandComponent>
       if (this.isDestroyed()) {
          throw new TreeError("Cannot grow a branch on a destroyed tree branch");
       }
-      return new TreeBranch(this, { component, ...options });
+      try {
+         return new TreeBranch(this, { component, ...options });
+      } catch (error: unknown) {
+         this.handleUserlandError(error);
+      }
    }
 
    /**
@@ -476,11 +481,34 @@ export class TreeBranch<UserlandComponent>
       });
    }
 
+   private handleUserlandError(error: unknown): never {
+      // When an error occurs in a userland component during a tree operation,
+      // it can cause undefined, bizarre behavior in the tree. To prevent this,
+      // we destroy the tree and throw an error instead. This helps protect
+      // the end-user's data from corruption.
+      this.furthestAncestor().destroy();
+      this.treeNodeBase.handleUserlandError(error);
+   }
+
    private indexIsOutOfRange(
       parent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
       index: number
    ): boolean {
       return index < 0 || index > parent.branches().length;
+   }
+
+   private furthestAncestor(): TreeNode<
+      TreeBranch<UserlandComponent>,
+      NodeComponent
+   > {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias -- This code is for an iteration, not to make `this` available in other scopes (which is what the rule is intended to protect against).
+      let node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent> = this;
+      while (node instanceof TreeBranch) {
+         const parent = node.parent();
+         if (parent === undefined) break;
+         node = parent;
+      }
+      return node;
    }
 
    private reattachView(index?: number): void {

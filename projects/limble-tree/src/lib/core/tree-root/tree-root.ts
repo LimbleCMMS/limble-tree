@@ -160,7 +160,11 @@ export class TreeRoot<UserlandComponent>
       if (this.isDestroyed()) {
          throw new TreeError("Cannot grow a branch on a destroyed tree root");
       }
-      return new TreeBranch(this, { component, ...options });
+      try {
+         return new TreeBranch(this, { component, ...options });
+      } catch (error) {
+         this.handleUserlandError(error);
+      }
    }
 
    /** @returns `true` if the tree is destroyed, `false` otherwise */
@@ -216,5 +220,14 @@ export class TreeRoot<UserlandComponent>
    ): void {
       callback(this);
       this.treeNodeBase.traverse(callback);
+   }
+
+   private handleUserlandError(error: unknown): never {
+      // When an error occurs in a userland component during a tree operation,
+      // it can cause undefined, bizarre behavior in the tree. To prevent this,
+      // we destroy the tree and throw an error instead. This helps protect
+      // the end-user's data from corruption.
+      this.destroy();
+      this.treeNodeBase.handleUserlandError(error);
    }
 }
