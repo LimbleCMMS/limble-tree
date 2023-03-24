@@ -12,6 +12,8 @@ import { RootComponent } from "../../components/root/root.component";
 import { TreeError } from "../../errors";
 import { DestructionEvent } from "../../events/general";
 import { NodeComponent } from "../../components/node-component.interface";
+import { ErrorConstructorComponent } from "../../test-util/error-constructor.component";
+import { ErrorInitComponent } from "../../test-util/error-init.component";
 
 describe("TreeRoot", () => {
    it("should start with no branches", () => {
@@ -307,5 +309,25 @@ describe("TreeRoot", () => {
       const root = new TreeRoot<EmptyComponent>(getViewContainer());
       root.destroy();
       expect(() => root.getNativeElement()).toThrowError(TreeError);
+   });
+
+   it("should throw an error and destroy itself when an error is thrown in the constructor of a child's userland component", () => {
+      const root = new TreeRoot<ErrorConstructorComponent | EmptyComponent>(
+         getViewContainer()
+      );
+      expect(() => {
+         root.grow(ErrorConstructorComponent);
+      }).toThrow();
+      expect(root.isDestroyed()).toBe(true);
+   });
+
+   it("should throw an error and destroy itself when an error is thrown in the ngOnInit hook of a child's userland component", () => {
+      const root = new TreeRoot<ErrorInitComponent | EmptyComponent>(
+         getViewContainer()
+      );
+      expect(() => {
+         root.grow(ErrorInitComponent);
+      }).toThrow();
+      expect(root.isDestroyed()).toBe(true);
    });
 });

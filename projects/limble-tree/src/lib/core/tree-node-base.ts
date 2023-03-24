@@ -1,4 +1,5 @@
 import { filter, Observable, Subject, Subscription } from "rxjs";
+import { hasProperty } from "../../shared/has-property";
 import { NodeComponent } from "../components/node-component.interface";
 import { TreeError } from "../errors";
 import { GraftEvent } from "../events/relational/graft-event";
@@ -54,6 +55,18 @@ export class TreeNodeBase<UserlandComponent>
 
    public getBranch(index: number): TreeBranch<UserlandComponent> | undefined {
       return this._branches[index];
+   }
+
+   public handleUserlandError(error: unknown): never {
+      const message = hasProperty(error, "message")
+         ? error.message
+         : "Unknown error";
+      throw new TreeError(`Failed to grow branch: ${message}`, {
+         // This cast to `any` is due to an issue in typescript that has been
+         // resolved at least by version 4.9.5. When we upgrade our typescript
+         // version we can remove the cast.
+         cause: error as any
+      });
    }
 
    public isDestroyed(): boolean {

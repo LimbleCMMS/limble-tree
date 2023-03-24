@@ -8,6 +8,7 @@ import type { TreeEvent } from "./tree-event.interface";
 export interface TreeNode<Children, Component>
    extends Branchable<Children>,
       ComponentContainer<Component> {
+   destroy: () => void;
    dispatch: (event: TreeEvent) => void;
    events: () => Observable<TreeEvent>;
    isDestroyed: () => boolean;

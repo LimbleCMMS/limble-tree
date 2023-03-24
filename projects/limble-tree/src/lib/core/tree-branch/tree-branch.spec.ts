@@ -15,6 +15,9 @@ import { TreeEvent } from "../../structure";
 import { DestructionEvent } from "../../events/general";
 import { NodeComponent } from "../../components/node-component.interface";
 import { ViewContainerRef } from "@angular/core";
+import { ErrorConstructorComponent } from "../../test-util/error-constructor.component";
+import { ErrorInitComponent } from "../../test-util/error-init.component";
+import { BranchGrowthComponent } from "../../test-util/branch-growth.component";
 
 describe("TreeBranch", () => {
    it("should start with no branches", () => {
@@ -652,5 +655,71 @@ describe("TreeBranch", () => {
       expect(() => {
          self.graftTo(grandchild);
       }).toThrowError(TreeError);
+   });
+
+   it("should throw an error and destroy the tree when an error is thrown in the constructor of a child's userland component", () => {
+      const root = new TreeRoot<ErrorConstructorComponent | EmptyComponent>(
+         getViewContainer()
+      );
+      const branch = new TreeBranch(root, {
+         component: EmptyComponent
+      });
+      expect(() => {
+         branch.grow(ErrorConstructorComponent);
+      }).toThrow();
+      expect(branch.isDestroyed()).toBe(true);
+      expect(root.isDestroyed()).toBe(true);
+   });
+
+   it("should throw an error and destroy the tree when an error is thrown in the ngOnInit hook of a child's userland component", () => {
+      const root = new TreeRoot<ErrorInitComponent | EmptyComponent>(
+         getViewContainer()
+      );
+      const branch = new TreeBranch(root, {
+         component: EmptyComponent
+      });
+      expect(() => {
+         branch.grow(ErrorInitComponent);
+      }).toThrow();
+      expect(branch.isDestroyed()).toBe(true);
+      expect(root.isDestroyed()).toBe(true);
+   });
+
+   it("should throw an error and destroy its furthest ancestor branch when an error is thrown in the constructor of a child's userland component and the branch is part of a pruned segment", () => {
+      const root = new TreeRoot<ErrorConstructorComponent | EmptyComponent>(
+         getViewContainer()
+      );
+      const branch = new TreeBranch(root, {
+         component: EmptyComponent
+      });
+      branch.prune();
+      expect(() => {
+         branch.grow(ErrorConstructorComponent);
+      }).toThrow();
+      expect(branch.isDestroyed()).toBe(true);
+      expect(root.isDestroyed()).toBe(false);
+   });
+
+   it("should throw an error and destroy its furthest ancestor branch when an error is thrown in the ngOnInit hook of a child's userland component and the branch is part of a pruned segment", () => {
+      const root = new TreeRoot<ErrorInitComponent | EmptyComponent>(
+         getViewContainer()
+      );
+      const branch = new TreeBranch(root, {
+         component: EmptyComponent
+      });
+      branch.prune();
+      expect(() => {
+         branch.grow(ErrorInitComponent);
+      }).toThrow();
+      expect(branch.isDestroyed()).toBe(true);
+      expect(root.isDestroyed()).toBe(false);
+   });
+
+   it("should be able to host a userland component which grows additional branches onto itself", () => {
+      const root = new TreeRoot<BranchGrowthComponent | EmptyComponent>(
+         getViewContainer()
+      );
+      const branch = root.grow(BranchGrowthComponent);
+      expect(branch.branches().length).toBe(2);
    });
 });
