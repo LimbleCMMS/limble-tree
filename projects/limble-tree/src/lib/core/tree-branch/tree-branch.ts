@@ -62,16 +62,16 @@ export class TreeBranch<UserlandComponent>
          this,
          parentBranchesContainer
       );
+      const hostView = this.branchController.getHostView();
       this.setIndentation(parent);
       if (
          parent instanceof TreeBranch &&
          parent.branchOptions.defaultCollapsed === true
       ) {
          treeCollapser.storePrecollapsedNode(parent, this);
-         this.detachedView = this.branchController.getHostView();
+         this.detachedView = hostView;
       } else {
-         parentBranchesContainer.insert(this.branchController.getHostView());
-         this.detectChanges();
+         parentBranchesContainer.insert(hostView);
          this._parent = parent;
          this.dispatch(
             new GraftEvent(this, {
@@ -80,6 +80,7 @@ export class TreeBranch<UserlandComponent>
                index: this._parent.branches().length
             })
          );
+         this.detectChanges();
       }
    }
 
