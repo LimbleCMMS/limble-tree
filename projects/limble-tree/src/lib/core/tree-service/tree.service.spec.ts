@@ -1,7 +1,6 @@
-import { assert } from "../../../shared/assert";
-import { TreeRoot } from "../../core/tree-root/tree-root";
-import { EmptyComponent } from "../../test-util/empty.component";
-import { getViewContainer } from "../../test-util/virtual";
+import { assert } from "../../../shared";
+import { TreeRoot } from "../../core";
+import { EmptyComponent, getViewContainer } from "../../test-util";
 import { TreeService } from "./tree.service";
 
 describe("TreeService", () => {

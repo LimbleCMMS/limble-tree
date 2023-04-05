@@ -1,15 +1,15 @@
 import {
-   ComponentRef,
+   type ComponentRef,
    createComponent,
    EnvironmentInjector,
-   ViewContainerRef,
-   ViewRef
+   type ViewContainerRef,
+   type ViewRef
 } from "@angular/core";
-import { assert } from "../../../shared/assert";
-import { filter, Subscription } from "rxjs";
-import { BranchComponent } from "../../components/branch/branch.component";
-import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
-import { ComponentContainer } from "../../structure";
+import { assert } from "../../../shared";
+import { filter, type Subscription } from "rxjs";
+import { BranchComponent } from "../../components";
+import { dropzoneRenderer } from "../../extras/drag-and-drop";
+import type { ComponentContainer } from "../component-container.interface";
 import { TreeBranch } from "./tree-branch";
 
 /**

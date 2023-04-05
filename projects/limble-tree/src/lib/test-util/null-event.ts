@@ -1,5 +1,6 @@
-import type { TreeEvent, TreeNode } from "../structure";
+import type { TreeNode } from "../core";
+import type { TreeEvent } from "../events";
 
-export function createNullEvent(source: TreeNode<unknown, unknown>): TreeEvent {
+export function createNullEvent<T>(source: TreeNode<T>): TreeEvent<T> {
    return { source: () => source };
 }

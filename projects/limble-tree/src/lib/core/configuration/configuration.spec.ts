@@ -1,6 +1,5 @@
-import { EmptyComponent } from "../../test-util/empty.component";
-import { getViewContainer } from "../../test-util/virtual";
-import { TreeRoot } from "../tree-root/tree-root";
+import { EmptyComponent, getViewContainer } from "../../test-util";
+import { TreeRoot } from "../tree-root";
 import { config } from "./configuration";
 
 describe("config (singleton instance of Configuration)", () => {

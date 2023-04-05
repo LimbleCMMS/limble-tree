@@ -1,23 +1,26 @@
-import { assert } from "../../../shared/assert";
+import { assert } from "../../../shared";
 import { filter, first, skip, take } from "rxjs";
-import { GraftEvent } from "../../events/relational/graft-event";
-import { PruneEvent } from "../../events/relational/prune-event";
-import { TreeRoot } from "../tree-root/tree-root";
+import {
+   GraftEvent,
+   PruneEvent,
+   type TreeEvent,
+   DestructionEvent
+} from "../../events";
+import { TreeRoot } from "../tree-root";
 import { TreeBranch } from "./tree-branch";
-import { TreeNode } from "../../structure/tree-node.interface";
-import { BranchComponent } from "../../components/branch/branch.component";
-import { getStandardBranch } from "../../test-util/standard-branch";
-import { getViewContainer } from "../../test-util/virtual";
-import { EmptyComponent } from "../../test-util/empty.component";
-import { TreeError } from "../../errors/tree-error";
-import { createNullEvent } from "../../test-util/null-event";
-import { TreeEvent } from "../../structure";
-import { DestructionEvent } from "../../events/general";
-import { NodeComponent } from "../../components/node-component.interface";
+import type { TreeNode } from "../tree-node.interface";
+import { BranchComponent } from "../../components";
+import {
+   getStandardBranch,
+   getViewContainer,
+   EmptyComponent,
+   createNullEvent,
+   ErrorConstructorComponent,
+   ErrorInitComponent,
+   BranchGrowthComponent
+} from "../../test-util";
+import { TreeError } from "../../errors";
 import { ViewContainerRef } from "@angular/core";
-import { ErrorConstructorComponent } from "../../test-util/error-constructor.component";
-import { ErrorInitComponent } from "../../test-util/error-init.component";
-import { BranchGrowthComponent } from "../../test-util/branch-growth.component";
 
 describe("TreeBranch", () => {
    it("should start with no branches", () => {
@@ -86,6 +89,7 @@ describe("TreeBranch", () => {
       const self = getStandardBranch();
       const newParent = getStandardBranch();
       const oldParent = self.parent();
+      assert(oldParent instanceof TreeRoot);
       self
          .events()
          .pipe(take(1))
@@ -125,7 +129,7 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent: TreeEvent = createNullEvent(gen2);
+      const nullEvent: TreeEvent<EmptyComponent> = createNullEvent(gen2);
       gen2.dispatch(nullEvent);
    });
 
@@ -143,7 +147,7 @@ describe("TreeBranch", () => {
          .subscribe((event) => {
             expect(event).toBe(nullEvent);
          });
-      const nullEvent: TreeEvent = createNullEvent(gen3);
+      const nullEvent: TreeEvent<EmptyComponent> = createNullEvent(gen3);
       gen3.dispatch(nullEvent);
    });
 
@@ -331,8 +335,7 @@ describe("TreeBranch", () => {
       branch3b.graftTo(branch3);
       branch3a1.graftTo(branch3a);
       branch3ab.graftTo(branch3a);
-      const nodes: Array<TreeNode<TreeBranch<EmptyComponent>, NodeComponent>> =
-         [];
+      const nodes: Array<TreeNode<EmptyComponent>> = [];
       self.traverse((node) => {
          nodes.push(node);
       });

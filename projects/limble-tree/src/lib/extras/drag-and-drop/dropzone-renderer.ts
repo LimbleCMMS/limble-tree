@@ -1,15 +1,10 @@
-import { assert } from "../../../shared/assert";
-import { BranchComponent } from "../../components/branch/branch.component";
-import { DropzoneComponent } from "../../components/dropzone/dropzone.component";
-import { NodeComponent } from "../../components/node-component.interface";
-import { dragAndDrop } from "./drag-and-drop";
-import { TreeBranch } from "../../core/tree-branch/tree-branch";
-import { TreeRoot } from "../../core/tree-root/tree-root";
+import { assert } from "../../../shared";
+import { BranchComponent, DropzoneComponent } from "../../components";
 import { dragState, DragStates } from "./drag-state";
+import { dragAndDrop } from "./drag-and-drop";
+import { TreeBranch, type TreeNode, TreeRoot, config } from "../../core";
 import { filter, first } from "rxjs";
-import { config } from "../../core/configuration/configuration";
 import { PruneEvent } from "../../events";
-import { TreeNode } from "../../structure";
 
 class DropzoneRenderer {
    private currentDisplay: {
@@ -67,7 +62,7 @@ class DropzoneRenderer {
    }
 
    public clearTreeFromRegistry(tree: TreeRoot<any> | TreeBranch<any>): void {
-      const nodes: Array<TreeNode<TreeBranch<any>, NodeComponent>> = [];
+      const nodes: Array<TreeNode<any>> = [];
       tree.traverse((node) => nodes.push(node));
       for (const [dropzoneComponent, treeNode] of this.registry) {
          if (nodes.includes(treeNode)) {
@@ -149,7 +144,7 @@ class DropzoneRenderer {
    private loopThroughLowerZones<T>(
       treeNode: TreeBranch<T> | TreeRoot<T>
    ): void {
-      let cursor: TreeNode<TreeBranch<T>, NodeComponent> | undefined = treeNode;
+      let cursor: TreeNode<T> | undefined = treeNode;
       while (cursor instanceof TreeBranch) {
          this.showLateralZone(cursor);
          const parent = cursor.parent();

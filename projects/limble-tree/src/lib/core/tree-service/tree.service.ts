@@ -1,7 +1,6 @@
 import { Injectable, type ViewContainerRef } from "@angular/core";
-import { config } from "../configuration/configuration";
-import type { TreeOptions } from "../configuration/tree-options.interface";
-import { TreeRoot } from "../tree-root/tree-root";
+import { config, type TreeOptions } from "../configuration";
+import { TreeRoot } from "../tree-root";
 
 /** Responsible for the creation of new trees. */
 @Injectable({ providedIn: "root" })

@@ -16,7 +16,7 @@ import type { LimbleTreeOptions } from "../legacy-tree-options.interface";
 import type { TreeRoot } from "../../core";
 import { filter, type Subscription } from "rxjs";
 import { DragEndEvent } from "../../events";
-import { assert } from "../../../shared/assert";
+import { assert } from "../../../shared";
 
 /** @deprecated */
 @Component({

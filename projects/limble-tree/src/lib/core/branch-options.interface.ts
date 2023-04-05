@@ -1,4 +1,4 @@
-import { EventEmitter, Type } from "@angular/core";
+import type { EventEmitter, Type } from "@angular/core";
 
 export interface BranchOptions<Component> {
    inputBindings?: {

@@ -1,14 +1,9 @@
 import { Subject } from "rxjs";
-import { NodeComponent } from "../../components/node-component.interface";
-import { TreeBranch } from "../../core";
-import { config } from "../../core/configuration/configuration";
+import { TreeBranch, type TreeNode, config } from "../../core";
 import { TreeError } from "../../errors";
-import { DragEndEvent } from "../../events/drag/drag-end-event";
-import { DragStartEvent } from "../../events/drag/drag-start-event";
+import { DragEndEvent, DragStartEvent, DropEvent } from "../../events";
 import { dragState, DragStates } from "./drag-state";
-import { DropEvent } from "../../events/drag/drop-event";
-import { assert } from "../../../shared/assert";
-import { TreeNode } from "../../structure";
+import { assert } from "../../../shared";
 
 class DragAndDrop {
    public readonly dragAborted$ = new Subject<DragEvent>();
@@ -30,10 +25,7 @@ class DragAndDrop {
       });
    }
 
-   public drop<T>(
-      parent: TreeNode<TreeBranch<T>, NodeComponent>,
-      index: number
-   ): void {
+   public drop<T>(parent: TreeNode<T>, index: number): void {
       const treeBranch = dragState.getDragData<T>();
       if (treeBranch === undefined) {
          throw new TreeError("Cannot get dragged branch");
@@ -105,7 +97,7 @@ class DragAndDrop {
 
    private graftDraggedBranch<T>(
       treeBranch: TreeBranch<T>,
-      parent: TreeNode<TreeBranch<T>, NodeComponent>,
+      parent: TreeNode<T>,
       index: number
    ): void {
       treeBranch.graftTo(parent, index);

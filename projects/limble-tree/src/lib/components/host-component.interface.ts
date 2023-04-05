@@ -1,4 +1,4 @@
-import { ComponentRef, EventEmitter, Type } from "@angular/core";
+import type { ComponentRef, EventEmitter, Type } from "@angular/core";
 
 export interface HostComponent<UserlandComponent> {
    contentCreated: EventEmitter<UserlandComponent>;

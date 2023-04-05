@@ -1,4 +1,4 @@
-import { assert } from "../../../shared/assert";
+import { assert } from "../../../shared";
 import type { Observable } from "rxjs";
 import type {
    ComponentRef,
@@ -6,26 +6,27 @@ import type {
    ViewContainerRef,
    ViewRef
 } from "@angular/core";
-import { BranchComponent } from "../../components/branch/branch.component";
-import type { NodeComponent } from "../../components/node-component.interface";
-import { TreeNodeBase } from "../tree-node-base";
+import { BranchComponent } from "../../components";
 import { TreeError } from "../../errors";
+import { dropzoneRenderer } from "../../extras/drag-and-drop";
+import { TreeRoot } from "../tree-root";
+import type { TreeNode } from "../tree-node.interface";
+import type { TreePlot } from "../tree-plot.interface";
+import { TreeNodeBase } from "../tree-node-base";
+import { config } from "../configuration";
 import type {
    BranchOptions,
    FullBranchOptions
 } from "../branch-options.interface";
-import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
-import { config } from "../configuration/configuration";
-import { TreeRoot } from "..";
-import { treeCollapser } from "../../extras/collapse/collapse";
-import { DestructionEvent, GraftEvent, PruneEvent } from "../../events";
-import type {
-   TreeNode,
-   TreePlot,
-   TreeEvent,
-   TreeBranchNode
-} from "../../structure";
 import { BranchController } from "./branch-controller";
+import type { Graftable } from "./graftable.interface";
+import { treeCollapser } from "../../extras/collapse";
+import {
+   DestructionEvent,
+   GraftEvent,
+   PruneEvent,
+   type TreeEvent
+} from "../../events";
 
 /** Represents a standard node in a tree. Renders a BranchComponent.
  *
@@ -37,22 +38,15 @@ import { BranchController } from "./branch-controller";
  * sibling), and one for dropping branches as a first child of this branch.
  */
 export class TreeBranch<UserlandComponent>
-   implements
-      TreeBranchNode<
-         BranchComponent<UserlandComponent>,
-         TreeBranch<UserlandComponent>,
-         NodeComponent
-      >
+   implements TreeNode<UserlandComponent>, Graftable<UserlandComponent>
 {
    private readonly branchController: BranchController<UserlandComponent>;
    private detachedView: ViewRef | null = null;
-   private _parent:
-      | TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
-      | undefined;
+   private _parent: TreeNode<UserlandComponent> | undefined;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
 
    public constructor(
-      parent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
+      parent: TreeNode<UserlandComponent>,
       public readonly branchOptions: FullBranchOptions<UserlandComponent>
    ) {
       this.treeNodeBase = new TreeNodeBase();
@@ -128,7 +122,7 @@ export class TreeBranch<UserlandComponent>
     *
     * @param event - The TreeEvent that will be emitted.
     */
-   public dispatch(event: TreeEvent): void {
+   public dispatch(event: TreeEvent<UserlandComponent>): void {
       this.treeNodeBase.dispatch(event);
       this._parent?.dispatch(event);
    }
@@ -138,7 +132,7 @@ export class TreeBranch<UserlandComponent>
     * An observable that emits TreeEvents whenever an event is dispatched
     * in this branch or any of its descendant branches.
     */
-   public events(): Observable<TreeEvent> {
+   public events(): Observable<TreeEvent<UserlandComponent>> {
       return this.treeNodeBase.events();
    }
 
@@ -227,7 +221,7 @@ export class TreeBranch<UserlandComponent>
     * @returns The index at which this branch was grafted.
     */
    public graftTo(
-      newParent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
+      newParent: TreeNode<UserlandComponent>,
       index?: number
    ): number {
       this.checkGraftLocationValidity(newParent, index);
@@ -316,9 +310,7 @@ export class TreeBranch<UserlandComponent>
     * If this branch has no parent, (eg, if this branch has been pruned) this
     * method will return undefined.
     */
-   public parent():
-      | TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
-      | undefined {
+   public parent(): TreeNode<UserlandComponent> | undefined {
       return this._parent;
    }
 
@@ -446,16 +438,14 @@ export class TreeBranch<UserlandComponent>
     * @param callback - A function to execute on each node.
     */
    public traverse(
-      callback: (
-         node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
-      ) => void
+      callback: (node: TreeNode<UserlandComponent>) => void
    ): void {
       callback(this);
       this.treeNodeBase.traverse(callback);
    }
 
    private checkGraftLocationValidity(
-      newParent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
+      newParent: TreeNode<UserlandComponent>,
       index?: number
    ): void {
       if (this.isDestroyed()) {
@@ -491,18 +481,15 @@ export class TreeBranch<UserlandComponent>
    }
 
    private indexIsOutOfRange(
-      parent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>,
+      parent: TreeNode<UserlandComponent>,
       index: number
    ): boolean {
       return index < 0 || index > parent.branches().length;
    }
 
-   private furthestAncestor(): TreeNode<
-      TreeBranch<UserlandComponent>,
-      NodeComponent
-   > {
+   private furthestAncestor(): TreeNode<UserlandComponent> {
       // eslint-disable-next-line @typescript-eslint/no-this-alias -- This code is for an iteration, not to make `this` available in other scopes (which is what the rule is intended to protect against).
-      let node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent> = this;
+      let node: TreeNode<UserlandComponent> = this;
       while (node instanceof TreeBranch) {
          const parent = node.parent();
          if (parent === undefined) break;
@@ -521,9 +508,7 @@ export class TreeBranch<UserlandComponent>
       this.detachedView = null;
    }
 
-   private setIndentation(
-      parent: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
-   ): void {
+   private setIndentation(parent: TreeNode<UserlandComponent>): void {
       const root = parent.root();
       assert(root !== undefined);
       const options = config.getConfig(root);

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import type { Observable } from "rxjs";
 import type { TreeBranch, TreeRoot } from "../../core";
-import { dragState, DragStates } from "./drag-state";
+import { dragState, type DragStates } from "./drag-state";
 import { dropzoneRenderer } from "./dropzone-renderer";
 
 @Injectable()
