@@ -1,5 +1,5 @@
 import { assert } from "../../../shared";
-import { BranchComponent, DropzoneComponent } from "../../components";
+import { BranchComponent, type DropzoneComponent } from "../../components";
 import { dragState, DragStates } from "./drag-state";
 import { dragAndDrop } from "./drag-and-drop";
 import { TreeBranch, type TreeNode, TreeRoot, config } from "../../core";
@@ -8,13 +8,10 @@ import { PruneEvent } from "../../events";
 
 class DropzoneRenderer {
    private currentDisplay: {
-      treeBranch: TreeBranch<any> | TreeRoot<any>;
+      treeBranch: TreeNode<any>;
       direction: "upper" | "lower";
    } | null;
-   private readonly registry: Map<
-      DropzoneComponent,
-      TreeBranch<any> | TreeRoot<any>
-   >;
+   private readonly registry: Map<DropzoneComponent, TreeNode<any>>;
 
    public constructor() {
       this.registry = new Map();
@@ -41,9 +38,7 @@ class DropzoneRenderer {
                   first()
                )
                .subscribe(() => {
-                  assert(
-                     final instanceof TreeBranch || final instanceof TreeRoot
-                  );
+                  assert(final !== undefined);
                   this.showLowerZones(final);
                });
          });
@@ -61,7 +56,7 @@ class DropzoneRenderer {
       this.currentDisplay = null;
    }
 
-   public clearTreeFromRegistry(tree: TreeRoot<any> | TreeBranch<any>): void {
+   public clearTreeFromRegistry(tree: TreeNode<any>): void {
       const nodes: Array<TreeNode<any>> = [];
       tree.traverse((node) => nodes.push(node));
       for (const [dropzoneComponent, treeNode] of this.registry) {
@@ -72,7 +67,7 @@ class DropzoneRenderer {
    }
 
    public getCurrentDisplay(): {
-      treeBranch: TreeBranch<any> | TreeRoot<any>;
+      treeBranch: TreeNode<any>;
       direction: "upper" | "lower";
    } | null {
       if (this.currentDisplay === null) return null;
@@ -81,7 +76,7 @@ class DropzoneRenderer {
 
    public getDropzoneLocation<T>(
       dropzone: DropzoneComponent
-   ): [TreeBranch<T> | TreeRoot<T>, "inner" | "lateral"] {
+   ): [TreeNode<T>, "inner" | "lateral"] {
       const branch = this.registry.get(dropzone);
       const placement = dropzone.placement;
       if (branch === undefined) {
@@ -94,7 +89,7 @@ class DropzoneRenderer {
    }
 
    public handleDrop<T>(
-      treeNode: TreeBranch<T> | TreeRoot<T>,
+      treeNode: TreeNode<T>,
       placement: "inner" | "lateral"
    ): void {
       if (placement === "inner") {
@@ -112,7 +107,7 @@ class DropzoneRenderer {
 
    public registerDropzone<T>(
       dropzone: DropzoneComponent,
-      treeNode: TreeBranch<T> | TreeRoot<T>
+      treeNode: TreeNode<T>
    ): void {
       this.registry.set(dropzone, treeNode);
    }
@@ -126,7 +121,7 @@ class DropzoneRenderer {
       }
    }
 
-   public showLowerZones<T>(treeNode: TreeBranch<T> | TreeRoot<T>): void {
+   public showLowerZones<T>(treeNode: TreeNode<T>): void {
       this.clearCurrentDisplay();
       this.showInnerZone(treeNode);
       if (treeNode.branches().length === 0) {
@@ -141,9 +136,7 @@ class DropzoneRenderer {
       this.currentDisplay = { treeBranch, direction: "upper" };
    }
 
-   private loopThroughLowerZones<T>(
-      treeNode: TreeBranch<T> | TreeRoot<T>
-   ): void {
+   private loopThroughLowerZones<T>(treeNode: TreeNode<T>): void {
       let cursor: TreeNode<T> | undefined = treeNode;
       while (cursor instanceof TreeBranch) {
          this.showLateralZone(cursor);
@@ -175,7 +168,7 @@ class DropzoneRenderer {
       }
    }
 
-   private nestingAllowed(treeNode: unknown): boolean {
+   private nestingAllowed<T>(treeNode: TreeNode<T>): boolean {
       if (treeNode instanceof TreeRoot) {
          return true;
       }
@@ -206,7 +199,7 @@ class DropzoneRenderer {
       throw new Error("unsupported treeNode type");
    }
 
-   private showInnerZone<T>(treeNode: TreeBranch<T> | TreeRoot<T>): void {
+   private showInnerZone<T>(treeNode: TreeNode<T>): void {
       if (!this.nestingAllowed(treeNode) || !this.dropAllowed(treeNode, 0))
          return;
       treeNode.getComponentInstance().showInnerDropzone = true;

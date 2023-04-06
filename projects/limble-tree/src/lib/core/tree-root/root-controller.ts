@@ -3,7 +3,7 @@ import { assert } from "../../../shared";
 import { type Subscription } from "rxjs";
 import { RootComponent } from "../../components";
 import { dropzoneRenderer } from "../../extras/drag-and-drop";
-import { TreeRoot } from "./tree-root";
+import type { TreeRoot } from "./tree-root";
 import type { ComponentContainer } from "../component-container.interface";
 
 /**

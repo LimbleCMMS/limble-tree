@@ -76,7 +76,7 @@ export class TreeNodeBase<UserlandComponent>
    }
 
    public traverse(
-      callback: (node: TreeNode<UserlandComponent>) => void
+      callback: (node: TreeBranch<UserlandComponent>) => void
    ): void {
       this.branches().forEach((branch) => {
          branch.traverse(callback);

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import type { Observable } from "rxjs";
-import type { TreeBranch, TreeRoot } from "../../core";
+import type { TreeNode, TreeRoot } from "../../core";
 import { dragState, type DragStates } from "./drag-state";
 import { dropzoneRenderer } from "./dropzone-renderer";
 
@@ -16,7 +16,7 @@ export class TreeDragAndDropService {
     * If no dropzones are being displayed, then null is returned.
     */
    public getCurrentlyDisplayedDropzoneFamily(): {
-      treeBranch: TreeRoot<any> | TreeBranch<any>;
+      treeBranch: TreeNode<any>;
       direction: "upper" | "lower";
    } | null {
       return dropzoneRenderer.getCurrentDisplay();

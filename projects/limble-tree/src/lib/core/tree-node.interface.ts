@@ -15,5 +15,5 @@ export interface TreeNode<UserlandComponent>
    isDestroyed: () => boolean;
    plot: () => TreePlot;
    root: () => TreeRoot<any> | undefined;
-   traverse: (callback: (node: Branchable<UserlandComponent>) => void) => void;
+   traverse: (callback: (node: TreeNode<UserlandComponent>) => void) => void;
 }

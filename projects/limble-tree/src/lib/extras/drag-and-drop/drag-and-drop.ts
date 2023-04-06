@@ -1,5 +1,5 @@
 import { Subject } from "rxjs";
-import { TreeBranch, type TreeNode, config } from "../../core";
+import { type TreeBranch, type TreeNode, config } from "../../core";
 import { TreeError } from "../../errors";
 import { DragEndEvent, DragStartEvent, DropEvent } from "../../events";
 import { dragState, DragStates } from "./drag-state";

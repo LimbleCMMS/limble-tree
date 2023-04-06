@@ -10,7 +10,7 @@ import { filter, type Subscription } from "rxjs";
 import { BranchComponent } from "../../components";
 import { dropzoneRenderer } from "../../extras/drag-and-drop";
 import type { ComponentContainer } from "../component-container.interface";
-import { TreeBranch } from "./tree-branch";
+import type { TreeBranch } from "./tree-branch";
 
 /**
  * A wrapper around the BranchComponent that helps instantiate it and handles its events.

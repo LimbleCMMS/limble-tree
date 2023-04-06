@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { DragoverNoChangeDetectDirective } from "../../extras/drag-and-drop";
+import { DragoverNoChangeDetectDirective } from "../dragover-no-change-detect";
 
 @Component({
    standalone: true,

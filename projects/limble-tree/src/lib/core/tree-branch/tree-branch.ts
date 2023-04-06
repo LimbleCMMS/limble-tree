@@ -438,7 +438,7 @@ export class TreeBranch<UserlandComponent>
     * @param callback - A function to execute on each node.
     */
    public traverse(
-      callback: (node: TreeNode<UserlandComponent>) => void
+      callback: (node: TreeBranch<UserlandComponent>) => void
    ): void {
       callback(this);
       this.treeNodeBase.traverse(callback);

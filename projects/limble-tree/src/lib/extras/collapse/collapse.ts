@@ -1,4 +1,4 @@
-import { TreeBranch } from "../../core";
+import type { TreeBranch } from "../../core";
 
 class TreeCollapser {
    private readonly tempStorage: Map<TreeBranch<any>, Array<TreeBranch<any>>>;

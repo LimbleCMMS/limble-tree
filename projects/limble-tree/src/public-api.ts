@@ -25,8 +25,7 @@ export { TreeCollapseModule, TreeCollapseService } from "./lib/extras/collapse";
 export {
    TreeDragAndDropModule,
    TreeDragAndDropService,
-   DraggableDirective,
-   DragoverNoChangeDetectDirective
+   DraggableDirective
 } from "./lib/extras/drag-and-drop";
 export {
    type ComponentObj,
@@ -36,3 +35,10 @@ export {
    LimbleTreeRootComponent,
    LimbleTreeLegacyModule
 } from "./lib/legacy";
+export {
+   DragoverNoChangeDetectDirective,
+   BranchComponent,
+   RootComponent,
+   type HostComponent,
+   type NodeComponent
+} from "./lib/components";

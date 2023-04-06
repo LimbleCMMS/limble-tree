@@ -19,7 +19,7 @@ import { map, merge } from "rxjs";
 import type { HostComponent } from "../host-component.interface";
 import type { NodeComponent } from "../node-component.interface";
 import { DropzoneComponent } from "../dropzone";
-import { DragoverNoChangeDetectDirective } from "../../extras/drag-and-drop";
+import { DragoverNoChangeDetectDirective } from "../dragover-no-change-detect";
 import { assert } from "../../../shared";
 
 @Component({
