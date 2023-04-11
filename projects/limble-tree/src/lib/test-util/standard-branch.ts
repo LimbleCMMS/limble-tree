@@ -1,5 +1,4 @@
-import { TreeBranch } from "../core/tree-branch/tree-branch";
-import { TreeRoot } from "../core/tree-root/tree-root";
+import { TreeBranch, TreeRoot } from "../core";
 import { EmptyComponent } from "./empty.component";
 import { getViewContainer } from "./virtual";
 

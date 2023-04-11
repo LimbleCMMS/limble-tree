@@ -1,26 +1,26 @@
 import { CommonModule } from "@angular/common";
 import {
-   AfterViewInit,
+   type AfterViewInit,
    ApplicationRef,
    Component,
-   ComponentRef,
+   type ComponentRef,
    EventEmitter,
    Input,
    NgZone,
-   OnDestroy,
+   type OnDestroy,
    Output,
-   QueryList,
-   Type,
+   type QueryList,
+   type Type,
    ViewChild,
    ViewChildren,
    ViewContainerRef
 } from "@angular/core";
 import { map, merge } from "rxjs";
-import { DropzoneComponent } from "../dropzone/dropzone.component";
-import { HostComponent } from "../host-component.interface";
-import { NodeComponent } from "../node-component.interface";
-import { DragoverNoChangeDetectDirective } from "../../extras/drag-and-drop/dragover-no-change-detect";
-import { assert } from "../../../shared/assert";
+import type { HostComponent } from "../host-component.interface";
+import type { NodeComponent } from "../node-component.interface";
+import { DropzoneComponent } from "../dropzone";
+import { DragoverNoChangeDetectDirective } from "../dragover-no-change-detect";
+import { assert } from "../../../shared";
 
 @Component({
    standalone: true,

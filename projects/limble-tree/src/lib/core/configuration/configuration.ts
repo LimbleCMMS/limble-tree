@@ -1,4 +1,4 @@
-import type { TreeRoot } from "../tree-root/tree-root";
+import type { TreeRoot } from "../tree-root";
 import type { TreeOptions } from "./tree-options.interface";
 
 class Configuration {

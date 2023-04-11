@@ -2,11 +2,43 @@
  * Public API Surface of limble-tree
  */
 
-export * from "./lib/limble-tree.module";
-export * from "./lib/core";
-export * from "./lib/errors";
-export * from "./lib/events";
-export * from "./lib/structure";
-export * from "./lib/extras/collapse";
-export * from "./lib/extras/drag-and-drop";
-export * from "./lib/legacy";
+export { LimbleTreeModule } from "./lib/limble-tree.module";
+export {
+   TreeService,
+   TreeRoot,
+   TreeBranch,
+   type TreeOptions,
+   type TreeNode,
+   type TreePlot
+} from "./lib/core";
+export { TreeError } from "./lib/errors";
+export {
+   type TreeEvent,
+   GraftEvent,
+   PruneEvent,
+   DragStartEvent,
+   DragEndEvent,
+   DropEvent,
+   DestructionEvent
+} from "./lib/events";
+export { TreeCollapseModule, TreeCollapseService } from "./lib/extras/collapse";
+export {
+   TreeDragAndDropModule,
+   TreeDragAndDropService,
+   DraggableDirective
+} from "./lib/extras/drag-and-drop";
+export {
+   type ComponentObj,
+   type LimbleTreeNode,
+   type LimbleTreeData,
+   type LimbleTreeOptions,
+   LimbleTreeRootComponent,
+   LimbleTreeLegacyModule
+} from "./lib/legacy";
+export {
+   DragoverNoChangeDetectDirective,
+   BranchComponent,
+   RootComponent,
+   type HostComponent,
+   type NodeComponent
+} from "./lib/components";

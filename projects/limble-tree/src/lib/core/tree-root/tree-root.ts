@@ -1,16 +1,16 @@
 import type { Observable } from "rxjs";
-import { TreeBranch } from "../tree-branch/tree-branch";
-import type { Type, ViewContainerRef, ViewRef } from "@angular/core";
-import { RootComponent } from "../../components/root/root.component";
+import { TreeBranch } from "../tree-branch";
+import type { TreePlot } from "../tree-plot.interface";
+import type { TreeNode } from "../tree-node.interface";
 import { TreeNodeBase } from "../tree-node-base";
-import type { NodeComponent } from "../../components/node-component.interface";
 import type { BranchOptions } from "../branch-options.interface";
-import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
-import { config } from "../configuration/configuration";
+import { config } from "../configuration";
+import { RootController } from "../tree-root/root-controller";
+import type { Type, ViewContainerRef, ViewRef } from "@angular/core";
+import { RootComponent } from "../../components";
+import { dropzoneRenderer } from "../../extras/drag-and-drop";
 import { TreeError } from "../../errors";
-import { DestructionEvent } from "../../events";
-import type { TreeNode, TreePlot, TreeEvent } from "../../structure";
-import { RootController } from "./root-controller";
+import { DestructionEvent, TreeEvent } from "../../events";
 
 /**
  * Represents the base of the tree. It renders a very simple container for child
@@ -18,7 +18,7 @@ import { RootController } from "./root-controller";
  * events when things happen in the tree.
  */
 export class TreeRoot<UserlandComponent>
-   implements TreeNode<TreeBranch<UserlandComponent>, RootComponent>
+   implements TreeNode<UserlandComponent>
 {
    private readonly rootController: RootController<UserlandComponent>;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
@@ -73,7 +73,7 @@ export class TreeRoot<UserlandComponent>
     *
     * @param event - The TreeEvent that will be emitted.
     */
-   public dispatch(event: TreeEvent): void {
+   public dispatch(event: TreeEvent<UserlandComponent>): void {
       this.treeNodeBase.dispatch(event);
    }
 
@@ -82,7 +82,7 @@ export class TreeRoot<UserlandComponent>
     * An observable that emits TreeEvents whenever an event is dispatched
     * in the root or any of its descendant branches.
     */
-   public events(): Observable<TreeEvent> {
+   public events(): Observable<TreeEvent<UserlandComponent>> {
       return this.treeNodeBase.events();
    }
 
@@ -214,9 +214,7 @@ export class TreeRoot<UserlandComponent>
     * @param callback - A function to execute on each node.
     */
    public traverse(
-      callback: (
-         node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
-      ) => void
+      callback: (node: TreeNode<UserlandComponent>) => void
    ): void {
       callback(this);
       this.treeNodeBase.traverse(callback);

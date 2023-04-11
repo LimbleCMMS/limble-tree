@@ -1,15 +1,15 @@
-import type { NodeComponent } from "../../components/node-component.interface";
-import type { TreeNode, TreeEvent } from "../../structure";
+import type { TreeNode } from "../../core";
+import type { TreeEvent } from "../../events";
 
 /** Emitted when a node is destroyed */
-export class DestructionEvent implements TreeEvent {
-   private readonly _source: TreeNode<unknown, NodeComponent>;
+export class DestructionEvent<T> implements TreeEvent<T> {
+   private readonly _source: TreeNode<T>;
 
-   public constructor(source: TreeNode<unknown, NodeComponent>) {
+   public constructor(source: TreeNode<T>) {
       this._source = source;
    }
 
-   public source(): TreeNode<unknown, NodeComponent> {
+   public source(): TreeNode<T> {
       return this._source;
    }
 }

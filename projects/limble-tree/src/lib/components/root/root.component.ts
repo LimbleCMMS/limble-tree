@@ -1,15 +1,15 @@
 import { CommonModule } from "@angular/common";
 import {
-   AfterViewInit,
+   type AfterViewInit,
    Component,
    EventEmitter,
    Output,
    ViewChild,
    ViewContainerRef
 } from "@angular/core";
-import { assert } from "../../../shared/assert";
-import { DropzoneComponent } from "../dropzone/dropzone.component";
-import { NodeComponent } from "../node-component.interface";
+import { assert } from "../../../shared";
+import { DropzoneComponent } from "../dropzone";
+import type { NodeComponent } from "../node-component.interface";
 
 @Component({
    standalone: true,

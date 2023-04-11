@@ -1,4 +1,4 @@
-import { ViewContainerRef } from "@angular/core";
+import type { ViewContainerRef } from "@angular/core";
 
 export interface NodeComponent {
    branchesContainer: ViewContainerRef | undefined;

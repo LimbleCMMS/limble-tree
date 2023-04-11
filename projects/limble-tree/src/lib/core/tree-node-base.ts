@@ -1,20 +1,16 @@
-import { filter, Observable, Subject, Subscription } from "rxjs";
-import { hasProperty } from "../../shared/has-property";
-import { NodeComponent } from "../components/node-component.interface";
+import { filter, type Observable, Subject, type Subscription } from "rxjs";
+import { hasProperty } from "../../shared";
 import { TreeError } from "../errors";
-import { GraftEvent } from "../events/relational/graft-event";
-import { PruneEvent } from "../events/relational/prune-event";
-import { TreeEvent } from "../structure/tree-event.interface";
-import { TreeNode } from "../structure/tree-node.interface";
-import { TreePlot } from "../structure/tree-plot";
-import { Relationship } from "./relationship.interface";
-import { TreeBranch } from "./tree-branch/tree-branch";
+import { GraftEvent, PruneEvent, type TreeEvent } from "../events";
+import { TreeBranch } from "./tree-branch";
+import type { TreePlot } from "./tree-plot.interface";
+import type { TreeNode } from "./tree-node.interface";
 
 export class TreeNodeBase<UserlandComponent>
-   implements Partial<TreeNode<TreeBranch<UserlandComponent>, NodeComponent>>
+   implements Partial<TreeNode<UserlandComponent>>
 {
    private readonly _branches: Array<TreeBranch<UserlandComponent>>;
-   private readonly events$: Subject<TreeEvent>;
+   private readonly events$: Subject<TreeEvent<UserlandComponent>>;
    private destroyed: boolean = false;
    private readonly subscriptions: Array<Subscription>;
 
@@ -45,11 +41,11 @@ export class TreeNodeBase<UserlandComponent>
       this.destroyed = true;
    }
 
-   public dispatch(event: TreeEvent): void {
+   public dispatch(event: TreeEvent<UserlandComponent>): void {
       this.events$.next(event);
    }
 
-   public events(): Observable<TreeEvent> {
+   public events(): Observable<TreeEvent<UserlandComponent>> {
       return this.events$;
    }
 
@@ -80,9 +76,7 @@ export class TreeNodeBase<UserlandComponent>
    }
 
    public traverse(
-      callback: (
-         node: TreeNode<TreeBranch<UserlandComponent>, NodeComponent>
-      ) => void
+      callback: (node: TreeBranch<UserlandComponent>) => void
    ): void {
       this.branches().forEach((branch) => {
          branch.traverse(callback);
@@ -96,24 +90,20 @@ export class TreeNodeBase<UserlandComponent>
       this._branches.splice(index, 1);
    }
 
-   private graftsToSelf(): Observable<
-      GraftEvent<Relationship<UserlandComponent>>
-   > {
+   private graftsToSelf(): Observable<GraftEvent<UserlandComponent>> {
       return this.events().pipe(
          filter(
-            (event): event is GraftEvent<Relationship<UserlandComponent>> =>
+            (event): event is GraftEvent<UserlandComponent> =>
                event instanceof GraftEvent
          ),
          filter((event) => event.parent().events() === this.events$)
       );
    }
 
-   private prunesToSelf(): Observable<
-      PruneEvent<Relationship<UserlandComponent>>
-   > {
+   private prunesToSelf(): Observable<PruneEvent<UserlandComponent>> {
       return this.events().pipe(
          filter(
-            (event): event is PruneEvent<Relationship<UserlandComponent>> =>
+            (event): event is PruneEvent<UserlandComponent> =>
                event instanceof PruneEvent
          ),
          filter((event) => event.parent().events() === this.events$)

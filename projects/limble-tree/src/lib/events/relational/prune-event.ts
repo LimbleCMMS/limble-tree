@@ -1,23 +1,27 @@
 import type { RelationalTreeEvent } from "./relational-tree-event.interface";
-import type { TreeRelationship } from "../../structure/tree-relationship.interface";
+import type { TreeRelationship } from "./tree-relationship.interface";
+import type { TreeNode, TreeBranch } from "../../core";
 
 /** Emitted when a branch is pruned from its parent branch */
-export class PruneEvent<T extends TreeRelationship<any, any>>
-   implements RelationalTreeEvent<T["parent"], T["child"]>
+export class PruneEvent<UserlandComponent>
+   implements RelationalTreeEvent<UserlandComponent>
 {
-   private readonly _source: T["child"];
-   private readonly _parent: T["parent"];
-   private readonly _child: T["child"];
+   private readonly _source: TreeBranch<UserlandComponent>;
+   private readonly _parent: TreeNode<UserlandComponent>;
+   private readonly _child: TreeBranch<UserlandComponent>;
    private readonly _index: number;
 
-   public constructor(source: T["child"], relationship: T) {
+   public constructor(
+      source: TreeBranch<UserlandComponent>,
+      relationship: TreeRelationship<UserlandComponent>
+   ) {
       this._source = source;
       this._child = relationship.child;
       this._parent = relationship.parent;
       this._index = relationship.index;
    }
 
-   public child(): T["child"] {
+   public child(): TreeBranch<UserlandComponent> {
       return this._child;
    }
 
@@ -25,11 +29,11 @@ export class PruneEvent<T extends TreeRelationship<any, any>>
       return this._index;
    }
 
-   public parent(): T["parent"] {
+   public parent(): TreeNode<UserlandComponent> {
       return this._parent;
    }
 
-   public source(): T["child"] {
+   public source(): TreeBranch<UserlandComponent> {
       return this._source;
    }
 }

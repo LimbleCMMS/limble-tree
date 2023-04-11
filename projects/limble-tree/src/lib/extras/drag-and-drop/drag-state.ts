@@ -1,5 +1,5 @@
-import { assert } from "../../../shared/assert";
-import { BehaviorSubject, Observable } from "rxjs";
+import { assert } from "../../../shared";
+import { BehaviorSubject, type Observable } from "rxjs";
 import { TreeBranch } from "../../core";
 
 export enum DragStates {

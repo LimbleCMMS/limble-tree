@@ -1,22 +1,20 @@
-import type { NodeComponent } from "../../components/node-component.interface";
-import type { TreeBranch } from "../../core";
-import type { TreeNode } from "../../structure";
-import type { TreeEvent } from "../../structure/tree-event.interface";
+import type { TreeNode } from "../../core";
+import type { TreeEvent } from "../../events";
 
 /** Emitted when a drag-and-drop operation has completed */
-export class DragEndEvent<T> implements TreeEvent {
-   private readonly _source: TreeNode<TreeBranch<T>, NodeComponent>;
-   private readonly _newParent: TreeNode<TreeBranch<T>, NodeComponent>;
+export class DragEndEvent<T> implements TreeEvent<T> {
+   private readonly _source: TreeNode<T>;
+   private readonly _newParent: TreeNode<T>;
    private readonly _newIndex: number;
-   private readonly _oldParent: TreeNode<TreeBranch<T>, NodeComponent>;
+   private readonly _oldParent: TreeNode<T>;
    private readonly _oldIndex: number;
 
    public constructor(
-      source: TreeNode<TreeBranch<T>, NodeComponent>,
+      source: TreeNode<T>,
       endpoints: {
-         oldParent: TreeNode<TreeBranch<T>, NodeComponent>;
+         oldParent: TreeNode<T>;
          oldIndex: number;
-         newParent: TreeNode<TreeBranch<T>, NodeComponent>;
+         newParent: TreeNode<T>;
          newIndex: number;
       }
    ) {
@@ -33,7 +31,7 @@ export class DragEndEvent<T> implements TreeEvent {
    }
 
    /** @returns The new parent of the dropped branch */
-   public newParent(): TreeNode<TreeBranch<T>, NodeComponent> {
+   public newParent(): TreeNode<T> {
       return this._newParent;
    }
 
@@ -43,11 +41,11 @@ export class DragEndEvent<T> implements TreeEvent {
    }
 
    /** @returns The parent of the dropped branch before it was dragged */
-   public oldParent(): TreeNode<TreeBranch<T>, NodeComponent> {
+   public oldParent(): TreeNode<T> {
       return this._oldParent;
    }
 
-   public source(): TreeNode<TreeBranch<T>, NodeComponent> {
+   public source(): TreeNode<T> {
       return this._source;
    }
 }

@@ -1,5 +1,5 @@
-import type { TreeBranch } from "../tree-branch/tree-branch";
-import type { TreeRoot } from "../tree-root/tree-root";
+import type { TreeBranch } from "../tree-branch";
+import type { TreeRoot } from "../tree-root";
 
 /** The configuration options for a tree, as identified by a TreeRoot */
 export interface TreeOptions {

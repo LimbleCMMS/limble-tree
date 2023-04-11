@@ -5,8 +5,8 @@ import {
    ViewContainerRef
 } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { assert } from "../../shared/assert";
-import { NodeComponent } from "../components/node-component.interface";
+import { assert } from "../../shared";
+import { NodeComponent } from "../components";
 
 @Component({
    selector: "N/A",

@@ -1,6 +1,5 @@
 import { TreeRoot } from "../../core";
-import { EmptyComponent } from "../../test-util/empty.component";
-import { getViewContainer } from "../../test-util/virtual";
+import { EmptyComponent, getViewContainer } from "../../test-util";
 import { TreeCollapseService } from "./collapse.service";
 
 describe("TreeCollapseService", () => {

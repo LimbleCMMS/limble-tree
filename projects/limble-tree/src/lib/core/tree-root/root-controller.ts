@@ -1,10 +1,10 @@
-import { ComponentRef, ViewContainerRef, ViewRef } from "@angular/core";
-import { assert } from "../../../shared/assert";
-import { Subscription } from "rxjs";
-import { RootComponent } from "../../components/root/root.component";
-import { dropzoneRenderer } from "../../extras/drag-and-drop/dropzone-renderer";
-import { ComponentContainer } from "../../structure";
-import { TreeRoot } from "./tree-root";
+import type { ComponentRef, ViewContainerRef, ViewRef } from "@angular/core";
+import { assert } from "../../../shared";
+import { type Subscription } from "rxjs";
+import { RootComponent } from "../../components";
+import { dropzoneRenderer } from "../../extras/drag-and-drop";
+import type { TreeRoot } from "./tree-root";
+import type { ComponentContainer } from "../component-container.interface";
 
 /**
  * A wrapper around the BranchComponent that helps instantiate it and handles its events.
