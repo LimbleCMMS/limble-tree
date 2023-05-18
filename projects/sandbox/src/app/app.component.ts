@@ -128,6 +128,10 @@ export class AppComponent implements AfterViewInit {
          .grow(DraggableComponent);
       branch3.grow(DraggableComponent);
       branch1b.grow(LoremIpsumComponent);
+      const branch1b1 = branch1b.grow(CollapsibleComponent, {
+         defaultCollapsed: true
+      });
+      branch1b1.grow(LoremIpsumComponent);
       const root2 = this.treeService.createEmptyTree<
          | LoremIpsumComponent
          | TextRendererComponent
