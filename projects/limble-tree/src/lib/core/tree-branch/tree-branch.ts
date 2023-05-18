@@ -57,7 +57,6 @@ export class TreeBranch<UserlandComponent>
          parentBranchesContainer
       );
       const hostView = this.branchController.getHostView();
-      this.setIndentation(parent);
       if (
          parent instanceof TreeBranch &&
          parent.branchOptions.defaultCollapsed === true
@@ -74,8 +73,9 @@ export class TreeBranch<UserlandComponent>
                index: this._parent.branches().length
             })
          );
-         this.detectChanges();
+         this.setIndentation();
       }
+      this.detectChanges();
    }
 
    /** @returns All child branches as an array of TreeBranch instances, in order. */
@@ -506,11 +506,15 @@ export class TreeBranch<UserlandComponent>
       this.detachedView.reattach();
       container.insert(this.detachedView, index);
       this.detachedView = null;
+      this.setIndentation();
    }
 
-   private setIndentation(parent: TreeNode<UserlandComponent>): void {
-      const root = parent.root();
-      assert(root !== undefined);
+   private setIndentation(): void {
+      assert(this._parent !== undefined);
+      const root = this._parent.root();
+      if (root === undefined) {
+         return;
+      }
       const options = config.getConfig(root);
       const branchesContainerEl = this.branchController
          .getNativeElement()
