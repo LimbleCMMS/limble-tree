@@ -1,12 +1,8 @@
 # Limble Tree
 
-This library is currently a work in progress. It may not be suitable for production environments yet.
-
-## Description
-
 An Angular library for building visual tree structures. Built and used by the team at [Limble](https://limblecmms.com/);
 
-Features:
+## Features
 
 -  Allows any number of different components to be rendered in the same tree.
 -  Collapsible tree branches
