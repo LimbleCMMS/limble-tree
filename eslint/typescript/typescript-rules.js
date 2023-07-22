@@ -581,8 +581,8 @@ export const typescriptRules = {
     * Disallow comparing an enum value with a non-enum value.
     *
     * @remarks
-    * Such code is confusing, and Typescript is unintuitively permissive about it.
-    * However, we are not ready to implement it.
+    * Typescript 5.0 already protects against most of what this rule is attempting
+    * to mitigate. Leaving off for now.
     */
    "typescript/no-unsafe-enum-comparison": "off",
 
