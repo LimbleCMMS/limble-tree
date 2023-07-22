@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 
 @Component({
+   standalone: true,
    selector: "error-init",
    template: "This is a test"
 })

@@ -144,19 +144,25 @@ export class AppComponent implements AfterViewInit {
          map((event) => {
             return { type: event.constructor.name };
          }),
-         scan((acc, curr) => {
-            acc.push(curr);
-            return acc;
-         }, [] as Array<{ type: string }>)
+         scan(
+            (acc, curr) => {
+               acc.push(curr);
+               return acc;
+            },
+            [] as Array<{ type: string }>
+         )
       );
       this.events2$ = root2.events().pipe(
          map((event) => {
             return { type: event.constructor.name };
          }),
-         scan((acc, curr) => {
-            acc.push(curr);
-            return acc;
-         }, [] as Array<{ type: string }>)
+         scan(
+            (acc, curr) => {
+               acc.push(curr);
+               return acc;
+            },
+            [] as Array<{ type: string }>
+         )
       );
       return [root, root2];
    }

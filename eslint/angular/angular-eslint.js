@@ -339,5 +339,5 @@ export const angularRules = {
     * @remarks
     * Standalone components are newer and better.
     */
-   "angular/prefer-standalone-component": "off"
+   "angular/prefer-standalone-component": "error"
 };

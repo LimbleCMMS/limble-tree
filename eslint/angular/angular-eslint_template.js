@@ -257,5 +257,5 @@ export const angularTemplateRules = {
     * @remarks
     * Self-closing tags are more concise.
     */
-   "template/self-closing-tags": "off"
+   "template/prefer-self-closing-tags": "warn"
 };

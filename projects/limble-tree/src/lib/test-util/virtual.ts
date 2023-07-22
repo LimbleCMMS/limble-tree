@@ -9,6 +9,7 @@ import { assert } from "../../shared";
 import { NodeComponent } from "../components";
 
 @Component({
+   standalone: true,
    selector: "N/A",
    template: "<div #container></div>"
 })
