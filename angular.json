@@ -49,7 +49,7 @@
          "prefix": "",
          "architect": {
             "build": {
-               "builder": "@angular-devkit/build-angular:browser",
+               "builder": "@angular-devkit/build-angular:browser-esbuild",
                "options": {
                   "outputPath": "dist/sandbox",
                   "index": "projects/sandbox/src/index.html",
@@ -92,10 +92,8 @@
                   "development": {
                      "buildOptimizer": false,
                      "optimization": false,
-                     "vendorChunk": true,
                      "extractLicenses": false,
-                     "sourceMap": true,
-                     "namedChunks": true
+                     "sourceMap": true
                   }
                },
                "defaultConfiguration": "production"
