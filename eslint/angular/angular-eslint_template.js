@@ -6,21 +6,21 @@ export const angularTemplateRules = {
     * @remarks
     * Accessibility is not a priority at this time.
     */
-   "template/accessibility-alt-text": "off",
+   "template/alt-text": "off",
    /**
     * Ensures that the heading, anchor, and button elements have content in them.
     *
     * @remarks
     * Accessibility is not a priority at this time.
     */
-   "template/accessibility-elements-content": "off",
+   "template/elements-content": "off",
    /**
     * Checks if a label component is associated with a form element
     *
     * @remarks
     * Accessibility is not a priority at this time.
     */
-   "template/accessibility-label-has-associated-control": "off",
+   "template/label-has-associated-control": "off",
    /**
     * Ensures that scope is not used on any element except th. The scope attribute
     * makes table navigation much easier for screen reader users, provided that it
@@ -30,14 +30,14 @@ export const angularTemplateRules = {
     * @remarks
     * Accessibility is not a priority at this time.
     */
-   "template/accessibility-table-scope": "off",
+   "template/table-scope": "off",
    /**
     * Ensures that the correct ARIA attributes are used
     *
     * @remarks
     * Accessibility is not a priority at this time.
     */
-   "template/accessibility-valid-aria": "off",
+   "template/valid-aria": "off",
    /**
     * Ensures that the two-way data binding syntax is correct;
     * eg, [(ngModel)] is correct whereas ([ngModel]) is not.
@@ -214,7 +214,7 @@ export const angularTemplateRules = {
     * @remarks
     * Accessibility is not a priority at this time.
     */
-   "template/accessibility-interactive-supports-focus": "off",
+   "template/interactive-supports-focus": "off",
 
    /**
     * Ensures elements with ARIA roles have all required properties for that role.
@@ -222,10 +222,11 @@ export const angularTemplateRules = {
     * @remarks
     * Accessibility is not a priority at this time.
     */
-   "template/accessibility-role-has-required-aria": "off",
+   "template/role-has-required-aria": "off",
 
    /**
-    * Ensures that HTML attributes and Angular bindings are sorted based on an expected order
+    * Ensures that HTML attributes and Angular bindings are sorted based on an
+    * expected order
     *
     * @remarks
     * Not a priority at this time. We may revisit in the future.
@@ -247,5 +248,14 @@ export const angularTemplateRules = {
     * @remarks
     * This seems like a great rule, but we violate it too much right now.
     */
-   "template/no-interpolation-in-attributes": "off"
+   "template/no-interpolation-in-attributes": "off",
+
+   /**
+    * Ensures that self-closing tags are used for elements with a closing tag but
+    * no content.
+    *
+    * @remarks
+    * Self-closing tags are more concise.
+    */
+   "template/self-closing-tags": "off"
 };
