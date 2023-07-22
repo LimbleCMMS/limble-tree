@@ -240,7 +240,7 @@ export const angularTemplateRules = {
     * Inline styles are harder to maintain and less reusable than classes.
     * We should implement this soon.
     */
-   "template/no-inline-styles": "off",
+   "template/no-inline-styles": "error",
 
    /**
     * Ensures that property-binding is used instead of interpolation in attributes.

@@ -377,7 +377,7 @@ describe("TreeBranch", () => {
       expect(container?.length).toBe(1);
       expect(
          Array.from(
-            //Angular renders child views in the DOM as siblings of the view container element.
+            // Angular renders child views in the DOM as siblings of the view container element.
             container?.element.nativeElement.parentElement.getElementsByTagName(
                self.getNativeElement().tagName
             )

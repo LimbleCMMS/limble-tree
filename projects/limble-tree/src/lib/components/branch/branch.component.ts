@@ -93,9 +93,9 @@ export class BranchComponent<T>
    }
 
    public ngOnDestroy(): void {
-      //I'm not 100% sure why, but we have to remove any reference to the
-      //componentRef otherwise Angular will never release it for garbage
-      //collection.
+      /* I'm not 100% sure why, but we have to remove any reference to the
+       * componentRef otherwise Angular will never release it for garbage
+       * collection. */
       this.hostedContent = undefined;
    }
 }

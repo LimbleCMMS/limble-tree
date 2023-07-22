@@ -472,10 +472,10 @@ export class TreeBranch<UserlandComponent>
    }
 
    private handleUserlandError(error: unknown): never {
-      // When an error occurs in a userland component during a tree operation,
-      // it can cause undefined, bizarre behavior in the tree. To prevent this,
-      // we destroy the tree and throw an error instead. This helps protect
-      // the end-user's data from corruption.
+      /* When an error occurs in a userland component during a tree operation,
+       * it can cause undefined, bizarre behavior in the tree. To prevent this,
+       * we destroy the tree and throw an error instead. This helps protect
+       * the end-user's data from corruption. */
       this.furthestAncestor().destroy();
       this.treeNodeBase.handleUserlandError(error);
    }

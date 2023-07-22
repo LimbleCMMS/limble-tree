@@ -43,7 +43,7 @@ export const suggestionRules = {
     * Comments should be written in full sentences, including capitalization.
     * We should turn this on in the future.
     */
-   "capitalized-comments": "off",
+   "capitalized-comments": "warn",
 
    /**
     * Enforce that class methods utilize `this`
@@ -1335,7 +1335,7 @@ export const suggestionRules = {
     * @remarks
     * Ensures consistency and readability. We should turn on in the future.
     */
-   "spaced-comment": "off",
+   "spaced-comment": "warn",
 
    /**
     * Require or disallow strict mode directives
