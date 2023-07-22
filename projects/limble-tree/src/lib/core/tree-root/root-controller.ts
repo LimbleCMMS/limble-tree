@@ -1,6 +1,6 @@
 import type { ComponentRef, ViewContainerRef, ViewRef } from "@angular/core";
 import { assert } from "../../../shared";
-import { type Subscription } from "rxjs";
+import type { Subscription } from "rxjs";
 import { RootComponent } from "../../components";
 import { dropzoneRenderer } from "../../extras/drag-and-drop";
 import type { TreeRoot } from "./tree-root";

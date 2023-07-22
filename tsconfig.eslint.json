@@ -1,14 +1,5 @@
 {
    "extends": "./tsconfig.json",
-   "files": [
-      "./projects/limble-tree/src/public-api.ts",
-      "projects/sandbox/src/main.ts",
-      "projects/sandbox/src/polyfills.ts"
-   ],
-   "include": [
-      "./projects/**/*.spec.ts",
-      "./projects/limble-tree/src/test.ts",
-      "./projects/sandbox/src/test.ts",
-      "./projects/sandbox/src/environments/environment.prod.ts"
-   ]
+   "include": ["**/*.ts", "**/*.js", "**/*.mjs", "**/*.cjs"],
+   "exclude": ["node_modules", "dist", "out-tsc", ".angular"]
 }

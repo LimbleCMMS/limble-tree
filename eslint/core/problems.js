@@ -1,60 +1,84 @@
-/**
- * These rules relate to possible syntax or logic errors in the code.
- * They are included with eslint.
- */
-
-module.exports = {
+export const problemRules = {
    /**
-    * enforce "for" loop update clause moving the counter in the
+    * Enforce `return` statements in callbacks of array methods
+    *
+    * @remarks
+    * This is level 2 because the array methods covered by this rule
+    * require a return statement to be useful, so breaking this rule
+    * is probably a mistake. If a return statement is not needed in your
+    * logic, consider using forEach() instead.
+    */
+   "array-callback-return": "error",
+
+   /**
+    * Require `super()` calls in constructors
+    *
+    * @remarks
+    * This is level 2 because code that violates this rule will always
+    * throw a runtime error
+    */
+   "constructor-super": "error",
+
+   /**
+    * Enforce "for" loop update clause moving the counter in the
     * right direction.
     *
     * @remarks
     * This is level 2 because breaking this rule is basically
     * guaranteed to be both a mistake and a fatal bug.
     */
-   "for-direction": 2,
+   "for-direction": "error",
 
    /**
-    * enforce `return` statements in getters
+    * Enforce `return` statements in getters
     *
     * @remarks
     * This is level 2 because breaking this rule is basically
     * guaranteed to be both a mistake and a fatal bug.
     */
-   "getter-return": 2,
+   "getter-return": "error",
 
    /**
-    * disallow using an async function as a Promise executor
+    * Disallow using an async function as a Promise executor
     *
     * @remarks
     * This is level 2 because it is a pointless complication of
     * the code that can hide errors. There are no reasons to do it,
     * and many reasons not to do it.
     */
-   "no-async-promise-executor": 2,
+   "no-async-promise-executor": "error",
 
    /**
-    * disallow `await` inside of loops
+    * Disallow `await` inside of loops
     *
     * @remarks
     * This is level 1 because it may be useful for simulations in
     * development; but most of the time it is either a mistake or an
     * indication that the code should be rewritten to be more efficient.
     */
-   "no-await-in-loop": 1,
+   "no-await-in-loop": "error",
 
    /**
-    * disallow comparing against -0
+    * Disallow reassigning class members
+    *
+    * @remarks
+    * Code such as this is usually a mistake, and when it is not a mistake
+    * it is confusing and should be refactored.
+    */
+   "no-class-assign": "error",
+
+   /**
+    * Disallow comparing against -0
     *
     * @remarks
     * This rule is level 2 because there is no reason to use -0 in
     * this project, and therefore comparing against it is certainly
     * a mistake.
     */
-   "no-compare-neg-zero": 2,
+   "no-compare-neg-zero": "error",
 
    /**
-    * disallow assignment operators in conditional expressions
+    * Disallow assignment operators in conditional expressions
     *
     * @remarks
     * This is level two because this is usually the result of a typo
@@ -63,142 +87,155 @@ module.exports = {
     * statements are not clear, and the same result can be
     * achieved by other methods that are easier to understand.
     */
-   "no-cond-assign": 2,
+   "no-cond-assign": "error",
 
    /**
-    * disallow the use of `console`
+    * Disallow reassigning `const` variables
     *
     * @remarks
-    * This is level 1 because it is often necessary to use `console` in
-    * development, but most console methods should not exist in production.
-    * Some possible exceptions are allowed.
+    * This is level 2 because such code will throw an error at runtime.
     */
-   "no-console": [1, { allow: ["assert", "debug", "error", "info", "warn"] }],
+   "no-const-assign": "error",
 
    /**
-    * disallow constant expressions in conditions
+    * Disallow expressions where the operation doesn't affect the value.
+    *
+    * @remarks
+    * This is level 2 because such code is useless and confusing.
+    */
+   "no-constant-binary-expression": "error",
+
+   /**
+    * Disallow constant expressions in conditions
     *
     * @remarks
     * This is level 2 because such code is pointless
     */
-   "no-constant-condition": 2,
+   "no-constant-condition": "error",
 
    /**
-    * disallow control characters in regular expressions
+    * Disallow returning value from constructor
+    *
+    * @remarks
+    * This is level 2 because such code is almost certainly a mistake or
+    * a misunderstanding of constructors. If it was done on purpose, we
+    * should consider refactoring to be clearer and more modular anyway.
+    */
+   "no-constructor-return": "error",
+
+   /**
+    * Disallow control characters in regular expressions
     *
     * @remarks
     * I don't know much about this area, but it is one of eslint's
     * recommended rules so I put it at level 1. Revisit in the future.
     */
-   "no-control-regex": 1,
+   "no-control-regex": "warn",
 
    /**
-    * disallow the use of `debugger`
+    * Disallow the use of `debugger`
     *
     * @remarks
     * This is level 2 because it is an old, unused, and unnecessary
     * feature of javascript, and it would cause fatal bugs in production.
     */
-   "no-debugger": 2,
+   "no-debugger": "error",
 
    /**
-    * disallow duplicate arguments in `function` definitions
+    * Disallow duplicate arguments in `function` definitions
     *
     * @remarks
     * This is level 2 because it is very prone to bugs and does not provide
     * any benefit. In addition to being very confusing, the first of the
     * duplicated arguments becomes almost inaccessible.
     */
-   "no-dupe-args": 2,
+   "no-dupe-args": "error",
 
    /**
-    * disallow duplicate conditions in if-else-if chains
+    * Disallow duplicate class members
+    *
+    * @remarks
+    * This is level 0 because there is a typescript extension rule which
+    * overrides it.
+    */
+   "no-dupe-class-members": "off",
+
+   /**
+    * Disallow duplicate conditions in if-else-if chains
     *
     * @remarks
     * This is level 2 because such code can be rewritten to be clearer
     * and more succinct. There is no reason to have a duplicate condition.
     */
-   "no-dupe-else-if": 2,
+   "no-dupe-else-if": "error",
 
    /**
-    * disallow duplicate keys in object literals
+    * Disallow duplicate keys in object literals
     *
     * @remarks
     * This is level 2 because it is a mistake and probably a bug. You
     * can't have duplicate keys in an object -- one would simply
     * overwrite the other.
     */
-   "no-dupe-keys": 2,
+   "no-dupe-keys": "error",
 
    /**
-    * disallow duplicate case labels
+    * Disallow duplicate case labels
     *
     * @remarks
     * This is level 2 because such code can be rewritten to be clearer
     * and more succinct. There is no reason to have a duplicate condition.
     */
-   "no-duplicate-case": 2,
+   "no-duplicate-case": "error",
 
    /**
-    * disallow empty block statements
+    * Disallow duplicate module imports
     *
     * @remarks
-    * This is level 1 because empty blocks are usually a mistake, and when they
-    * are not mistakes they should have a comment inside them explaining why
-    * they are empty so that future developers don't delete it when they assume
-    * it doesn't do anything. It is not level 2 because sometimes during development
-    * empty blocks may hang around for a while.
+    * This is level 0 because there is a typescript extension rule which
+    * overrides it.
     */
-   "no-empty": 1,
+   "no-duplicate-imports": "off",
 
    /**
-    * disallow empty character classes in regular expressions
+    * Disallow empty character classes in regular expressions
     *
     * @remarks
     * This is level 2 because such code is pointless and should be removed for
     * clarity.
     */
-   "no-empty-character-class": 2,
+   "no-empty-character-class": "error",
 
    /**
-    * disallow reassigning exceptions in `catch` clauses
+    * Disallow empty destructuring patterns
+    *
+    * @remarks
+    * This is level 2 because such code is pointless and is probably a
+    * mistake.
+    */
+   "no-empty-pattern": "error",
+
+   /**
+    * Disallow reassigning exceptions in `catch` clauses
     *
     * @remarks
     * This is level 2 because it is unnecessary and can be very confusing.
     * It is likely a mistake.
     */
-   "no-ex-assign": 2,
+   "no-ex-assign": "error",
 
    /**
-    * disallow unnecessary boolean casts
+    * Disallow fallthrough of `case` statements
     *
     * @remarks
-    * This is level 2 because, as indicated in the description, it is
-    * completely unnecessary. It uses extra processing power and extra
-    * brain power, but provides no benefits.
+    * This is level 1, not because fallthrough is bad, but because we
+    * should be explicit about it. Intentional fallthrough should be noted
+    * in a comment.
     */
-   "no-extra-boolean-cast": 2,
+   "no-fallthrough": "warn",
 
    /**
-    * disallow unnecessary parentheses
-    *
-    * @remarks
-    * This is level 0 because there is a typescript extension rule which
-    * overrides it.
-    */
-   "no-extra-parens": 0,
-
-   /**
-    * disallow unnecessary semicolons
-    *
-    * @remarks
-    * This is level 0 because there is a typescript extension rule which
-    * overrides it.
-    */
-   "no-extra-semi": 0,
-
-   /**
-    * disallow reassigning `function` declarations
+    * Disallow reassigning `function` declarations
     *
     * @remarks
     * This is level 2 because violating it can cause confusing or buggy
@@ -207,10 +244,10 @@ module.exports = {
     * in cases where a function needs to be reassigned, thus avoiding any
     * hoisting issues.
     */
-   "no-func-assign": 2,
+   "no-func-assign": "error",
 
    /**
-    * disallow assigning to imported bindings
+    * Disallow assigning to imported bindings
     *
     * @remarks
     * This is level 2 because it is very likely to cause bugs and is
@@ -219,10 +256,10 @@ module.exports = {
     * right (ie, the module you are importing from is not following
     * best practices)
     */
-   "no-import-assign": 2,
+   "no-import-assign": "error",
 
    /**
-    * disallow variable or function declarations in nested blocks
+    * Disallow variable or function declarations in nested blocks
     *
     * @remarks
     * There are two parts to this rule: variables and functions.
@@ -231,53 +268,71 @@ module.exports = {
     * declarations that are not at file scope can be confusing and
     * buggy due to function hoisting.
     */
-   "no-inner-declarations": 2,
+   "no-inner-declarations": "error",
 
    /**
-    * disallow invalid regular expression strings in RegExp constructors
+    * Disallow invalid regular expression strings in RegExp constructors
     *
     * @remarks
     * This is level 2 because it will throw an error at runtime.
     */
-   "no-invalid-regexp": 2,
+   "no-invalid-regexp": "error",
 
    /**
-    * disallow irregular whitespace
+    * Disallow irregular whitespace
     *
     * @remarks
     * This is level 0 because Prettier already takes care of it.
     */
-   "no-irregular-whitespace": 0,
+   "no-irregular-whitespace": "off",
 
    /**
-    * disallow literal numbers that lose precision
+    * Disallow literal numbers that lose precision
     *
     * @remarks
     * This is level 0 because there is a typescript extension rule which
     * overrides it.
     */
-   "no-loss-of-precision": 0,
+   "no-loss-of-precision": "off",
 
    /**
-    * disallow characters which are made with multiple code points in
+    * Disallow characters which are made with multiple code points in
     * character class syntax
     *
     * @remarks
     * This is level 2 because such code won't work as intended and should
     * be rewritten.
     */
-   "no-misleading-character-class": 2,
+   "no-misleading-character-class": "error",
 
    /**
-    * disallow calling global object properties as functions
+    * Disallow `new` operators with global non-constructor functions.
+    *
+    * @remarks
+    * This is level 2 because such code will error at runtime. Typescript
+    * should also catch this issue.
+    */
+   "no-new-native-nonconstructor": "error",
+
+   /**
+    * Disallow `new` operators with the `Symbol` object
+    *
+    * @remarks
+    * This is level 0 because it is already covered by the
+    * "no-new-native-constructor" rule.
+    */
+   "no-new-symbol": "error",
+
+   /**
+    * Disallow calling global object properties as functions
     *
     * @remarks
     * This is level 2 because such code will throw an error at runtime
     */
-   "no-obj-calls": 2,
+   "no-obj-calls": "error",
 
    /**
-    * disallow returning values from Promise executor functions
+    * Disallow returning values from Promise executor functions
     *
     * @remarks
     * This is level 2 because, as explained in the docs, "The return
@@ -285,38 +340,47 @@ module.exports = {
     * executor function is a possible error because the returned value
     * cannot be used and it doesn't affect the promise in any way."
     */
-   "no-promise-executor-return": 2,
+   "no-promise-executor-return": "error",
 
    /**
-    * disallow calling some `Object.prototype` methods directly on objects
+    * Disallow calling some `Object.prototype` methods directly on objects
     *
     * @remarks
     * This is level 1 because eslint recommends this rule. ESLint makes
     * some good arguments for it, but I didn't make it level 2 because I'm
     * not sure how this rule will shake out in the real world.
     */
-   "no-prototype-builtins": 2,
+   "no-prototype-builtins": "error",
 
    /**
-    * disallow multiple spaces in regular expressions
+    * Disallow assignments where both sides are exactly the same
     *
     * @remarks
-    * This is level 2 because multiple spaces in regex are hard to count,
-    * and should be rewritten for clarity.
+    * This is level 2 because such code is obviously unnecessary and should
+    * be removed.
     */
-   "no-regex-spaces": 2,
+   "no-self-assign": "error",
 
    /**
-    * disallow returning values from setters
+    * Disallow comparisons where both sides are exactly the same
+    *
+    * @remarks
+    * This is level 2 because such code is obviously unnecessary and should
+    * be removed.
+    */
+   "no-self-compare": "error",
+
+   /**
+    * Disallow returning values from setters
     *
     * @remarks
     * Return values from setters are ignored, so such code is certainly
     * a mistake or misunderstanding.
     */
-   "no-setter-return": 2,
+   "no-setter-return": "error",
 
    /**
-    * disallow sparse arrays
+    * Disallow sparse arrays
     *
     * @remarks
     * This is level 2 because sparse arrays are usually the result of a
@@ -324,10 +388,10 @@ module.exports = {
     * think you need a sparse array, consider using a different data
     * structure or handling your array differently.
     */
-   "no-sparse-arrays": 2,
+   "no-sparse-arrays": "error",
 
    /**
-    * disallow template literal placeholder syntax in regular strings
+    * Disallow template literal placeholder syntax in regular strings
     *
     * @remarks
     * Such code is usually a mistake -- the author probably intended for
@@ -335,70 +399,132 @@ module.exports = {
     * this is intentional, so we have it turned off. Additionally, the IDE
     * syntax highlights should already make it obvious if there is a problem.
     */
-   "no-template-curly-in-string": 0,
+   "no-template-curly-in-string": "off",
 
    /**
-    * disallow confusing multiline expressions
+    * Disallow `this`/`super` before calling `super()` in constructors
+    *
+    * @remarks
+    * This is level 2 because such code will throw an error at runtime.
+    */
+   "no-this-before-super": "error",
+
+   /**
+    * Disallow the use of undeclared variables unless mentioned in `global`
+    * comments
+    *
+    * @remarks
+    * This is turned off because Typescript will already warn us about it,
+    * and Typescript is smarter about it.
+    */
+   "no-undef": "off",
+
+   /**
+    * Disallow confusing multiline expressions
     *
     * @remarks
     * Prettier already takes care of this.
     */
-   "no-unexpected-multiline": 0,
+   "no-unexpected-multiline": "off",
 
    /**
-    * disallow unreachable code after `return`, `throw`, `continue`, and
+    * Disallow unmodified loop conditions
+    *
+    * @remarks
+    * Such code will lead to an infinite loop. The reason this is not level
+    * 2 is because the rule is not perfect at detecting when a value is
+    * modified by a side-effect. Of course, we should be avoiding side-effects
+    * anyway, so maybe we should revisit this in the future and bump it up
+    * to level 2
+    */
+   "no-unmodified-loop-condition": "warn",
+
+   /**
+    * Disallow unreachable code after `return`, `throw`, `continue`, and
     * `break` statements
     *
     * @remarks
-    * Obviously, unreachable code is useless and should be removed. It is
-    * not level 2 because such code may exist temporarily during development.
+    * Obviously, unreachable code is useless and should be removed.
     */
-   "no-unreachable": 1,
+   "no-unreachable": "error",
 
    /**
-    * disallow loops with a body that allows only one iteration
+    * Disallow loops with a body that allows only one iteration
     *
     * @remarks
     * Obviously, a loop that can only iterate once should not be a loop
     */
-   "no-unreachable-loop": 2,
+   "no-unreachable-loop": "error",
 
    /**
-    * disallow control flow statements in `finally` blocks
+    * Disallow control flow statements in `finally` blocks
     *
     * @remarks
     * Control flow statements within `finally` do not behave intuitively
     * (see the eslint docs), and may indicate a poor design. This rule is
     * level 2 to avoid these issues.
     */
-   "no-unsafe-finally": 2,
+   "no-unsafe-finally": "error",
 
    /**
-    * disallow negating the left operand of relational operators
+    * Disallow negating the left operand of relational operators
     *
     * @remarks
     * This is level 2 because it is almost certainly a mistake/bug.
     * See eslint docs.
     */
-   "no-unsafe-negation": 2,
+   "no-unsafe-negation": "error",
 
    /**
-    * disallow useless backreferences in regular expressions
+    * Disallow use of optional chaining in contexts where the undefined value is not allowed
+    *
+    * @remarks
+    * This is level 0 because typescript and typescript-eslint already take care of it.
+    */
+   "no-unsafe-optional-chaining": "off",
+
+   /**
+    * Disallow unused private class members
+    *
+    * @remarks
+    * Unused code should be removed. This is not level 2 because such code often
+    * exists temporarily during development.
+    */
+   "no-unused-private-class-members": "warn",
+
+   /**
+    * Disallow unused variables
+    *
+    * @remarks
+    * This is level 0 because there is a typescript extension rule which
+    * overrides it.
+    */
+   "no-unused-vars": "off",
+
+   /**
+    * Disallow the use of variables before they are defined
+    *
+    * @remarks
+    * This is level 0 because there is a typescript extension rule which
+    * overrides it.
+    */
+   "no-use-before-define": "off",
+
+   /**
+    * Disallow useless backreferences in regular expressions
     *
     * @remarks
     * This is level 2 because, as the name suggests, such code is useless
     * and should be rewritten
     */
-   "no-useless-backreference": 2,
+   "no-useless-backreference": "error",
 
    /**
-    * disallow assignments that can lead to race conditions due to usage
+    * Disallow assignments that can lead to race conditions due to usage
     * of `await` or `yield`
     *
     * @remarks
-    * This rule's documentation is incomplete. The rule actually flags more
-    * code than the docs indicate. It will try to flag code when all of these
-    * conditions are met:
+    * This rule will try to flag code when all of these conditions are met:
     *
     * 1. A variable or property is assigned or created before an await statement
     * 2. That same variable or property is modified after the await statement
@@ -415,7 +541,7 @@ module.exports = {
     *    }
     * }
     * async function clickBlueButton() {
-    *    x = {num: 0};
+    *    x = {num: "off"};
     * }
     * ```
     *
@@ -433,23 +559,23 @@ module.exports = {
     * of the problems mentioned above, we have it turned off for now. We might revisit
     * in the future if these problems are mitigated.
     */
-   "require-atomic-updates": 0,
+   "require-atomic-updates": "off",
 
    /**
-    * require calls to `isNaN()` when checking for `NaN`
+    * Require calls to `isNaN()` when checking for `NaN`
     *
     * @remarks
     * This is level 2 because checking for NaN in other ways is often
     * not intuitive (see eslint docs), and there is no reason not to use
     * the isNaN() function instead.
     */
-   "use-isnan": 2,
+   "use-isnan": "error",
 
    /**
-    * enforce comparing `typeof` expressions against valid strings
+    * Enforce comparing `typeof` expressions against valid strings
     *
     * @remarks
     * This is level 2 because such code is always a mistake/bug.
     */
-   "valid-typeof": 2
+   "valid-typeof": "error"
 };

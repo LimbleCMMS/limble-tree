@@ -19,9 +19,10 @@
       "experimentalDecorators": true,
       "moduleResolution": "node",
       "importHelpers": true,
-      "target": "es2020",
+      "target": "ES2022",
       "module": "ESNext",
-      "lib": ["ESNext", "dom"]
+      "lib": ["ESNext", "dom"],
+      "useDefineForClassFields": false
    },
    "angularCompilerOptions": {
       "enableI18nLegacyMessageIdFormat": false,

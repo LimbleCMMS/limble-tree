@@ -488,7 +488,7 @@ export class TreeBranch<UserlandComponent>
    }
 
    private furthestAncestor(): TreeNode<UserlandComponent> {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias -- This code is for an iteration, not to make `this` available in other scopes (which is what the rule is intended to protect against).
+      // eslint-disable-next-line typescript/no-this-alias -- This code is for an iteration, not to make `this` available in other scopes (which is what the rule is intended to protect against).
       let node: TreeNode<UserlandComponent> = this;
       while (node instanceof TreeBranch) {
          const parent = node.parent();
