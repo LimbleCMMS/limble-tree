@@ -8,14 +8,14 @@
  * extension rule which replaces it.
  */
 
-module.exports = {
+export const extensionRulesForTypescript = {
    /**
     * Enforce consistent brace style for blocks
     *
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/brace-style": 0,
+   "typescript/brace-style": "off",
 
    /**
     * Require or disallow trailing commas
@@ -23,7 +23,7 @@ module.exports = {
     * @remarks
     * This is level 0 because Prettier already takes care of it.
     */
-   "@typescript-eslint/comma-dangle": 0,
+   "typescript/comma-dangle": "off",
 
    /**
     * Enforces consistent spacing before and after commas
@@ -31,7 +31,7 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/comma-spacing": 0,
+   "typescript/comma-spacing": "off",
 
    /**
     * Enforce or disallow the use of the record type
@@ -41,7 +41,7 @@ module.exports = {
     * opinion on this at the moment, so it is off. We may revisit in the
     * future.
     */
-   "@typescript-eslint/consistent-indexed-object-style": 0,
+   "typescript/consistent-indexed-object-style": "off",
 
    /**
     * Enforce default parameters to be last
@@ -51,15 +51,15 @@ module.exports = {
     * but also because this pattern tends to be easier to utilize.
     * There is no reason not to do it.
     */
-   "@typescript-eslint/default-param-last": 2,
+   "typescript/default-param-last": "error",
 
    /**
-    * enforce dot notation whenever possible
+    * Enforce dot notation whenever possible
     *
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/dot-notation": 0,
+   "typescript/dot-notation": "off",
 
    /**
     * Require or disallow spacing between function identifiers and
@@ -68,7 +68,7 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/func-call-spacing": 0,
+   "typescript/func-call-spacing": "off",
 
    /**
     * Enforce consistent indentation
@@ -76,15 +76,24 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/indent": 0,
+   "typescript/indent": "off",
 
    /**
-    * require or disallow initialization in variable declarations
+    * Require or disallow initialization in variable declarations
     *
     * @remarks
     * This is turned off because I don' believe it would be useful.
     */
-   "@typescript-eslint/init-declarations": 0,
+   "typescript/init-declarations": "off",
+
+   /**
+    * Enforce consistent spacing between property names and type annotations
+    * in types and interfaces.
+    *
+    * @remarks
+    * Already handled by Prettier.
+    */
+   "typescript/key-spacing": "off",
 
    /**
     * Enforce consistent spacing before and after keywords
@@ -92,16 +101,23 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/keyword-spacing": 0,
+   "typescript/keyword-spacing": "off",
+
+   /**
+    * Require empty lines around comments.
+    *
+    * @remarks
+    * Not useful.
+    */
+   "typescript/lines-around-comment": "off",
 
    /**
     * Require or disallow an empty line between class members
     *
     * @remarks
-    * This is turned off because it is not a priority right now.
-    * We may turn this on in the future.
+    * Not configurable enough for my liking.
     */
-   "@typescript-eslint/lines-between-class-members": 0,
+   "typescript/lines-between-class-members": "off",
 
    /**
     * Disallow generic `Array` constructors
@@ -110,7 +126,7 @@ module.exports = {
     * This is turned off because it is not a priority at this time.
     * We may revisit in the future.
     */
-   "@typescript-eslint/no-array-constructor": 0,
+   "typescript/no-array-constructor": "off",
 
    /**
     * Disallow duplicate class members
@@ -119,15 +135,15 @@ module.exports = {
     * This is level 2 because either the second of the duplicate members is
     * a mistake, or the first of the duplicate members should be deleted.
     */
-   "@typescript-eslint/no-dupe-class-members": 2,
+   "typescript/no-dupe-class-members": "error",
 
    /**
-    * disallow duplicate module imports
+    * Disallow duplicate module imports
     *
     * @remarks
     * This is level 2 to enforce consistency and readability
     */
-   "@typescript-eslint/no-duplicate-imports": 2,
+   "typescript/no-duplicate-imports": "error",
 
    /**
     * Disallow empty functions
@@ -140,7 +156,7 @@ module.exports = {
     * because sometimes during development empty functions may hang
     * around for a while.
     */
-   "@typescript-eslint/no-empty-function": 1,
+   "typescript/no-empty-function": "warn",
 
    /**
     * Disallow unnecessary parentheses
@@ -148,7 +164,7 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/no-extra-parens": 0,
+   "typescript/no-extra-parens": "off",
 
    /**
     * Disallow unnecessary semicolons
@@ -156,26 +172,25 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/no-extra-semi": 0,
+   "typescript/no-extra-semi": "off",
 
    /**
-    * disallow `this` keywords outside of classes or class-like objects
+    * Disallow `this` keywords outside of classes or class-like objects
     *
     * @remarks
     * Such code is usually a mistake or a misunderstanding of the
     * language.
     */
-   "@typescript-eslint/no-invalid-this": 2,
+   "typescript/no-invalid-this": "error",
 
    /**
-    * disallow function declarations that contain unsafe references
+    * Disallow function declarations that contain unsafe references
     * inside loop statements
     *
     * @remarks
-    * This is level 2 because such code is error-prone and may not
-    * work as expected. It is also harder to read and debug.
+    * This rule is not reliable enough to use at this time.
     */
-   "@typescript-eslint/no-loop-func": 2,
+   "typescript/no-loop-func": "off",
 
    /**
     * Disallow literal numbers that lose precision
@@ -185,7 +200,7 @@ module.exports = {
     * number to a level of precision that is not supported.
     * It may cause unanticipated behavior.
     */
-   "@typescript-eslint/no-loss-of-precision": 2,
+   "typescript/no-loss-of-precision": "error",
 
    /**
     * Disallow magic numbers
@@ -194,23 +209,12 @@ module.exports = {
     * This is turned off because, though certainly useful, this rule
     * is sometimes more work than it is worth. We may revisit in the future.
     */
-   "@typescript-eslint/no-magic-numbers": 0,
+   "typescript/no-magic-numbers": "off",
 
    /**
-    * disallow specified modules when loaded by `import`
+    * Disallow specified modules when loaded by `import`
     */
-   "@typescript-eslint/no-restricted-imports": [
-      2,
-      {
-         paths: [
-            {
-               name: "axios",
-               message:
-                  "This is a CommonJS module and should be avoided for performance reasons. Import from `axios/dist/axios` instead."
-            }
-         ]
-      }
-   ],
+   "typescript/no-restricted-imports": "error",
 
    /**
     * Disallow variable declarations from shadowing variables
@@ -220,7 +224,7 @@ module.exports = {
     * This is level 2 because such code is unnecessarily confusing and can
     * easily lead to bugs.
     */
-   "@typescript-eslint/no-shadow": 2,
+   "typescript/no-shadow": "error",
 
    /**
     * Disallow unused expressions
@@ -229,7 +233,7 @@ module.exports = {
     * Obviously, if it is unused, we should get rid of it to clean up
     * the code.
     */
-   "@typescript-eslint/no-unused-expressions": 2,
+   "typescript/no-unused-expressions": "error",
 
    /**
     * Disallow unused variables
@@ -239,7 +243,7 @@ module.exports = {
     * readability and efficiency. This is not level 2 because sometimes
     * variables go unused for long periods of time during development.
     */
-   "@typescript-eslint/no-unused-vars": 1,
+   "typescript/no-unused-vars": "warn",
 
    /**
     * Disallow the use of variables before they are defined
@@ -262,7 +266,7 @@ module.exports = {
     *
     * For this reason, we leave the rule turned off.
     */
-   "@typescript-eslint/no-use-before-define": 0,
+   "typescript/no-use-before-define": "off",
 
    /**
     * Disallow unnecessary constructors
@@ -271,7 +275,7 @@ module.exports = {
     * This is level 2 because empty constructors do not add anything
     * to the code and should be removed.
     */
-   "@typescript-eslint/no-useless-constructor": 2,
+   "typescript/no-useless-constructor": "error",
 
    /**
     * Enforce consistent spacing inside braces
@@ -279,15 +283,15 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/object-curly-spacing": 0,
+   "typescript/object-curly-spacing": "off",
 
    /**
-    * require or disallow padding lines between statements
+    * Require or disallow padding lines between statements
     *
     * @remarks
     * This is off because Prettier already handles it.
     */
-   "@typescript-eslint/padding-line-between-statements": 0,
+   "typescript/padding-line-between-statements": "off",
 
    /**
     * Enforce the consistent use of either backticks, double, or single quotes
@@ -295,7 +299,7 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/quotes": 0,
+   "typescript/quotes": "off",
 
    /**
     * Disallow async functions which have no await expression and do not
@@ -305,7 +309,7 @@ module.exports = {
     * Async functions that don't use `await` won't actually run asynchronously.
     * If the function returns a promise, there is still value in declaring the
     * function async even if there are no `await`s
-    * (see the `@typescript-eslint/promise-function-async` rule), but otherwise,
+    * (see the `typescript/promise-function-async` rule), but otherwise,
     * marking it as `async` does not do anything except wrap the return
     * in a promise for no reason. It could be the unintentional result of
     * refactoring. Some people use it as a shortcut to wrap a value in an
@@ -313,7 +317,7 @@ module.exports = {
     * should also explicitly wrap the return value in a Promise.resolve()
     * so your intentions are clear.
     */
-   "@typescript-eslint/require-await": 1,
+   "typescript/require-await": "warn",
 
    /**
     * Enforces consistent returning of awaited values
@@ -323,7 +327,7 @@ module.exports = {
     * inefficient and complex, and may indicate a lack of understanding
     * about how async functions work.
     */
-   "@typescript-eslint/return-await": 2,
+   "typescript/return-await": "error",
 
    /**
     * Require or disallow semicolons instead of ASI
@@ -331,7 +335,7 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/semi": 0,
+   "typescript/semi": "off",
 
    /**
     * Enforces consistent spacing before function parenthesis
@@ -339,7 +343,7 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this.
     */
-   "@typescript-eslint/space-before-function-paren": 0,
+   "typescript/space-before-function-paren": "off",
 
    /**
     * This rule is aimed at ensuring there are spaces around infix operators
@@ -347,7 +351,7 @@ module.exports = {
     * @remarks
     * This is level 0 because Prettier already takes care of it.
     */
-   "@typescript-eslint/space-infix-ops": 0,
+   "typescript/space-infix-ops": "off",
 
    /**
     * Enforce consistent spacing before blocks.
@@ -355,5 +359,5 @@ module.exports = {
     * @remarks
     * This rule is level 0 because Prettier should already take care of it.
     */
-   "@typescript-eslint/space-before-blocks": 0
+   "typescript/space-before-blocks": "off"
 };

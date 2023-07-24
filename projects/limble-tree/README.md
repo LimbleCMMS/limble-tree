@@ -11,6 +11,13 @@ An Angular library for building visual tree structures. Built and used by the te
 -  No limit on tree depth or size.
 -  Recently redesigned to allow better performance with large/complex trees.
 
+## Compatibility Table
+
+| limble-tree | Angular         | RxJs  |
+| ----------- | --------------- | ----- |
+| 1.0.0       | 14.2.0 - 14.x.x | 7.x.x |
+| 2.0.0       | 15.x.x          | 7.x.x |
+
 ## Installation
 
 ```bash

@@ -4,14 +4,14 @@
  * for information on these rules and the plugin
  */
 
-module.exports = {
+export const typescriptRules = {
    /**
     * Require that member overloads be consecutive
     *
     * @remarks
     * This is level 2 to enforce consistency and readability
     */
-   "@typescript-eslint/adjacent-overload-signatures": 2,
+   "typescript/adjacent-overload-signatures": "error",
 
    /**
     * Requires using either `T[]` or `Array<T>` for arrays
@@ -20,7 +20,7 @@ module.exports = {
     * We are leaving this off for now because it isn't high priority. We
     * may revisit in the future.
     */
-   "@typescript-eslint/array-type": 0,
+   "typescript/array-type": "off",
 
    /**
     * Disallows awaiting a value that is not a Thenable
@@ -29,7 +29,7 @@ module.exports = {
     * There is no reason to await a non-promise value. This is probably a
     * mistake, and should be removed.
     */
-   "@typescript-eslint/await-thenable": 2,
+   "typescript/await-thenable": "error",
 
    /**
     * Bans `// @ts-<directive>` comments from being used or requires
@@ -39,7 +39,7 @@ module.exports = {
     * The only reason to use such comments is to cover up an underlying
     * problem. The problem should be addressed instead.
     */
-   "@typescript-eslint/ban-ts-comment": 2,
+   "typescript/ban-ts-comment": "error",
 
    /**
     * Bans `// tslint:<rule-flag>` comments from being used
@@ -49,7 +49,7 @@ module.exports = {
     * tslint, but we might as well ban the comments anyway. We might
     * turn off this rule if it is having a performance impact.
     */
-   "@typescript-eslint/ban-tslint-comment": 2,
+   "typescript/ban-tslint-comment": "error",
 
    /**
     * Bans specific types from being used
@@ -58,7 +58,7 @@ module.exports = {
     * This is level 1 because these types should almost never be used.
     * See https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html#general-types
     */
-   "@typescript-eslint/ban-types": [1, { extendDefaults: true }],
+   "typescript/ban-types": ["warn", { extendDefaults: true }],
 
    /**
     * Ensures that literals on classes are exposed in a consistent style
@@ -69,7 +69,7 @@ module.exports = {
     * does not apply to us. I don't think this rule is worthwhile at
     * this time.
     */
-   "@typescript-eslint/class-literal-property-style": 0,
+   "typescript/class-literal-property-style": "off",
 
    /**
     * Enforces consistent usage of type assertions
@@ -79,8 +79,8 @@ module.exports = {
     * Also because objectLiteralTypeAssertions can hide type
     * errors
     */
-   "@typescript-eslint/consistent-type-assertions": [
-      1,
+   "typescript/consistent-type-assertions": [
+      "warn",
       {
          assertionStyle: "as",
          objectLiteralTypeAssertions: "never"
@@ -94,7 +94,7 @@ module.exports = {
     * This is off because it is not a priority right now. We may
     * revisit in the future.
     */
-   "@typescript-eslint/consistent-type-definitions": 0,
+   "typescript/consistent-type-definitions": "off",
 
    /**
     * Enforces consistent usage of type exports
@@ -102,7 +102,7 @@ module.exports = {
     * @remarks
     * Type exports allow the compiler to be more efficient.
     */
-   "@typescript-eslint/consistent-type-exports": 1,
+   "typescript/consistent-type-exports": "warn",
 
    /**
     * Enforces consistent usage of type imports
@@ -114,7 +114,7 @@ module.exports = {
     * with Angular "tokens" (as in dependency injection); it can be done,
     * but it is annoying.
     */
-   "@typescript-eslint/consistent-type-imports": 0,
+   "typescript/consistent-type-imports": "off",
 
    /**
     * Require explicit return types on functions and class methods
@@ -124,7 +124,7 @@ module.exports = {
     * will turn it on in the future when we get closer to the end
     * of the transition.
     */
-   "@typescript-eslint/explicit-function-return-type": 1,
+   "typescript/explicit-function-return-type": "off",
 
    /**
     * Require explicit accessibility modifiers on class properties
@@ -138,8 +138,8 @@ module.exports = {
     * refactor that we haven't gotten to yet -- but we should revisit
     * in the future and remove the overrides.
     */
-   "@typescript-eslint/explicit-member-accessibility": [
-      1,
+   "typescript/explicit-member-accessibility": [
+      "warn",
       { overrides: { properties: "off" } }
    ],
 
@@ -153,7 +153,7 @@ module.exports = {
     * Note that this rule may be obsolete when `noImplicitAny` config is
     * used
     */
-   "@typescript-eslint/explicit-module-boundary-types": 0,
+   "typescript/explicit-module-boundary-types": "off",
 
    /**
     * Require a specific member delimiter style for interfaces and type
@@ -162,7 +162,7 @@ module.exports = {
     * @remarks
     * This is off because prettier takes care of it already.
     */
-   "@typescript-eslint/member-delimiter-style": 0,
+   "typescript/member-delimiter-style": "off",
 
    /**
     * Require a consistent member declaration order
@@ -171,8 +171,8 @@ module.exports = {
     * This is level 1 to help enforce consistency. The rule is relatively
     * loose right now. At some point we may want to make it more specific.
     */
-   "@typescript-eslint/member-ordering": [
-      1,
+   "typescript/member-ordering": [
+      "warn",
       {
          default: ["field", "constructor", "method"]
       }
@@ -186,7 +186,7 @@ module.exports = {
     * because the "method syntax" does not play well
     * with typescript's `strictFunctionTypes` setting.
     */
-   "@typescript-eslint/method-signature-style": 2,
+   "typescript/method-signature-style": "error",
 
    /**
     * Enforces naming conventions for everything across a codebase
@@ -196,7 +196,7 @@ module.exports = {
     * don't have much preference on naming conventions other than
     * the rules already used in this config.
     */
-   "@typescript-eslint/naming-convention": 0,
+   "typescript/naming-convention": "off",
 
    /**
     * Requires that `.toString()` is only called on objects which
@@ -205,7 +205,7 @@ module.exports = {
     * @remarks
     * This is level 2 because such code is almost certainly a mistake.
     */
-   "@typescript-eslint/no-base-to-string": 2,
+   "typescript/no-base-to-string": "error",
 
    /**
     * Disallow non-null assertion in locations that may be confusing
@@ -213,7 +213,7 @@ module.exports = {
     * @remarks
     * Not applicable when the `no-non-null-assertion` rule is on
     */
-   "@typescript-eslint/no-confusing-non-null-assertion": 0,
+   "typescript/no-confusing-non-null-assertion": "off",
 
    /**
     * Requires expressions of type void to appear in statement position
@@ -221,18 +221,26 @@ module.exports = {
     * @remarks
     * This is level 2 because it helps avoid ambiguities around the `void` type
     */
-   "@typescript-eslint/no-confusing-void-expression": 2,
+   "typescript/no-confusing-void-expression": "error",
+
+   /**
+    * Disallow duplicate constituents of union or intersection types.
+    *
+    * @remarks
+    * Such code is extraneous.
+    */
+   "typescript/no-duplicate-type-constituents": "error",
 
    /**
     * Disallow the delete operator with computed key expressions
     *
     * @remarks
     * This is a really good indicator of poor choice of data structure.
-    * It is not level 2 right now because it is not a high priority.
-    * We will probably change this in the future.
-    * 2020-10-17 bryan changed to 0 for the time being.  we will turn this back on in the future.  I found I was adding too many exceptions to it
+    * But there are too many instances where we violate the rule right now.
+    * We should revisit after Plaid, because the move to Lookups should
+    * address most of the violations.
     */
-   "@typescript-eslint/no-dynamic-delete": 0,
+   "typescript/no-dynamic-delete": "off",
 
    /**
     * Disallow the declaration of empty interfaces
@@ -241,7 +249,7 @@ module.exports = {
     * This is level 2 because such declarations are useless and should
     * be deleted
     */
-   "@typescript-eslint/no-empty-interface": 2,
+   "typescript/no-empty-interface": "error",
 
    /**
     * Disallow usage of the `any` type
@@ -250,7 +258,7 @@ module.exports = {
     * This is off for now because we are still in transition. We will turn
     * it on in the future when we get closer to the end of the transition.
     */
-   "@typescript-eslint/no-explicit-any": 0,
+   "typescript/no-explicit-any": "off",
 
    /**
     * Disallow extra non-null assertion
@@ -258,7 +266,7 @@ module.exports = {
     * @remarks
     * Not applicable when the `no-non-null-assertion` rule is on
     */
-   "@typescript-eslint/no-extra-non-null-assertion": 0,
+   "typescript/no-extra-non-null-assertion": "off",
 
    /**
     * Forbids the use of classes as namespaces
@@ -269,8 +277,8 @@ module.exports = {
     * many classes in Angular appear empty (though they usually have a
     * decorator that makes them substantive at runtime)
     */
-   "@typescript-eslint/no-extraneous-class": [
-      2,
+   "typescript/no-extraneous-class": [
+      "error",
       { allowEmpty: true, allowConstructorOnly: true }
    ],
 
@@ -278,11 +286,10 @@ module.exports = {
     * Requires Promise-like values to be handled appropriately
     *
     * @remarks
-    * This is off right now because it would require a large-scale refactor
-    * and it is not a high enough priority to be worthwhile at this time.
-    * We should revisit in the future.
+    * This is off because it doesn't seem to work as expected. We may
+    * revisit it in the future.
     */
-   "@typescript-eslint/no-floating-promises": 0,
+   "typescript/no-floating-promises": "off",
 
    /**
     * Disallow iterating over an array with a for-in loop
@@ -292,18 +299,24 @@ module.exports = {
     * 2 because there are so many places where we violate the rule. We should
     * bump it to level 2 in the future.
     */
-   "@typescript-eslint/no-for-in-array": 1,
+   "typescript/no-for-in-array": "warn",
+
+   /**
+    * Enforce the use of top-level import type qualifier when an import only
+    * has specifiers with inline type qualifiers.
+    *
+    * @remarks
+    * Helps improve tree shaking at typescript transpile time
+    */
+   "typescript/no-import-type-side-effects": "error",
 
    /**
     * Disallow usage of the implicit any type in catch clauses
     *
     * @remarks
-    * The `noImplicitAny` flag in typescript does not cover variables in catch
-    * clauses (for backwards compatibility reasons, I'm told). This loophole can
-    * cause type errors. This rule fills in that gap. It is turned off because
-    * we are still in transition. Revisit in the future.
+    * Improves type safety, but not a priority right now.
     */
-   "@typescript-eslint/no-implicit-any-catch": 0,
+   "typescript/no-implicit-any-catch": "off",
 
    /**
     * Disallow the use of `eval()`-like methods
@@ -312,7 +325,7 @@ module.exports = {
     * This is level 2 because such code raises security and performance
     * concerns, and indicates a poor design.
     */
-   "@typescript-eslint/no-implied-eval": 2,
+   "typescript/no-implied-eval": "error",
 
    /**
     * Disallows explicit type declarations for variables or parameters
@@ -324,7 +337,7 @@ module.exports = {
     * little extra verbose in the type system, even if it is redundant. We
     * will leave it off for now.
     */
-   "@typescript-eslint/no-inferrable-types": 0,
+   "typescript/no-inferrable-types": "off",
 
    /**
     * Disallows usage of void type outside of generic or return types
@@ -334,7 +347,7 @@ module.exports = {
     * complex or misleading, and may indicate a lack of understanding of the
     * `void` type.
     */
-   "@typescript-eslint/no-invalid-void-type": 2,
+   "typescript/no-invalid-void-type": "error",
 
    /**
     * Disallow the void operator when its argument is already of type void or
@@ -343,7 +356,7 @@ module.exports = {
     * @remarks
     * Not applicable when the `no-void` rule is turned on.
     */
-   "@typescript-eslint/no-meaningless-void-operator": 0,
+   "typescript/no-meaningless-void-operator": "off",
 
    /**
     * Enforce valid definition of `new` and `constructor`
@@ -351,7 +364,7 @@ module.exports = {
     * @remarks
     * This is level 2 because such code is erroneous and probably a mistake.
     */
-   "@typescript-eslint/no-misused-new": 2,
+   "typescript/no-misused-new": "error",
 
    /**
     * Avoid using promises in places not designed to handle them
@@ -360,7 +373,15 @@ module.exports = {
     * This is level 2 because such code is almost certainly a mistake or a
     * misunderstanding of how promises work.
     */
-   "@typescript-eslint/no-misused-promises": 2,
+   "typescript/no-misused-promises": "error",
+
+   /**
+    * Disallow enums from having both number and string members.
+    *
+    * @remarks
+    * Improves consistency and avoids likely bugs.
+    */
+   "typescript/no-mixed-enums": "error",
 
    /**
     * Disallow the use of custom TypeScript modules and namespaces
@@ -369,7 +390,7 @@ module.exports = {
     * This is level 2 to enforce consistency and readability, and also to
     * discourage use of typescript features that have fallen out of favor.
     */
-   "@typescript-eslint/no-namespace": 2,
+   "typescript/no-namespace": "error",
 
    /**
     * Disallows using a non-null assertion in the left operand of the nullish
@@ -378,7 +399,7 @@ module.exports = {
     * @remarks
     * Not applicable when `no-non-null-assertion` is turned on.
     */
-   "@typescript-eslint/no-non-null-asserted-nullish-coalescing": 0,
+   "typescript/no-non-null-asserted-nullish-coalescing": "off",
 
    /**
     * Disallows using a non-null assertion after an optional chain expression
@@ -386,7 +407,7 @@ module.exports = {
     * @remarks
     * Not applicable when the `no-non-null-assertion` rule is on
     */
-   "@typescript-eslint/no-non-null-asserted-optional-chain": 0,
+   "typescript/no-non-null-asserted-optional-chain": "off",
 
    /**
     * Disallows non-null assertions using the `!` postfix operator
@@ -396,15 +417,15 @@ module.exports = {
     * the strict null-checking mode", and if that mode is not used then
     * there is no reason to use the assertion.
     */
-   "@typescript-eslint/no-non-null-assertion": 2,
+   "typescript/no-non-null-assertion": "error",
 
    /**
     * Disallow the use of parameter properties in class constructors
     *
     * @remarks
-    * This is off because parameter properties are the norm in Angular.
+    * This is off because parameter properties are the norm in NestJS.
     */
-   "@typescript-eslint/no-parameter-properties": 0,
+   "typescript/no-parameter-properties": "off",
 
    /**
     * Disallows invocation of `require()`
@@ -413,7 +434,7 @@ module.exports = {
     * This is level 2 to enforce the use of the newer ES6 imports/exports
     * instead. This enforces consistency and improves readability.
     */
-   "@typescript-eslint/no-require-imports": 2,
+   "typescript/no-require-imports": "error",
 
    /**
     * Disallow aliasing `this`
@@ -422,7 +443,7 @@ module.exports = {
     * Assigning `this` to a variable instead of properly using arrow lambdas
     * may be a symptom of pre-ES6 practices or not managing scope well.
     */
-   "@typescript-eslint/no-this-alias": 1,
+   "typescript/no-this-alias": "warn",
 
    /**
     * Disallow throwing literals as exceptions
@@ -432,7 +453,7 @@ module.exports = {
     * provides more benefits than throwing a literal, and there isn't a good
     * reason not to use an error object.
     */
-   "@typescript-eslint/no-throw-literal": 2,
+   "typescript/no-throw-literal": "error",
 
    /**
     * Disallow the use of type aliases
@@ -440,7 +461,7 @@ module.exports = {
     * @remarks
     * This is off because I don't think it would be useful.
     */
-   "@typescript-eslint/no-type-alias": 0,
+   "typescript/no-type-alias": "off",
 
    /**
     * Flags unnecessary equality comparisons against boolean literals
@@ -449,7 +470,7 @@ module.exports = {
     * This is turned off because I think there is value in being more
     * explicit.
     */
-   "@typescript-eslint/no-unnecessary-boolean-literal-compare": 0,
+   "typescript/no-unnecessary-boolean-literal-compare": "off",
 
    /**
     * Prevents conditionals where the type is always truthy or always falsy
@@ -488,7 +509,7 @@ module.exports = {
     * 4, which would cause `console.log(3)` to run, introducing a bug.
     * Perhaps we can revisit in the future.
     */
-   "@typescript-eslint/no-unnecessary-condition": 0,
+   "typescript/no-unnecessary-condition": "off",
 
    /**
     * Warns when a namespace qualifier is unnecessary
@@ -496,7 +517,7 @@ module.exports = {
     * @remarks
     * This is level 1 because we want to use the newer syntax when possible.
     */
-   "@typescript-eslint/no-unnecessary-qualifier": 1,
+   "typescript/no-unnecessary-qualifier": "warn",
 
    /**
     * Enforces that type arguments will not be used if not required
@@ -504,7 +525,7 @@ module.exports = {
     * @remarks
     * This is off, because I think the added verbosity may actually be useful.
     */
-   "@typescript-eslint/no-unnecessary-type-arguments": 0,
+   "typescript/no-unnecessary-type-arguments": "off",
 
    /**
     * Warns if a type assertion does not change the type of an expression
@@ -513,7 +534,7 @@ module.exports = {
     * This is important because such assertions are unnecessary and should
     * be removed.
     */
-   "@typescript-eslint/no-unnecessary-type-assertion": 2,
+   "typescript/no-unnecessary-type-assertion": "error",
 
    /**
     * Disallows unnecessary constraints on generic types
@@ -522,57 +543,64 @@ module.exports = {
     * This is level 2 because extending from `unknown` or `any` in a generic
     * type is unnecessary.
     */
-   "@typescript-eslint/no-unnecessary-type-constraint": 2,
+   "typescript/no-unnecessary-type-constraint": "error",
 
    /**
     * Disallows calling an function with an any type value
     *
     * @remarks
-    * This is off for now because we are still in transition to Typescript.
-    * We will turn it on in the future when we get closer to the end of the
-    * transition.
+    * Improves type safety. We should turn on soon.
     */
-   "@typescript-eslint/no-unsafe-argument": 0,
+   "typescript/no-unsafe-argument": "off",
 
    /**
     * Disallows assigning `any` to variables and properties
     *
     * @remarks
-    * This is off for now because we are still in transition to Typescript.
-    * We will turn it on in the future when we get closer to the end of the
-    * transition.
+    * Improves type safety. We should turn on soon.
     */
-   "@typescript-eslint/no-unsafe-assignment": 0,
+   "typescript/no-unsafe-assignment": "off",
 
    /**
     * Disallows calling an `any` type value
     *
     * @remarks
-    * This is off for now because we are still in transition to Typescript.
-    * We will turn it on in the future when we get closer to the end of the
-    * transition.
+    * Improves type safety. We should turn on soon.
     */
-   "@typescript-eslint/no-unsafe-call": 0,
+   "typescript/no-unsafe-call": "off",
+
+   /**
+    * Disallow unsafe declaration merging.
+    *
+    * @remarks
+    * Such code is confusing and buggy.
+    */
+   "typescript/no-unsafe-declaration-merging": "error",
+
+   /**
+    * Disallow comparing an enum value with a non-enum value.
+    *
+    * @remarks
+    * Such code is confusing, and Typescript is unintuitively permissive about it.
+    * However, we are not ready to implement it.
+    */
+   "typescript/no-unsafe-enum-comparison": "off",
 
    /**
     * Disallows member access on `any` typed variables
     *
     * @remarks
-    * This is off for now because we are still in transition to Typescript.
-    * We will turn it on in the future when we get closer to the end of the
-    * transition.
+    * Improves type safety. We should turn on soon.
     */
-   "@typescript-eslint/no-unsafe-member-access": 0,
+   "typescript/no-unsafe-member-access": "off",
 
    /**
     * Disallows returning any from a function
     *
     * @remarks
-    * This is off for now because we are still in transition to Typescript.
-    * We will turn it on in the future when we get closer to the end of the
-    * transition.
+    * Improves type safety. We should turn on soon.
     */
-   "@typescript-eslint/no-unsafe-return": 0,
+   "typescript/no-unsafe-return": "off",
 
    /**
     * Disallows the use of require statements except in import statements
@@ -580,7 +608,7 @@ module.exports = {
     * @remarks
     * Not applicable when `no-require-imports` is on
     */
-   "@typescript-eslint/no-var-requires": 0,
+   "typescript/no-var-requires": "off",
 
    /**
     * Prefers a non-null assertion over explicit type cast when possible
@@ -588,7 +616,7 @@ module.exports = {
     * @remarks
     * Not applicable when `no-non-null-assertion` is on
     */
-   "@typescript-eslint/non-nullable-type-assertion-style": 0,
+   "typescript/non-nullable-type-assertion-style": "off",
 
    /**
     * Prefer usage of `as const` over literal type
@@ -597,15 +625,15 @@ module.exports = {
     * I'm not convinced that the `as const` syntax is better than the
     * alternative.
     */
-   "@typescript-eslint/prefer-as-const": 0,
+   "typescript/prefer-as-const": "off",
 
    /**
     * Prefer initializing each enums member value
     *
     * @remarks
-    * This is level 0 because it is ok to not initialize enums to a value.
+    * This is level 2 to improve consistency and readability in enums.
     */
-   "@typescript-eslint/prefer-enum-initializers": 0,
+   "typescript/prefer-enum-initializers": "error",
 
    /**
     * Prefer a ‘for-of’ loop over a standard ‘for’ loop if the index is only
@@ -615,7 +643,7 @@ module.exports = {
     * This is level 1 to enforce consistency and readability. It is not level
     * 2 because for loops may be used temporarily during development.
     */
-   "@typescript-eslint/prefer-for-of": 1,
+   "typescript/prefer-for-of": "warn",
 
    /**
     * Use function types instead of interfaces with call signatures
@@ -623,7 +651,7 @@ module.exports = {
     * @remarks
     * This is level 2 to enforce consistency and readability
     */
-   "@typescript-eslint/prefer-function-type": 2,
+   "typescript/prefer-function-type": "error",
 
    /**
     * Enforce `includes` method over `indexOf` method
@@ -631,7 +659,7 @@ module.exports = {
     * @remarks
     * This is level 2 to enforce consistency and readability
     */
-   "@typescript-eslint/prefer-includes": 2,
+   "typescript/prefer-includes": "error",
 
    /**
     * Require that all enum members be literal values to prevent unintended
@@ -641,7 +669,7 @@ module.exports = {
     * This is off for now just because I am wary that it will be more trouble
     * than it is worth. We may revisit in the future.
     */
-   "@typescript-eslint/prefer-literal-enum-member": 0,
+   "typescript/prefer-literal-enum-member": "off",
 
    /**
     * Require the use of the `namespace` keyword instead of the `module` keyword
@@ -650,7 +678,7 @@ module.exports = {
     * @remarks
     * This is level 2 to prevent deprecated use of the "module" keyword.
     */
-   "@typescript-eslint/prefer-namespace-keyword": 2,
+   "typescript/prefer-namespace-keyword": "error",
 
    /**
     * Enforce the usage of the nullish coalescing operator instead of
@@ -660,7 +688,7 @@ module.exports = {
     * This makes the code more concise and prevents errors that may occur
     * when using `||` in assignments.
     */
-   "@typescript-eslint/prefer-nullish-coalescing": 2,
+   "typescript/prefer-nullish-coalescing": "error",
 
    /**
     * Prefer using concise optional chain expressions instead of chained
@@ -671,7 +699,7 @@ module.exports = {
     * documentation explicitly states "There are a few edge cases where this rule
     * will false positive."
     */
-   "@typescript-eslint/prefer-optional-chain": 1,
+   "typescript/prefer-optional-chain": "warn",
 
    /**
     * Requires that private members are marked as `readonly` if they're never
@@ -682,7 +710,7 @@ module.exports = {
     * does for variable declarations) that is valuable to future devs. It is
     * not level 2 because it may flag code during development.
     */
-   "@typescript-eslint/prefer-readonly": 1,
+   "typescript/prefer-readonly": "warn",
 
    /**
     * Requires that function parameters are typed as readonly to prevent
@@ -692,7 +720,7 @@ module.exports = {
     * This is off for now because it would require a ton of refactoring.
     * We may revisit at some point in the future.
     */
-   "@typescript-eslint/prefer-readonly-parameter-types": 0,
+   "typescript/prefer-readonly-parameter-types": "off",
 
    /**
     * Prefer using type parameter when calling `Array#reduce` instead of casting
@@ -700,7 +728,7 @@ module.exports = {
     * @remarks
     * Whenever there is an alternative to casting, we should take it.
     */
-   "@typescript-eslint/prefer-reduce-type-parameter": 2,
+   "typescript/prefer-reduce-type-parameter": "error",
 
    /**
     * Enforce that `RegExp#exec` is used instead of `String#match` if no
@@ -710,7 +738,7 @@ module.exports = {
     * As the docs say, "`RegExp#exec` is faster than `String#match` and both
     * work the same when not using the /g flag."
     */
-   "@typescript-eslint/prefer-regexp-exec": 2,
+   "typescript/prefer-regexp-exec": "error",
 
    /**
     * Enforce that `this` is used when only `this` type is returned
@@ -718,7 +746,7 @@ module.exports = {
     * @remarks
     * Helps avoid inheritance issues
     */
-   "@typescript-eslint/prefer-return-this-type": 2,
+   "typescript/prefer-return-this-type": "error",
 
    /**
     * Enforce the use of String#startsWith and String#endsWith instead of
@@ -727,7 +755,7 @@ module.exports = {
     * @remarks
     * This greatly improves readability
     */
-   "@typescript-eslint/prefer-string-starts-ends-with": 2,
+   "typescript/prefer-string-starts-ends-with": "error",
 
    /**
     * Recommends using `// @ts-expect-error` over `// @ts-ignore`
@@ -735,7 +763,7 @@ module.exports = {
     * @remarks
     * Not applicable when the `ban-ts-comment` rule is turned on.
     */
-   "@typescript-eslint/prefer-ts-expect-error": 0,
+   "typescript/prefer-ts-expect-error": "off",
 
    /**
     * Requires any function or method that returns a Promise to be marked async
@@ -747,7 +775,7 @@ module.exports = {
     * capable of either, which introduces unnecessary complexity. This is not
     * level 2 at the moment, but we may change this in the future.
     */
-   "@typescript-eslint/promise-function-async": 1,
+   "typescript/promise-function-async": "warn",
 
    /**
     * Requires `Array#sort` calls to always provide a compareFunction
@@ -755,18 +783,16 @@ module.exports = {
     * @remarks
     * This is not a priority at this time. We may revisit in the future.
     */
-   "@typescript-eslint/require-array-sort-compare": 0,
+   "typescript/require-array-sort-compare": "off",
 
    /**
     * When adding two variables, operands must both be of type number or of
     * type string
     *
     * @remarks
-    * This is off for now because we are still in transition, and untyped
-    * variables will violate this rule. We will turn on this rule in the
-    * future when we get closer to the end of the transition.
+    * Reduces bugs and improves readability. We should turn it on soon.
     */
-   "@typescript-eslint/restrict-plus-operands": 0,
+   "typescript/restrict-plus-operands": ["off"],
 
    /**
     * Enforce template literal expressions to be of string type
@@ -775,7 +801,7 @@ module.exports = {
     * This is off for now because we violate this rule in many places and
     * it is not a priority right now. We should revisit in the future.
     */
-   "@typescript-eslint/restrict-template-expressions": 0,
+   "typescript/restrict-template-expressions": "off",
 
    /**
     * Enforces that members of a type union/intersection are sorted alphabetically
@@ -783,7 +809,7 @@ module.exports = {
     * @Remarks
     * This is not a priority at this time. We may revisit in the future.
     */
-   "@typescript-eslint/sort-type-union-intersection-members": 0,
+   "typescript/sort-type-union-intersection-members": "off",
 
    /**
     * Restricts the types allowed in boolean expressions
@@ -791,7 +817,7 @@ module.exports = {
     * @remarks
     * This is not a priority right now. We may revisit in the future.
     */
-   "@typescript-eslint/strict-boolean-expressions": 0,
+   "typescript/strict-boolean-expressions": "off",
 
    /**
     * Exhaustiveness checking in switch with union type
@@ -800,7 +826,7 @@ module.exports = {
     * This will point out when a case in a switch statement is missing. Switch
     * statements should always consider all possible cases to prevent bugs.
     */
-   "@typescript-eslint/switch-exhaustiveness-check": 2,
+   "typescript/switch-exhaustiveness-check": "error",
 
    /**
     * Sets preference level for triple slash directives versus ES6-style
@@ -809,7 +835,7 @@ module.exports = {
     * @remarks
     * This prevents use of deprecated syntax and enforces consistency.
     */
-   "@typescript-eslint/triple-slash-reference": 2,
+   "typescript/triple-slash-reference": "error",
 
    /**
     * Require consistent spacing around type annotations
@@ -817,7 +843,7 @@ module.exports = {
     * @remarks
     * Prettier already takes care of this
     */
-   "@typescript-eslint/type-annotation-spacing": 0,
+   "typescript/type-annotation-spacing": "off",
 
    /**
     * Requires type annotations to exist
@@ -826,7 +852,7 @@ module.exports = {
     * This rule seems to be discouraged by the documentation, so we leave
     * it turned off.
     */
-   "@typescript-eslint/typedef": 0,
+   "typescript/typedef": "off",
 
    /**
     * Enforces unbound methods are called with their expected scope
@@ -836,7 +862,7 @@ module.exports = {
     * work as expected due to scope switching. If you want to purposefully
     * use scope switching, it probably should not be a class method.
     */
-   "@typescript-eslint/unbound-method": 2,
+   "typescript/unbound-method": "error",
 
    /**
     * Warns for any two overloads that could be unified into one by using a
@@ -846,7 +872,7 @@ module.exports = {
     * This is level 2 because code flagged by this rule should be simplified
     * for easier readability.
     */
-   "@typescript-eslint/unified-signatures": 2,
+   "typescript/unified-signatures": "error",
 
    /**
     * Disallow members of unions and intersections that do nothing or override
@@ -855,7 +881,7 @@ module.exports = {
     * @remarks
     * This is turned on because we want to keep our type declarations clear.
     */
-   "@typescript-eslint/no-redundant-type-constituents": 2,
+   "typescript/no-redundant-type-constituents": "error",
 
    /**
     * Disallow empty exports that don't change anything in a module file
@@ -863,7 +889,7 @@ module.exports = {
     * @remarks
     * This is turned on for obvious reasons
     */
-   "@typescript-eslint/no-useless-empty-export": 2,
+   "typescript/no-useless-empty-export": "error",
 
    /**
     * Disallow duplicate enum member values.
@@ -873,7 +899,7 @@ module.exports = {
     * members to have unique values within the same enum. Duplicate values
     * can lead to bugs that are hard to track down."
     */
-   "@typescript-eslint/no-duplicate-enum-values": 2,
+   "typescript/no-duplicate-enum-values": "error",
 
    /**
     * Enforce specifying generic type arguments on type annotation or
@@ -882,5 +908,5 @@ module.exports = {
     * @remarks
     * This is not a priority for us right now, but we may revisit in the future.
     */
-   "@typescript-eslint/consistent-generic-constructors": 0
+   "typescript/consistent-generic-constructors": "off"
 };
