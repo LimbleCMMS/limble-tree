@@ -74,11 +74,11 @@ export default [
       languageOptions: {
          parser: {
             ...templateParser,
-            // This added property is a hack in order to make the parser serializable.
-            // See https://github.com/eslint/eslint/pull/16944.
-            // Presumably, a new or upcoming version of the parser will include this property
-            // and we can delete this line.
-            meta: { name: "angular-eslint/template-parser", version: "14.4.0" }
+            /* This added property is a hack in order to make the parser serializable.
+             * See https://github.com/eslint/eslint/pull/16944.
+             * Presumably, an upcoming version of the parser will include this
+             * property and we will be able to delete this line. */
+            meta: { name: "angular-eslint/template-parser", version: "16.1.0" }
          }
       },
       plugins: {

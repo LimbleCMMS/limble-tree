@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
+   standalone: true,
    selector: "error-constructor",
    template: "This is a test"
 })

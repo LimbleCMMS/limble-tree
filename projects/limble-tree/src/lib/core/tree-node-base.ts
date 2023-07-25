@@ -58,10 +58,7 @@ export class TreeNodeBase<UserlandComponent>
          ? error.message
          : "Unknown error";
       throw new TreeError(`Failed to grow branch: ${message}`, {
-         // This cast to `any` is due to an issue in typescript that has been
-         // resolved at least by version 4.9.5. When we upgrade our typescript
-         // version we can remove the cast.
-         cause: error as any
+         cause: error
       });
    }
 

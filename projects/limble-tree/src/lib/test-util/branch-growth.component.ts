@@ -4,7 +4,8 @@ import { EmptyComponent } from "./empty.component";
 
 @Component({
    selector: "branch-growth",
-   template: "This is a test"
+   template: "This is a test",
+   standalone: true
 })
 export class BranchGrowthComponent implements OnInit {
    @Input() treeBranch?: TreeBranch<BranchGrowthComponent | EmptyComponent>;

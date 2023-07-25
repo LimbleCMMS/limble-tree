@@ -13,7 +13,7 @@ export const angularRules = {
     * Such code will usually result in an error, and is usually a mistake or
     * misunderstanding of the framework.
     */
-   "angular/contextual-decorator": 2,
+   "angular/contextual-decorator": "error",
 
    /**
     * Ensures that lifecycle methods are only used in the appropriate class types.
@@ -24,7 +24,7 @@ export const angularRules = {
     * Such code will usually result in an error, and is usually a mistake or
     * misunderstanding of the framework.
     */
-   "angular/contextual-lifecycle": 2,
+   "angular/contextual-lifecycle": "error",
 
    /**
     * Disallows use of `@Attribute()`
@@ -33,7 +33,7 @@ export const angularRules = {
     * This is off because I don't know why the attribute decorator is detrimental.
     * It seems useful in certain circumstances.
     */
-   "angular/no-attribute-decorator": 0,
+   "angular/no-attribute-decorator": "off",
 
    /**
     * Disallows explicit calls to lifecycle methods
@@ -43,7 +43,7 @@ export const angularRules = {
     * directly indicates that we probably need to pull some functionality out of the
     * lifecycle method and put it in a separate function.
     */
-   "angular/no-lifecycle-call": 2,
+   "angular/no-lifecycle-call": "error",
 
    /**
     * Disallows naming directive outputs as standard DOM events
@@ -53,7 +53,7 @@ export const angularRules = {
     * the native event is raised. This can cause confusion and bugs that are hard
     * to address.
     */
-   "angular/no-output-native": 2,
+   "angular/no-output-native": "error",
 
    /**
     * Disallows the declaration of impure pipes.
@@ -62,7 +62,7 @@ export const angularRules = {
     * Impure pipes should be avoided because they are invoked on each change-detection
     * cycle.
     */
-   "angular/no-pipe-impure": 2,
+   "angular/no-pipe-impure": "error",
 
    /**
     * Ensures that component change detection is set to `ChangeDetectionStrategy.OnPush`
@@ -82,7 +82,7 @@ export const angularRules = {
     * This is a *really* good rule, but I don't think we are ready to implement it yet.
     * Definitely revisit in the future.
     */
-   "angular/prefer-on-push-component-change-detection": 0,
+   "angular/prefer-on-push-component-change-detection": "off",
 
    /**
     * Ensures classes implement lifecycle interfaces corresponding to the declared
@@ -91,7 +91,7 @@ export const angularRules = {
     * @remarks
     * See https://angular.io/styleguide#style-09-01
     */
-   "angular/use-lifecycle-interface": 2,
+   "angular/use-lifecycle-interface": "error",
 
    /**
     * Disallows having too many lines in inline template and styles.
@@ -117,7 +117,7 @@ export const angularRules = {
     * misunderstanding something? I'll leave it turned off for now and revisit in
     * the future.
     */
-   "angular/no-conflicting-lifecycle": 0,
+   "angular/no-conflicting-lifecycle": "off",
 
    /**
     * Disallows usage of forwardRef references for DI
@@ -129,7 +129,7 @@ export const angularRules = {
     * This is turned off for now because we don't follow it and it requires some
     * refactoring. Revisit in the future.
     */
-   "angular/no-forward-ref": 0,
+   "angular/no-forward-ref": "off",
 
    /**
     * Input names should not be prefixed by the configured disallowed prefixes.
@@ -138,7 +138,7 @@ export const angularRules = {
     * The idea here is that "enabled" is preferred over "isEnabled" for input names.
     * But I don't think this is a priority.
     */
-   "angular/no-input-prefix": 0,
+   "angular/no-input-prefix": "off",
 
    /**
     * Disallows renaming directive inputs by providing a string to the decorator.
@@ -147,7 +147,7 @@ export const angularRules = {
     * Two names for the same property (one private, one public) is inherently
     * confusing and should be avoided.
     */
-   "angular/no-input-rename": 2,
+   "angular/no-input-rename": "error",
 
    /**
     * Name events without the prefix `on`
@@ -158,7 +158,7 @@ export const angularRules = {
     *
     * See https://angular.io/guide/styleguide#dont-prefix-output-properties
     */
-   "angular/no-output-on-prefix": 2,
+   "angular/no-output-on-prefix": "error",
 
    /**
     * Disallows renaming directive outputs by providing a string to the decorator.
@@ -169,7 +169,7 @@ export const angularRules = {
     *
     * See https://angular.io/styleguide#style-05-13
     */
-   "angular/no-output-rename": 2,
+   "angular/no-output-rename": "error",
 
    /**
     * Ensures @Output is declared as a readonly
@@ -177,7 +177,7 @@ export const angularRules = {
     * @remarks
     * Outputs are not supposed to be reassigned
     */
-   "angular/prefer-output-readonly": 2,
+   "angular/prefer-output-readonly": "error",
 
    /**
     * The ./ prefix is standard syntax for relative URLs
@@ -186,7 +186,7 @@ export const angularRules = {
     * Don’t depend on Angular's current ability to do without that prefix.
     * See https://angular.io/styleguide#style-05-04
     */
-   "angular/relative-url-prefix": 2,
+   "angular/relative-url-prefix": "error",
 
    /**
     * Component selector must be declared
@@ -195,7 +195,7 @@ export const angularRules = {
     * Explicitly declaring a selector precludes the need to know what the
     * implicit selector would be.
     */
-   "angular/use-component-selector": 1,
+   "angular/use-component-selector": "warn",
 
    /**
     * Disallows using ViewEncapsulation.None
@@ -204,7 +204,7 @@ export const angularRules = {
     * We always want to use ViewEncapsulation so we can keep the
     * styles modular and contained.
     */
-   "angular/use-component-view-encapsulation": 2,
+   "angular/use-component-view-encapsulation": "error",
 
    /**
     * Ensures that classes decorated with `@Pipe()` implement
@@ -213,7 +213,7 @@ export const angularRules = {
     * @remarks
     * This should be done for type safety.
     */
-   "angular/use-pipe-transform-interface": 2,
+   "angular/use-pipe-transform-interface": "error",
 
    /**
     * Ensures that services use the `providedIn` syntax recommended by Angular.
@@ -227,7 +227,7 @@ export const angularRules = {
     * We should definitely implement this, and it wouldn't be very hard, but it
     * isn't a priority right now.
     */
-   "angular/use-injectable-provided-in": 0,
+   "angular/use-injectable-provided-in": "off",
 
    /**
     * Ensures that $localize tagged messages contain helpful metadata to aid
@@ -236,7 +236,7 @@ export const angularRules = {
     * @remarks
     * I don't think this is applicable to us right now
     */
-   "angular/require-localize-metadata": 0,
+   "angular/require-localize-metadata": "off",
 
    /**
     * Classes decorated with @Component must have suffix “Component”
@@ -247,7 +247,7 @@ export const angularRules = {
     * https://angular.io/styleguide#style-02-03. We will leave it
     * off for now, but we should revisit in the future.
     */
-   "angular/component-class-suffix": 0,
+   "angular/component-class-suffix": "off",
 
    /**
     * Enforces certain characteristics in component selectors.
@@ -269,7 +269,7 @@ export const angularRules = {
     * https://angular.io/styleguide#style-02-03. We will leave it
     * off for now, but we should revisit in the future.
     */
-   "angular/directive-class-suffix": 0,
+   "angular/directive-class-suffix": "off",
 
    /**
     * Enforces certain characteristics in directive selectors.
@@ -288,7 +288,7 @@ export const angularRules = {
     * Angular encourages use of @HostBinding() and @HostListener() instead.
     * See https://angular.io/styleguide#style-06-03
     */
-   "angular/no-host-metadata-property": 2,
+   "angular/no-host-metadata-property": "error",
 
    /**
     * Disallows usage of the inputs metadata property
@@ -297,7 +297,7 @@ export const angularRules = {
     * Angular encourages use of @Input() instead. See
     * https://angular.io/styleguide#style-05-12
     */
-   "angular/no-inputs-metadata-property": 2,
+   "angular/no-inputs-metadata-property": "error",
 
    /**
     * Disallows usage of the outputs metadata property
@@ -306,7 +306,7 @@ export const angularRules = {
     * Angular encourages use of @Output() instead. See
     * https://angular.io/styleguide#style-05-12
     */
-   "angular/no-outputs-metadata-property": 2,
+   "angular/no-outputs-metadata-property": "error",
 
    /**
     * Disallows usage of the queries metadata property
@@ -315,7 +315,7 @@ export const angularRules = {
     * I'm not familiar with this property so I will leave this
     * rule off for now. Revisit in the future.
     */
-   "angular/no-queries-metadata-property": 0,
+   "angular/no-queries-metadata-property": "off",
 
    /**
     * Enforce consistent prefix for pipes
@@ -323,7 +323,7 @@ export const angularRules = {
     * @remarks
     * Not a priority right now. Revisit in the future.
     */
-   "angular/pipe-prefix": 0,
+   "angular/pipe-prefix": "off",
 
    /**
     * Enforces sorting of values within NgModule metadata arrays
@@ -331,5 +331,13 @@ export const angularRules = {
     * @remarks
     * Not a priority right now. Revisit in the future.
     */
-   "angular/sort-ngmodule-metadata-arrays": 0
+   "angular/sort-ngmodule-metadata-arrays": "off",
+
+   /**
+    * Ensures component `standalone` property is set to `true` in the component decorator
+    *
+    * @remarks
+    * Standalone components are newer and better.
+    */
+   "angular/prefer-standalone-component": "error"
 };

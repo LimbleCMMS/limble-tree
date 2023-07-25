@@ -16,8 +16,8 @@ class DragAndDrop {
       treeBranch.dispatch(new DragStartEvent(treeBranch));
       this.setDragEffects(treeBranch, event);
       this.watchForDragend(treeBranch, event);
-      // We have to do a setTimeout because DOM changes are not allowed during a
-      // dragstart event.
+      /* We have to do a setTimeout because DOM changes are not allowed during a
+       * dragstart event. */
       setTimeout(() => {
          dragState.starting(treeBranch);
          treeBranch.prune();
@@ -66,7 +66,7 @@ class DragAndDrop {
          "dragend",
          (dragend) => {
             if (dragState.state() !== DragStates.Dropped) {
-               //The drag ended but a drop never occurred, so put the dragged branch back where it started.
+               // The drag ended but a drop never occurred, so put the dragged branch back where it started.
                this.dragAborted$.next(dragend as DragEvent);
                this.graftDraggedBranch(treeBranch, oldParent, oldIndex);
             }
