@@ -257,5 +257,21 @@ export const angularTemplateRules = {
     * @remarks
     * Self-closing tags are more concise.
     */
-   "template/prefer-self-closing-tags": "warn"
+   "template/prefer-self-closing-tags": "warn",
+
+   /**
+    * Ensures ngSrc is used instead of src for img elements
+    *
+    * @remarks
+    * This would probably be a really good rule to turn on. Revisit in the future.
+    */
+   "template/prefer-ngsrc": "off",
+
+   /**
+    * Ensures that the template control flow syntax introduced in Angular 17 is used.
+    *
+    * @remarks
+    * DEREK TODO: Turn this on as part of the Angular migration.
+    */
+   "template/prefer-control-flow": "off"
 };

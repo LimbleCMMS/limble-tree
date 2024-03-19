@@ -45,14 +45,14 @@ export class LimbleTreeRootComponent
       this.legacyTree = new LegacyTree();
    }
 
-   public ngAfterViewInit(): void {
-      this.update();
-   }
-
    public ngOnChanges(): void {
       if (this.host !== undefined && this.data !== undefined) {
          this.update();
       }
+   }
+
+   public ngAfterViewInit(): void {
+      this.update();
    }
 
    public ngOnDestroy(): void {

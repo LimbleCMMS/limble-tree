@@ -44,5 +44,6 @@
    "eslint.options": {
       "extensions": [".js", ".ts", ".html"]
    },
-   "eslint.validate": ["javascript", "typescript", "html"]
+   "eslint.validate": ["javascript", "typescript", "html"],
+   "typescript.preferences.preferTypeOnlyAutoImports": true
 }

@@ -163,7 +163,7 @@ export class TreeRoot<UserlandComponent>
       try {
          return new TreeBranch(this, { component, ...options });
       } catch (error) {
-         this.handleUserlandError(error);
+         throw this.handleUserlandError(error);
       }
    }
 
@@ -220,12 +220,12 @@ export class TreeRoot<UserlandComponent>
       this.treeNodeBase.traverse(callback);
    }
 
-   private handleUserlandError(error: unknown): never {
+   private handleUserlandError(error: unknown): TreeError {
       /* When an error occurs in a userland component during a tree operation,
        * it can cause undefined, bizarre behavior in the tree. To prevent this,
        * we destroy the tree and throw an error instead. This helps protect
        * the end-user's data from corruption. */
       this.destroy();
-      this.treeNodeBase.handleUserlandError(error);
+      return this.treeNodeBase.handleUserlandError(error);
    }
 }

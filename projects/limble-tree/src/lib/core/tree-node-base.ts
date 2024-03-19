@@ -53,11 +53,11 @@ export class TreeNodeBase<UserlandComponent>
       return this._branches[index];
    }
 
-   public handleUserlandError(error: unknown): never {
+   public handleUserlandError(error: unknown): TreeError {
       const message = hasProperty(error, "message")
          ? error.message
          : "Unknown error";
-      throw new TreeError(`Failed to grow branch: ${message}`, {
+      return new TreeError(`Failed to grow branch: ${message}`, {
          cause: error
       });
    }

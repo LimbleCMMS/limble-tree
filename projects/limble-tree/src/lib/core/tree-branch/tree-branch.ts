@@ -262,7 +262,7 @@ export class TreeBranch<UserlandComponent>
       try {
          return new TreeBranch(this, { component, ...options });
       } catch (error: unknown) {
-         this.handleUserlandError(error);
+         throw this.handleUserlandError(error);
       }
    }
 
@@ -397,7 +397,7 @@ export class TreeBranch<UserlandComponent>
       }
       const parent = this._parent;
       const index = this.index();
-      if (index === undefined || parent === undefined) return;
+      if (index === undefined || parent === undefined) return undefined;
       const container = parent.getBranchesContainer();
       assert(container !== undefined);
       this.detachedView = container.detach(index);
@@ -471,13 +471,13 @@ export class TreeBranch<UserlandComponent>
       });
    }
 
-   private handleUserlandError(error: unknown): never {
+   private handleUserlandError(error: unknown): Error {
       /* When an error occurs in a userland component during a tree operation,
        * it can cause undefined, bizarre behavior in the tree. To prevent this,
        * we destroy the tree and throw an error instead. This helps protect
        * the end-user's data from corruption. */
       this.furthestAncestor().destroy();
-      this.treeNodeBase.handleUserlandError(error);
+      return this.treeNodeBase.handleUserlandError(error);
    }
 
    private indexIsOutOfRange(

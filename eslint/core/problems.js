@@ -315,15 +315,6 @@ export const problemRules = {
    "no-new-native-nonconstructor": "error",
 
    /**
-    * Disallow `new` operators with the `Symbol` object
-    *
-    * @remarks
-    * This is level 0 because it is already covered by the
-    * "no-new-native-constructor" rule.
-    */
-   "no-new-symbol": "error",
-
-   /**
     * Disallow calling global object properties as functions
     *
     * @remarks

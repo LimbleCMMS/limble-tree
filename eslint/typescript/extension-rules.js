@@ -10,28 +10,15 @@
 
 export const extensionRulesForTypescript = {
    /**
-    * Enforce consistent brace style for blocks
+    * Enforce that class methods utilize `this`.
     *
     * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/brace-style": "off",
-
-   /**
-    * Require or disallow trailing commas
+    * Methods that don't use `this` likely should not be methods. Such functions
+    * should be moved outside of the class to improve code cohesion and decoupling.
     *
-    * @remarks
-    * This is level 0 because Prettier already takes care of it.
+    * We should turn this rule on in the future. It will require some refactoring.
     */
-   "typescript/comma-dangle": "off",
-
-   /**
-    * Enforces consistent spacing before and after commas
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/comma-spacing": "off",
+   "typescript/class-methods-use-this": "off",
 
    /**
     * Enforce or disallow the use of the record type
@@ -42,6 +29,14 @@ export const extensionRulesForTypescript = {
     * future.
     */
    "typescript/consistent-indexed-object-style": "off",
+
+   /**
+    * Require return statements to either always or never specify values.
+    *
+    * @remarks
+    * This is level one to help improve consistency and readability.
+    */
+   "typescript/consistent-return": "warn",
 
    /**
     * Enforce default parameters to be last
@@ -62,62 +57,12 @@ export const extensionRulesForTypescript = {
    "typescript/dot-notation": "off",
 
    /**
-    * Require or disallow spacing between function identifiers and
-    * their invocations
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/func-call-spacing": "off",
-
-   /**
-    * Enforce consistent indentation
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/indent": "off",
-
-   /**
     * Require or disallow initialization in variable declarations
     *
     * @remarks
     * This is turned off because I don' believe it would be useful.
     */
    "typescript/init-declarations": "off",
-
-   /**
-    * Enforce consistent spacing between property names and type annotations
-    * in types and interfaces.
-    *
-    * @remarks
-    * Already handled by Prettier.
-    */
-   "typescript/key-spacing": "off",
-
-   /**
-    * Enforce consistent spacing before and after keywords
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/keyword-spacing": "off",
-
-   /**
-    * Require empty lines around comments.
-    *
-    * @remarks
-    * Not useful.
-    */
-   "typescript/lines-around-comment": "off",
-
-   /**
-    * Require or disallow an empty line between class members
-    *
-    * @remarks
-    * Not configurable enough for my liking.
-    */
-   "typescript/lines-between-class-members": "off",
 
    /**
     * Disallow generic `Array` constructors
@@ -138,14 +83,6 @@ export const extensionRulesForTypescript = {
    "typescript/no-dupe-class-members": "error",
 
    /**
-    * Disallow duplicate module imports
-    *
-    * @remarks
-    * This is level 2 to enforce consistency and readability
-    */
-   "typescript/no-duplicate-imports": "error",
-
-   /**
     * Disallow empty functions
     *
     * @remarks
@@ -157,22 +94,6 @@ export const extensionRulesForTypescript = {
     * around for a while.
     */
    "typescript/no-empty-function": "warn",
-
-   /**
-    * Disallow unnecessary parentheses
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/no-extra-parens": "off",
-
-   /**
-    * Disallow unnecessary semicolons
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/no-extra-semi": "off",
 
    /**
     * Disallow `this` keywords outside of classes or class-like objects
@@ -227,6 +148,16 @@ export const extensionRulesForTypescript = {
    "typescript/no-shadow": "error",
 
    /**
+    * Disallow throwing literals as exceptions
+    *
+    * @remarks
+    * In addition to consistency and readability, throwing an error object
+    * provides more benefits than throwing a literal, and there isn't a good
+    * reason not to use an error object.
+    */
+   "typescript/no-throw-literal": "error",
+
+   /**
     * Disallow unused expressions
     *
     * @remarks
@@ -278,28 +209,23 @@ export const extensionRulesForTypescript = {
    "typescript/no-useless-constructor": "error",
 
    /**
-    * Enforce consistent spacing inside braces
+    * Require destructuring from arrays and/or objects.
     *
     * @remarks
-    * Prettier already takes care of this.
+    * This is level 0 because we want the engineer to be able to choose.
     */
-   "typescript/object-curly-spacing": "off",
+   "typescript/prefer-destructuring": "off",
 
    /**
-    * Require or disallow padding lines between statements
+    * Require using Error objects as Promise rejection reasons.
     *
     * @remarks
-    * This is off because Prettier already handles it.
+    * In addition to consistency and readability, rejecting with an error object
+    * provides more benefits than rejecting with a literal, and there isn't a good
+    * reason not to use an error object. This rule should
+    * match the `no-throw-literal` rule.
     */
-   "typescript/padding-line-between-statements": "off",
-
-   /**
-    * Enforce the consistent use of either backticks, double, or single quotes
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/quotes": "off",
+   "typescript/prefer-promise-reject-errors": "error",
 
    /**
     * Disallow async functions which have no await expression and do not
@@ -327,37 +253,5 @@ export const extensionRulesForTypescript = {
     * inefficient and complex, and may indicate a lack of understanding
     * about how async functions work.
     */
-   "typescript/return-await": "error",
-
-   /**
-    * Require or disallow semicolons instead of ASI
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/semi": "off",
-
-   /**
-    * Enforces consistent spacing before function parenthesis
-    *
-    * @remarks
-    * Prettier already takes care of this.
-    */
-   "typescript/space-before-function-paren": "off",
-
-   /**
-    * This rule is aimed at ensuring there are spaces around infix operators
-    *
-    * @remarks
-    * This is level 0 because Prettier already takes care of it.
-    */
-   "typescript/space-infix-ops": "off",
-
-   /**
-    * Enforce consistent spacing before blocks.
-    *
-    * @remarks
-    * This rule is level 0 because Prettier should already take care of it.
-    */
-   "typescript/space-before-blocks": "off"
+   "typescript/return-await": "error"
 };
