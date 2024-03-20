@@ -334,10 +334,38 @@ export const angularRules = {
    "angular/sort-ngmodule-metadata-arrays": "off",
 
    /**
-    * Ensures component `standalone` property is set to `true` in the component decorator
+    * Ensures `standalone` property is set to `true` for Component, Pipe,
+    * and Directive decorators.
     *
     * @remarks
-    * Standalone components are newer and better.
+    * Standalone is newer and better.
     */
-   "angular/prefer-standalone-component": "error"
+   "angular/prefer-standalone": "error",
+
+   /**
+    * Ensures that lifecycle methods are declared in order of execution
+    *
+    * @remarks
+    * Turned on to help enforce consistency and readability.
+    */
+   "angular/sort-lifecycle-methods": "warn",
+
+   /**
+    * Forbids async lifecycle hook methods.
+    *
+    * @remarks
+    * Lifecycle hook methods can be async, but this is misleading: Angular does NOT
+    * wait for the async operation to complete before continuing the lifecycle. Making
+    * them async often causes race conditions and subtle bugs.
+    */
+   "angular/no-async-lifecycle-method": "error",
+
+   /**
+    * Ensures consistent usage of styles/styleUrls/styleUrl within Component metadata
+    *
+    * @remarks
+    * This is off for now because it isn't a priority, but I would like to
+    * revisit in the future.
+    */
+   "angular/consistent-component-styles": "off"
 };

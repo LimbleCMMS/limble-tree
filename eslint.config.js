@@ -1,22 +1,21 @@
 import { commentDirectiveRules } from "./eslint/comment-directives/comment-directives.js";
-import { layoutRules } from "./eslint/core/layout.js";
 import { problemRules } from "./eslint/core/problems.js";
 import { suggestionRules } from "./eslint/core/suggestions.js";
 import { extensionRulesForTypescript } from "./eslint/typescript/extension-rules.js";
 import { typescriptRules } from "./eslint/typescript/typescript-rules.js";
-import * as typescriptParser from "@typescript-eslint/parser";
-import * as typescriptPlugin from "@typescript-eslint/eslint-plugin";
+import tseslint from "typescript-eslint";
 import commentDirectivesPlugin from "eslint-plugin-eslint-comments";
 import { angularTemplateRules } from "./eslint/angular/angular-eslint_template.js";
 import * as templateParser from "@angular-eslint/template-parser";
 import templatePlugin from "@angular-eslint/eslint-plugin-template";
 import angularPlugin from "@angular-eslint/eslint-plugin";
 import { angularRules as ngRules } from "./eslint/angular/angular-eslint.js";
+import importPlugin from "eslint-plugin-import";
+import { importRules } from "./eslint/imports/imports.js";
 
 const jsRules = {
    ...problemRules,
-   ...suggestionRules,
-   ...layoutRules
+   ...suggestionRules
 };
 
 const tsRules = {
@@ -43,30 +42,42 @@ export default [
    {
       files: ["**/*.ts"],
       languageOptions: {
-         parser: typescriptParser,
+         parser: tseslint.parser,
          parserOptions: {
             ecmaVersion: "latest",
             project: ["tsconfig.eslint.json"]
          }
       },
       plugins: {
-         typescript: typescriptPlugin,
+         typescript: tseslint.plugin,
          directives: commentDirectivesPlugin,
-         angular: angularPlugin
+         angular: angularPlugin,
+         import: importPlugin
+      },
+      settings: {
+         "import/parser": {
+            "@typescript-eslint/parser": [".ts", ".tsx"]
+         },
+         "import/resolver": {
+            typescript: true
+         }
       },
       rules: {
          ...jsRules,
          ...tsRules,
-         ...ngRules
+         ...ngRules,
+         ...importRules
       }
    },
    {
       files: ["**/*.js"],
       plugins: {
-         directives: commentDirectivesPlugin
+         directives: commentDirectivesPlugin,
+         import: importPlugin
       },
       rules: {
-         ...jsRules
+         ...jsRules,
+         ...importRules
       }
    },
    {
@@ -78,7 +89,7 @@ export default [
              * See https://github.com/eslint/eslint/pull/16944.
              * Presumably, an upcoming version of the parser will include this
              * property and we will be able to delete this line. */
-            meta: { name: "angular-eslint/template-parser", version: "16.1.0" }
+            meta: { name: "angular-eslint/template-parser", version: "17.3.0" }
          }
       },
       plugins: {

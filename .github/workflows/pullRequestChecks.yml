@@ -9,12 +9,12 @@ jobs:
          - name: Install Node
            uses: actions/setup-node@v3
            with:
-              node-version: "16"
+              node-version: "18"
               cache: "npm"
          - name: Install Modules
            run: npm ci
          - name: Run ESLint
-           run: npm run lint:strict
+           run: npm run lint:check
 
    format:
       runs-on: ubuntu-22.04
@@ -24,7 +24,7 @@ jobs:
          - name: Install Node
            uses: actions/setup-node@v3
            with:
-              node-version: "16"
+              node-version: "18"
               cache: "npm"
          - name: Install Modules
            run: npm ci
@@ -39,7 +39,7 @@ jobs:
          - name: Install Node
            uses: actions/setup-node@v3
            with:
-              node-version: "16"
+              node-version: "18"
               cache: "npm"
          - name: Install Modules
            run: npm ci

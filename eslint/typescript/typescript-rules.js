@@ -72,6 +72,15 @@ export const typescriptRules = {
    "typescript/class-literal-property-style": "off",
 
    /**
+    * Enforce specifying generic type arguments on type annotation or
+    * constructor name of a constructor call.
+    *
+    * @remarks
+    * This is not a priority for us right now, but we may revisit in the future.
+    */
+   "typescript/consistent-generic-constructors": "off",
+
+   /**
     * Enforces consistent usage of type assertions
     *
     * @remarks
@@ -156,15 +165,6 @@ export const typescriptRules = {
    "typescript/explicit-module-boundary-types": "off",
 
    /**
-    * Require a specific member delimiter style for interfaces and type
-    * literals
-    *
-    * @remarks
-    * This is off because prettier takes care of it already.
-    */
-   "typescript/member-delimiter-style": "off",
-
-   /**
     * Require a consistent member declaration order
     *
     * @remarks
@@ -199,6 +199,17 @@ export const typescriptRules = {
    "typescript/naming-convention": "off",
 
    /**
+    * Disallow using the `delete` operator on array values.
+    *
+    * @remarks
+    * When using the delete operator with an array value, the array's length
+    * property is not affected, but the element at the specified index is removed
+    * and leaves an empty slot in the array. This is likely to lead to unexpected
+    * behavior.
+    */
+   "typescript/no-array-delete": "error",
+
+   /**
     * Requires that `.toString()` is only called on objects which
     * provide useful information when stringified
     *
@@ -222,6 +233,16 @@ export const typescriptRules = {
     * This is level 2 because it helps avoid ambiguities around the `void` type
     */
    "typescript/no-confusing-void-expression": "error",
+
+   /**
+    * Disallow duplicate enum member values.
+    *
+    * @remarks
+    * This is level 2 because, as the docs state, "people usually expect
+    * members to have unique values within the same enum. Duplicate values
+    * can lead to bugs that are hard to track down."
+    */
+   "typescript/no-duplicate-enum-values": "error",
 
    /**
     * Disallow duplicate constituents of union or intersection types.
@@ -309,14 +330,6 @@ export const typescriptRules = {
     * Helps improve tree shaking at typescript transpile time
     */
    "typescript/no-import-type-side-effects": "error",
-
-   /**
-    * Disallow usage of the implicit any type in catch clauses
-    *
-    * @remarks
-    * Improves type safety, but not a priority right now.
-    */
-   "typescript/no-implicit-any-catch": "off",
 
    /**
     * Disallow the use of `eval()`-like methods
@@ -446,22 +459,13 @@ export const typescriptRules = {
    "typescript/no-this-alias": "warn",
 
    /**
-    * Disallow throwing literals as exceptions
+    * Disallow members of unions and intersections that do nothing or override
+    * type information
     *
     * @remarks
-    * In addition to consistency and readability, throwing an error object
-    * provides more benefits than throwing a literal, and there isn't a good
-    * reason not to use an error object.
+    * This is turned on because we want to keep our type declarations clear.
     */
-   "typescript/no-throw-literal": "error",
-
-   /**
-    * Disallow the use of type aliases
-    *
-    * @remarks
-    * This is off because I don't think it would be useful.
-    */
-   "typescript/no-type-alias": "off",
+   "typescript/no-redundant-type-constituents": "error",
 
    /**
     * Flags unnecessary equality comparisons against boolean literals
@@ -603,6 +607,22 @@ export const typescriptRules = {
    "typescript/no-unsafe-return": "off",
 
    /**
+    * Require unary negation to take a number.
+    *
+    * @remarks
+    * This is level 2 to enforce correctness and prevent errors.
+    */
+   "typescript/no-unsafe-unary-minus": "error",
+
+   /**
+    * Disallow empty exports that don't change anything in a module file
+    *
+    * @remarks
+    * This is turned on for obvious reasons
+    */
+   "typescript/no-useless-empty-export": "error",
+
+   /**
     * Disallows the use of require statements except in import statements
     *
     * @remarks
@@ -634,6 +654,15 @@ export const typescriptRules = {
     * This is level 2 to improve consistency and readability in enums.
     */
    "typescript/prefer-enum-initializers": "error",
+
+   /**
+    * Enforce the use of Array.prototype.find() over Array.prototype.filter()
+    * followed by [0] when looking for a single result.
+    *
+    * @remarks
+    * Level 2 for readability and performance
+    */
+   "typescript/prefer-find": "error",
 
    /**
     * Prefer a ‘for-of’ loop over a standard ‘for’ loop if the index is only
@@ -838,14 +867,6 @@ export const typescriptRules = {
    "typescript/triple-slash-reference": "error",
 
    /**
-    * Require consistent spacing around type annotations
-    *
-    * @remarks
-    * Prettier already takes care of this
-    */
-   "typescript/type-annotation-spacing": "off",
-
-   /**
     * Requires type annotations to exist
     *
     * @remarks
@@ -872,41 +893,5 @@ export const typescriptRules = {
     * This is level 2 because code flagged by this rule should be simplified
     * for easier readability.
     */
-   "typescript/unified-signatures": "error",
-
-   /**
-    * Disallow members of unions and intersections that do nothing or override
-    * type information
-    *
-    * @remarks
-    * This is turned on because we want to keep our type declarations clear.
-    */
-   "typescript/no-redundant-type-constituents": "error",
-
-   /**
-    * Disallow empty exports that don't change anything in a module file
-    *
-    * @remarks
-    * This is turned on for obvious reasons
-    */
-   "typescript/no-useless-empty-export": "error",
-
-   /**
-    * Disallow duplicate enum member values.
-    *
-    * @remarks
-    * This is level 2 because, as the docs state, "people usually expect
-    * members to have unique values within the same enum. Duplicate values
-    * can lead to bugs that are hard to track down."
-    */
-   "typescript/no-duplicate-enum-values": "error",
-
-   /**
-    * Enforce specifying generic type arguments on type annotation or
-    * constructor name of a constructor call.
-    *
-    * @remarks
-    * This is not a priority for us right now, but we may revisit in the future.
-    */
-   "typescript/consistent-generic-constructors": "off"
+   "typescript/unified-signatures": "error"
 };

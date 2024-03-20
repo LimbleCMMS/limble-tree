@@ -49,10 +49,7 @@ export const suggestionRules = {
     * Enforce that class methods utilize `this`
     *
     * @remarks
-    * Methods that don't use `this` likely should not be methods. Such functions
-    * should be moved outside of the class to improve code cohesion and decoupling.
-    *
-    * We should turn this rule on in the future. It will require some refactoring.
+    * This rule is off because there is a typescript rule that overrides it.
     */
    "class-methods-use-this": "off",
 
@@ -72,11 +69,7 @@ export const suggestionRules = {
     * Require `return` statements to either always or never specify values
     *
     * @remarks
-    * This is set to level 0 because typescript will already help ensure
-    * consistent return types, and this rule is not always smart enough
-    * to know that what appears inconsistent is actually fine: Eg, a function
-    * that has some empty return statements as well as a statement that
-    * returns a function call which returns `void`.
+    * There is a typescript rule that overrides this
     */
    "consistent-return": "off",
 
@@ -368,15 +361,6 @@ export const suggestionRules = {
    "no-case-declarations": "error",
 
    /**
-    * Disallow arrow functions where they could be confused with comparisons
-    *
-    * @remarks
-    * This rule is turned off because it seems like it could be more trouble
-    * than it is worth. Also, Prettier sometimes conflicts with this rule.
-    */
-   "no-confusing-arrow": "off",
-
-   /**
     * Disallow the use of `console`
     *
     * @remarks
@@ -512,24 +496,6 @@ export const suggestionRules = {
    "no-extra-label": "off",
 
    /**
-    * Disallow unnecessary semicolons
-    *
-    * @remarks
-    * This is level 0 because there is a typescript extension rule which
-    * overrides it.
-    */
-   "no-extra-semi": "off",
-
-   /**
-    * Disallow leading or trailing decimal points in numeric literals
-    *
-    * @remarks
-    * This is level 1 to enforce consistency and readability
-    * (does prettier already take care of this?)
-    */
-   "no-floating-decimal": "warn",
-
-   /**
     * Disallow assignments to native objects or read-only global
     * variables
     *
@@ -650,14 +616,6 @@ export const suggestionRules = {
    "no-magic-numbers": "off",
 
    /**
-    * Disallow mixed binary operators
-    *
-    * @remarks
-    * This is level 0 because Prettier already takes care of it.
-    */
-   "no-mixed-operators": "off",
-
-   /**
     * Disallow use of chained assignment expressions
     *
     * @remarks
@@ -711,14 +669,6 @@ export const suggestionRules = {
    "no-new-func": "error",
 
    /**
-    * Disallow `Object` constructors
-    *
-    * @remarks
-    * This is level 2 because it enforces consistency and readability
-    */
-   "no-new-object": "error",
-
-   /**
     * Disallow `new` operators with the `String`, `Number`, and `Boolean`
     * objects
     *
@@ -738,6 +688,14 @@ export const suggestionRules = {
     * and may not be supported in the future.
     */
    "no-nonoctal-decimal-escape": "error",
+
+   /**
+    * Disallow calls to the Object constructor without an argument
+    *
+    * @remarks
+    * This is level 2 to enforce consistency and readability.
+    */
+   "no-object-constructor": "error",
 
    /**
     * Disallow octal literals
@@ -867,15 +825,6 @@ export const suggestionRules = {
     * and it may be a mistake/bug.
     */
    "no-return-assign": "error",
-
-   /**
-    * Disallow unnecessary `return await`
-    *
-    * @remarks
-    * This is level 0 because there is a typescript extension rule which
-    * overrides it.
-    */
-   "no-return-await": "off",
 
    /**
     * Disallow `javascript:` urls
@@ -1122,14 +1071,6 @@ export const suggestionRules = {
    "one-var": 0,
 
    /**
-    * Require or disallow newlines around variable declarations
-    *
-    * @remarks
-    * Prettier should already take care of this.
-    */
-   "one-var-declaration-per-line": "off",
-
-   /**
     * Require or disallow assignment operator shorthand where possible
     *
     * @remarks
@@ -1161,9 +1102,7 @@ export const suggestionRules = {
     * Require destructuring from arrays and/or objects
     *
     * @remarks
-    * I don't see any benefit to enforcing this rule. Destructuring can be
-    * cleaner in some situations, but usually I think normal access and
-    * assignment are cleaner.
+    * This is off because there is a typescript extension rule which overrides it.
     */
    "prefer-destructuring": "off",
 
@@ -1218,12 +1157,9 @@ export const suggestionRules = {
     * Require using Error objects as Promise rejection reasons
     *
     * @remarks
-    * In addition to consistency and readability, rejecting with an error object
-    * provides more benefits than rejecting with a literal, and there isn't a good
-    * reason not to use an error object. This rule should
-    * match the `no-throw-literal` rule. Revisit in the future.
+    * There is a typescript rule that overrides it.
     */
-   "prefer-promise-reject-errors": "error",
+   "prefer-promise-reject-errors": "off",
 
    /**
     * Disallow use of the `RegExp` constructor in favor of regular expression
@@ -1260,14 +1196,6 @@ export const suggestionRules = {
     * This is set to level 2 to enforce consistency and readability.
     */
    "prefer-template": "error",
-
-   /**
-    * Require quotes around object literal property names
-    *
-    * @remarks
-    * This is level 0 because Prettier already takes care of it.
-    */
-   "quote-props": "off",
 
    /**
     * Enforce the consistent use of the radix argument when using `parseInt()`
