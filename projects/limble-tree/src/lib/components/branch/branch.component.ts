@@ -1,4 +1,3 @@
-import { CommonModule } from "@angular/common";
 import {
    type AfterViewInit,
    ApplicationRef,
@@ -27,7 +26,7 @@ import { assert } from "../../../shared";
    selector: "branch",
    templateUrl: "./branch.component.html",
    styleUrls: ["./branch.component.scss"],
-   imports: [CommonModule, DropzoneComponent, DragoverNoChangeDetectDirective]
+   imports: [DropzoneComponent, DragoverNoChangeDetectDirective]
 })
 export class BranchComponent<T>
    implements NodeComponent, HostComponent<T>, AfterViewInit, OnDestroy

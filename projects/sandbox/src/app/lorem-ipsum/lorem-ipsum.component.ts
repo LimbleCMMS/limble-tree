@@ -14,6 +14,6 @@ export class LoremIpsumComponent {
 
    public constructor() {
       const random = Math.floor(Math.random() * 50);
-      this.text = `${loremIpsum[random]}`;
+      this.text = loremIpsum[random];
    }
 }

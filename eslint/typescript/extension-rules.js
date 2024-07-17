@@ -148,16 +148,6 @@ export const extensionRulesForTypescript = {
    "typescript/no-shadow": "error",
 
    /**
-    * Disallow throwing literals as exceptions
-    *
-    * @remarks
-    * In addition to consistency and readability, throwing an error object
-    * provides more benefits than throwing a literal, and there isn't a good
-    * reason not to use an error object.
-    */
-   "typescript/no-throw-literal": "error",
-
-   /**
     * Disallow unused expressions
     *
     * @remarks
@@ -209,6 +199,15 @@ export const extensionRulesForTypescript = {
    "typescript/no-useless-constructor": "error",
 
    /**
+    * Disallow throwing non-Error values as exceptions
+    *
+    * @remarks
+    * In addition to consistency and readability, throwing an error object
+    * provides more benefits, and conforms with the Principle of Least Surprise.
+    */
+   "typescript/only-throw-error": "error",
+
+   /**
     * Require destructuring from arrays and/or objects.
     *
     * @remarks
@@ -223,7 +222,7 @@ export const extensionRulesForTypescript = {
     * In addition to consistency and readability, rejecting with an error object
     * provides more benefits than rejecting with a literal, and there isn't a good
     * reason not to use an error object. This rule should
-    * match the `no-throw-literal` rule.
+    * match the `only-throw-error` rule.
     */
    "typescript/prefer-promise-reject-errors": "error",
 
