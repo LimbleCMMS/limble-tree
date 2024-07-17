@@ -52,7 +52,7 @@
                "builder": "@angular-devkit/build-angular:application",
                "options": {
                   "outputPath": {
-                    "base": "dist/sandbox"
+                     "base": "dist/sandbox"
                   },
                   "index": "projects/sandbox/src/index.html",
                   "polyfills": ["zone.js"],
@@ -92,7 +92,7 @@
                      "outputHashing": "all"
                   },
                   "development": {
-                    "optimization": false,
+                     "optimization": false,
                      "extractLicenses": false,
                      "sourceMap": true
                   }
