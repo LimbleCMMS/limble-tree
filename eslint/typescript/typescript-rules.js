@@ -37,7 +37,7 @@ export const typescriptRules = {
     *
     * @remarks
     * The only reason to use such comments is to cover up an underlying
-    * problem. The problem should be addressed instead.
+    * problem. The problem should be directly addressed instead.
     */
    "typescript/ban-ts-comment": "error",
 
@@ -524,6 +524,11 @@ export const typescriptRules = {
    "typescript/no-unnecessary-qualifier": "warn",
 
    /**
+    * Disallow unnecessary template expressions.
+    */
+   "typescript/no-unnecessary-template-expression": "warn",
+
+   /**
     * Enforces that type arguments will not be used if not required
     *
     * @remarks
@@ -787,14 +792,6 @@ export const typescriptRules = {
    "typescript/prefer-string-starts-ends-with": "error",
 
    /**
-    * Recommends using `// @ts-expect-error` over `// @ts-ignore`
-    *
-    * @remarks
-    * Not applicable when the `ban-ts-comment` rule is turned on.
-    */
-   "typescript/prefer-ts-expect-error": "off",
-
-   /**
     * Requires any function or method that returns a Promise to be marked async
     *
     * @remarks
@@ -893,5 +890,14 @@ export const typescriptRules = {
     * This is level 2 because code flagged by this rule should be simplified
     * for easier readability.
     */
-   "typescript/unified-signatures": "error"
+   "typescript/unified-signatures": "error",
+
+   /**
+    * Enforce typing arguments in .catch() callbacks as unknown
+    *
+    * @remarks
+    * Typescript treats the caught error as `any` by default, which is
+    * unsafe. This rule enforces the use of `unknown` instead.
+    */
+   "typescript/use-unknown-in-catch-callback-variable": "warn"
 };

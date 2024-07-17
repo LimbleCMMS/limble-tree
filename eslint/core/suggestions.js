@@ -876,7 +876,7 @@ export const suggestionRules = {
     *
     * @remarks
     * This is level 0 because there is a typescript extension rule which
-    * overrides it.
+    * overrides it. See `only-throw-error`.
     */
    "no-throw-literal": "off",
 

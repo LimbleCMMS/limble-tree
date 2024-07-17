@@ -3,7 +3,7 @@ import { problemRules } from "./eslint/core/problems.js";
 import { suggestionRules } from "./eslint/core/suggestions.js";
 import { extensionRulesForTypescript } from "./eslint/typescript/extension-rules.js";
 import { typescriptRules } from "./eslint/typescript/typescript-rules.js";
-import tseslint from "typescript-eslint";
+import tsEslint from "typescript-eslint";
 import commentDirectivesPlugin from "eslint-plugin-eslint-comments";
 import { angularTemplateRules } from "./eslint/angular/angular-eslint_template.js";
 import * as templateParser from "@angular-eslint/template-parser";
@@ -42,14 +42,14 @@ export default [
    {
       files: ["**/*.ts"],
       languageOptions: {
-         parser: tseslint.parser,
+         parser: tsEslint.parser,
          parserOptions: {
             ecmaVersion: "latest",
             project: ["tsconfig.eslint.json"]
          }
       },
       plugins: {
-         typescript: tseslint.plugin,
+         typescript: tsEslint.plugin,
          directives: commentDirectivesPlugin,
          angular: angularPlugin,
          import: importPlugin
