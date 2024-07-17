@@ -1,12 +1,16 @@
 <tree-node>
    <div class="container">
       <div class="collapse-button" (click)="toggle()">
-         <span *ngIf="!collapsed">
-            <mat-icon fontIcon="expand_less" />
-         </span>
-         <span *ngIf="collapsed">
-            <mat-icon fontIcon="expand_more" />
-         </span>
+         @if (!collapsed) {
+            <span>
+               <mat-icon fontIcon="expand_less" />
+            </span>
+         }
+         @if (collapsed) {
+            <span>
+               <mat-icon fontIcon="expand_more" />
+            </span>
+         }
       </div>
       <div>
          This is a collapsible component. Click the arrow to collapse/expand

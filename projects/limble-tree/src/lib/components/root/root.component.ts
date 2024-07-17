@@ -1,4 +1,3 @@
-import { CommonModule } from "@angular/common";
 import {
    type AfterViewInit,
    Component,
@@ -16,7 +15,7 @@ import type { NodeComponent } from "../node-component.interface";
    selector: "root",
    templateUrl: "./root.component.html",
    styleUrls: ["./root.component.scss"],
-   imports: [CommonModule, DropzoneComponent]
+   imports: [DropzoneComponent]
 })
 export class RootComponent implements NodeComponent, AfterViewInit {
    @ViewChild("branchesContainer", { read: ViewContainerRef })

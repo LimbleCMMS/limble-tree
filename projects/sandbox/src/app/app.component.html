@@ -17,9 +17,11 @@
          </div>
          <div class="events">
             <strong> Events </strong>
-            <div *ngFor="let event of events$ | async">
-               {{ event.type }}
-            </div>
+            @for (event of events$ | async; track event) {
+               <div>
+                  {{ event.type }}
+               </div>
+            }
          </div>
       </div>
    </div>
@@ -31,9 +33,11 @@
          </div>
          <div class="events">
             <strong> Events </strong>
-            <div *ngFor="let event of events2$ | async">
-               {{ event.type }}
-            </div>
+            @for (event of events2$ | async; track event) {
+               <div>
+                  {{ event.type }}
+               </div>
+            }
          </div>
       </div>
    </div>
