@@ -244,11 +244,8 @@ export const angularTemplateRules = {
 
    /**
     * Ensures that property-binding is used instead of interpolation in attributes.
-    *
-    * @remarks
-    * This seems like a great rule, but we violate it too much right now.
     */
-   "template/no-interpolation-in-attributes": "off",
+   "template/no-interpolation-in-attributes": "warn",
 
    /**
     * Ensures that self-closing tags are used for elements with a closing tag but
@@ -261,11 +258,8 @@ export const angularTemplateRules = {
 
    /**
     * Ensures ngSrc is used instead of src for img elements
-    *
-    * @remarks
-    * This would probably be a really good rule to turn on. Revisit in the future.
     */
-   "template/prefer-ngsrc": "off",
+   "template/prefer-ngsrc": "warn",
 
    /**
     * Ensures that the template control flow syntax introduced in Angular 17 is used.
@@ -273,5 +267,5 @@ export const angularTemplateRules = {
     * @remarks
     * DEREK TODO: Turn this on as part of the Angular migration.
     */
-   "template/prefer-control-flow": "off"
+   "template/prefer-control-flow": "warn"
 };
