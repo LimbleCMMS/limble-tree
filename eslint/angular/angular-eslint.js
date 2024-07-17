@@ -282,15 +282,6 @@ export const angularRules = {
    "angular/directive-selector": [2, { type: "attribute", style: "camelCase" }],
 
    /**
-    * Disallows usage of the host metadata property
-    *
-    * @remarks
-    * Angular encourages use of @HostBinding() and @HostListener() instead.
-    * See https://angular.io/styleguide#style-06-03
-    */
-   "angular/no-host-metadata-property": "error",
-
-   /**
     * Disallows usage of the inputs metadata property
     *
     * @remarks
@@ -367,5 +358,8 @@ export const angularRules = {
     * This is off for now because it isn't a priority, but I would like to
     * revisit in the future.
     */
-   "angular/consistent-component-styles": "off"
+   "angular/consistent-component-styles": "off",
+
+   /** Ensures that decorator metadata arrays do not contain duplicate entries. */
+   "angular/no-duplicates-in-metadata-arrays": "error"
 };
