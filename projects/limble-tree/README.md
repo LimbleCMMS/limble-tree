@@ -20,6 +20,7 @@ An Angular library for building visual tree structures. Built and used by the te
 | 3.0.0       | 16.x.x          | 7.x.x |
 | 4.0.0       | 17.x.x          | 7.x.x |
 | 5.0.0       | 18.x.x          | 7.x.x |
+| 6.0.0       | 19.x.x          | 7.8.x |
 
 ## Installation
 
