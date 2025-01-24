@@ -4,10 +4,10 @@ import { TreeBranch, TreeDragAndDropModule } from "@limble/limble-tree";
 import { TreeNodeComponent } from "../tree-node/tree-node.component";
 
 @Component({
-    selector: "draggable",
-    templateUrl: "./draggable.component.html",
-    styleUrls: ["./draggable.component.scss"],
-    imports: [TreeDragAndDropModule, TreeNodeComponent, MatButtonModule]
+   selector: "draggable",
+   templateUrl: "./draggable.component.html",
+   styleUrls: ["./draggable.component.scss"],
+   imports: [TreeDragAndDropModule, TreeNodeComponent, MatButtonModule]
 })
 export class DraggableComponent {
    @Input() treeBranch?: TreeBranch<DraggableComponent>;

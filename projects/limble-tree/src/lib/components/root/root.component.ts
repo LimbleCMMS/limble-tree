@@ -11,10 +11,10 @@ import { DropzoneComponent } from "../dropzone";
 import type { NodeComponent } from "../node-component.interface";
 
 @Component({
-    selector: "root",
-    templateUrl: "./root.component.html",
-    styleUrls: ["./root.component.scss"],
-    imports: [DropzoneComponent]
+   selector: "root",
+   templateUrl: "./root.component.html",
+   styleUrls: ["./root.component.scss"],
+   imports: [DropzoneComponent]
 })
 export class RootComponent implements NodeComponent, AfterViewInit {
    @ViewChild("branchesContainer", { read: ViewContainerRef })

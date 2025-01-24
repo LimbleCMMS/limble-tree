@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { TreeNodeComponent } from "../tree-node/tree-node.component";
 
 @Component({
-    selector: "text-renderer",
-    templateUrl: "./text-renderer.component.html",
-    styleUrls: ["./text-renderer.component.scss"],
-    imports: [TreeNodeComponent]
+   selector: "text-renderer",
+   templateUrl: "./text-renderer.component.html",
+   styleUrls: ["./text-renderer.component.scss"],
+   imports: [TreeNodeComponent]
 })
 export class TextRendererComponent {
    @Input() text1?: string;

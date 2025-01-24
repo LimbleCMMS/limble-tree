@@ -21,16 +21,16 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 
 @Component({
-    selector: "app-root",
-    templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"],
-    imports: [
-        CommonModule,
-        LimbleTreeModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatButtonModule
-    ]
+   selector: "app-root",
+   templateUrl: "./app.component.html",
+   styleUrls: ["./app.component.scss"],
+   imports: [
+      CommonModule,
+      LimbleTreeModule,
+      MatToolbarModule,
+      MatIconModule,
+      MatButtonModule
+   ]
 })
 export class AppComponent implements AfterViewInit {
    @ViewChild("treeContainer", { read: ViewContainerRef })

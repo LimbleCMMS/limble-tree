@@ -3,10 +3,10 @@ import { TreeNodeComponent } from "../tree-node/tree-node.component";
 import { loremIpsum } from "./lorem-ipsum";
 
 @Component({
-    selector: "lorem-ipsum",
-    templateUrl: "./lorem-ipsum.component.html",
-    styleUrls: ["./lorem-ipsum.component.scss"],
-    imports: [TreeNodeComponent]
+   selector: "lorem-ipsum",
+   templateUrl: "./lorem-ipsum.component.html",
+   styleUrls: ["./lorem-ipsum.component.scss"],
+   imports: [TreeNodeComponent]
 })
 export class LoremIpsumComponent {
    public text?: string;
