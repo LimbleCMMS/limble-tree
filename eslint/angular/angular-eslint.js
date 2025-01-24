@@ -325,15 +325,6 @@ export const angularRules = {
    "angular/sort-ngmodule-metadata-arrays": "off",
 
    /**
-    * Ensures `standalone` property is set to `true` for Component, Pipe,
-    * and Directive decorators.
-    *
-    * @remarks
-    * Standalone is newer and better.
-    */
-   "angular/prefer-standalone": "error",
-
-   /**
     * Ensures that lifecycle methods are declared in order of execution
     *
     * @remarks

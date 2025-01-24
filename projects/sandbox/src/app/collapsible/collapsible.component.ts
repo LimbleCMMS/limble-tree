@@ -4,11 +4,10 @@ import { TreeBranch, TreeCollapseService } from "@limble/limble-tree";
 import { TreeNodeComponent } from "../tree-node/tree-node.component";
 
 @Component({
-   standalone: true,
-   selector: "collapsible",
-   templateUrl: "./collapsible.component.html",
-   styleUrls: ["./collapsible.component.scss"],
-   imports: [TreeNodeComponent, MatIconModule]
+    selector: "collapsible",
+    templateUrl: "./collapsible.component.html",
+    styleUrls: ["./collapsible.component.scss"],
+    imports: [TreeNodeComponent, MatIconModule]
 })
 export class CollapsibleComponent implements OnInit {
    @Input() treeBranch?: TreeBranch<CollapsibleComponent>;

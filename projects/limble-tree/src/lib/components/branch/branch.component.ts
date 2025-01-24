@@ -22,11 +22,10 @@ import { DragoverNoChangeDetectDirective } from "../dragover-no-change-detect";
 import { assert } from "../../../shared";
 
 @Component({
-   standalone: true,
-   selector: "branch",
-   templateUrl: "./branch.component.html",
-   styleUrls: ["./branch.component.scss"],
-   imports: [DropzoneComponent, DragoverNoChangeDetectDirective]
+    selector: "branch",
+    templateUrl: "./branch.component.html",
+    styleUrls: ["./branch.component.scss"],
+    imports: [DropzoneComponent, DragoverNoChangeDetectDirective]
 })
 export class BranchComponent<T>
    implements NodeComponent, HostComponent<T>, AfterViewInit, OnDestroy
