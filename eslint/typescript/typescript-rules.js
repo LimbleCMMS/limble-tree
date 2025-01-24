@@ -52,15 +52,6 @@ export const typescriptRules = {
    "typescript/ban-tslint-comment": "error",
 
    /**
-    * Bans specific types from being used
-    *
-    * @remarks
-    * This is level 1 because these types should almost never be used.
-    * See https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html#general-types
-    */
-   "typescript/ban-types": ["warn", { extendDefaults: true }],
-
-   /**
     * Ensures that literals on classes are exposed in a consistent style
     *
     * @remarks
