@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { DragoverNoChangeDetectDirective } from "../dragover-no-change-detect";
 
 @Component({
-   standalone: true,
    selector: "dropzone",
    templateUrl: "./dropzone.component.html",
    styleUrls: ["./dropzone.component.scss"],

@@ -4,7 +4,6 @@ import { TreeBranch, TreeCollapseService } from "@limble/limble-tree";
 import { TreeNodeComponent } from "../tree-node/tree-node.component";
 
 @Component({
-   standalone: true,
    selector: "collapsible",
    templateUrl: "./collapsible.component.html",
    styleUrls: ["./collapsible.component.scss"],
