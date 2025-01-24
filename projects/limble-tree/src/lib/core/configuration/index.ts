@@ -1,2 +1,2 @@
 export * from "./configuration";
-export * from "./tree-options.interface";
+export type * from "./tree-options.interface";

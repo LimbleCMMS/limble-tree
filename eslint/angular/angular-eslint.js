@@ -333,6 +333,14 @@ export const angularRules = {
    "angular/sort-lifecycle-methods": "warn",
 
    /**
+    * Ensures `standalone` property is set to `true` for Component, Pipe,
+    * and Directive decorators.
+    *
+    * @remarks
+    * Standalone is the default for Angular 19.
+    */
+   "angular/prefer-standalone": "off",
+   /**
     * Forbids async lifecycle hook methods.
     *
     * @remarks

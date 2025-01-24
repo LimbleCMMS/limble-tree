@@ -63,6 +63,19 @@ export const typescriptRules = {
    "typescript/class-literal-property-style": "off",
 
    /**
+    * Bans specific types from being used
+    *
+    * @remarks
+    * This is level 1 because these types should almost never be used.
+    * See https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html#general-types
+    * The default options from ban-types are now covered by:
+    * - no-empty-object-type: banning the built-in {} type in confusing locations
+    * - no-unsafe-function-type: banning the built-in Function
+    * - no-wrapper-object-types: banning Object and built-in class wrappers such as Number
+    */
+   "typescript/no-restricted-types": ["warn"],
+
+   /**
     * Enforce specifying generic type arguments on type annotation or
     * constructor name of a constructor call.
     *
