@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input, Input } from "@angular/core";
 
 @Component({
    standalone: true,
@@ -7,4 +7,5 @@ import { Component, Input } from "@angular/core";
 })
 export class EmptyComponent {
    @Input() testInput?: string;
+   treeBranch = input.required();
 }
