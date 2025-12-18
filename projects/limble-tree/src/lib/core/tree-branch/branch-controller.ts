@@ -94,7 +94,9 @@ export class BranchController<UserlandComponent>
                userlandComponentInstance[key].subscribe(value)
             );
          });
-         userlandComponentRef.setInput("treeBranch", this.treeBranch);
+         if (userlandComponentInstance.treeBranch !== undefined) {
+            userlandComponentRef.setInput("treeBranch", this.treeBranch);
+         }
          const dropzones = instance.dropzones;
          assert(dropzones !== undefined);
          dropzoneRenderer.registerDropzones(dropzones, this.treeBranch);
