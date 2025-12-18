@@ -725,4 +725,14 @@ describe("TreeBranch", () => {
       const branch = root.grow(BranchGrowthComponent);
       expect(branch.branches().length).toBe(2);
    });
+
+   it("should be able to host a userland component which has a signal input, when a corresponding inputBinding is provided", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      const branch = root.grow(EmptyComponent, {
+         inputBindings: { testInput2: "testing" }
+      });
+      expect(branch.getUserlandComponentRef()?.instance.testInput2()).toBe(
+         "testing"
+      );
+   });
 });

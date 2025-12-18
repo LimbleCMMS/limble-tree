@@ -7,5 +7,6 @@ import { Component, input, Input } from "@angular/core";
 })
 export class EmptyComponent {
    @Input() testInput?: string;
+   testInput2 = input<string>();
    treeBranch = input.required();
 }
