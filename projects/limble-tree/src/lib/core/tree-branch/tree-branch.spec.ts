@@ -609,7 +609,7 @@ describe("TreeBranch", () => {
    it("should pass itself to the userland component as an input", () => {
       const branch = getStandardBranch();
       expect(
-         (branch.getUserlandComponentRef()?.instance as any).treeBranch
+         (branch.getUserlandComponentRef()?.instance as any).treeBranch()
       ).toBe(branch);
    });
 
