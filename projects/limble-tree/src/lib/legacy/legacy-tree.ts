@@ -1,4 +1,4 @@
-import type { Type, ViewContainerRef } from "@angular/core";
+import type { InputSignal, Type, ViewContainerRef } from "@angular/core";
 import { TreeRoot, type TreeBranch, type TreeOptions, config } from "../core";
 import type { LimbleTreeOptions as LegacyLimbleTreeOptions } from "./legacy-tree-options.interface";
 import type {
@@ -78,7 +78,9 @@ export class LegacyTree {
       }
       const bindings = (node.component?.bindings ??
          options.defaultComponent?.bindings ??
-         {}) as { [K in keyof T]?: T[K] | undefined };
+         {}) as {
+         [K in keyof T]?: T[K] extends InputSignal<infer U> ? U : T[K];
+      };
       const nodeData = node;
       const branch = parent.grow(component as Type<T>, {
          inputBindings: bindings,

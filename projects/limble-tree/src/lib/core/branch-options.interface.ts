@@ -1,8 +1,10 @@
-import type { EventEmitter, Type } from "@angular/core";
+import type { EventEmitter, InputSignal, Type } from "@angular/core";
 
 export interface BranchOptions<Component> {
    inputBindings?: {
-      [K in keyof Component]?: Component[K];
+      [K in keyof Component]?: Component[K] extends InputSignal<infer U>
+         ? U
+         : Component[K];
    };
    outputBindings?: {
       [K in keyof Component]?: Component[K] extends EventEmitter<infer T>

@@ -80,21 +80,21 @@ export class BranchController<UserlandComponent>
    private getContentCreatedSub(
       instance: BranchComponent<UserlandComponent>
    ): Subscription {
-      return instance.contentCreated.subscribe((userlandComponentInstance) => {
-         const component = userlandComponentInstance as any;
+      return instance.contentCreated.subscribe((userlandComponentRef) => {
          Object.entries(
             this.treeBranch.branchOptions.inputBindings ?? {}
          ).forEach(([key, value]) => {
-            component[key] = value;
+            userlandComponentRef.setInput(key, value);
          });
+         const userlandComponentInstance = userlandComponentRef.instance as any;
          Object.entries(
             this.treeBranch.branchOptions.outputBindings ?? {}
          ).forEach(([key, value]) => {
             this.outputBindingSubscriptions.push(
-               component[key].subscribe(value)
+               userlandComponentInstance[key].subscribe(value)
             );
          });
-         component.treeBranch = this.treeBranch;
+         userlandComponentRef.setInput("treeBranch", this.treeBranch);
          const dropzones = instance.dropzones;
          assert(dropzones !== undefined);
          dropzoneRenderer.registerDropzones(dropzones, this.treeBranch);

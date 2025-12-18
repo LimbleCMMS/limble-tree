@@ -40,7 +40,7 @@ export class BranchComponent<T>
 
    @Input() contentToHost?: Type<T>;
 
-   @Output() readonly contentCreated = new EventEmitter<T>();
+   @Output() readonly contentCreated = new EventEmitter<ComponentRef<T>>();
    @Output() readonly showDropzones = new EventEmitter<"upper" | "lower">();
    @Output() readonly dropped = new EventEmitter<"inner" | "lateral">();
 
@@ -57,7 +57,7 @@ export class BranchComponent<T>
       this.hostedContent = this.contentContainer.createComponent(
          this.contentToHost
       );
-      this.contentCreated.emit(this.hostedContent.instance);
+      this.contentCreated.emit(this.hostedContent);
       assert(this.dropzones !== undefined);
       const inner = this.dropzones.get(0);
       const lateral = this.dropzones.get(1);
