@@ -4,12 +4,12 @@ An Angular library for building visual tree structures. Built and used by the te
 
 ## Features
 
-- Allows any number of different components to be rendered in the same tree.
-- Collapsible tree branches
-- Move branches around both programmatically and with built-in drag-and-drop.
-- Branches can be moved between trees.
-- No limit on tree depth or size.
-- Recently redesigned to allow better performance with large/complex trees.
+-  Allows any number of different components to be rendered in the same tree.
+-  Collapsible tree branches
+-  Move branches around both programmatically and with built-in drag-and-drop.
+-  Branches can be moved between trees.
+-  No limit on tree depth or size.
+-  Recently redesigned to allow better performance with large/complex trees.
 
 ## Compatibility Table
 
@@ -392,12 +392,12 @@ Events bubble up the tree. So subscribing to the root's `events()` observable wi
 
 Below is a list of event types that are currently emitted by the tree.
 
-- drag start
-- drop
-- drag end
-- prune
-- graft
-- destruction
+-  drag start
+-  drop
+-  drag end
+-  prune
+-  graft
+-  destruction
 
 Each event contains applicable information about the event, such as the nodes involved, position in the tree, etc.
 
@@ -441,8 +441,8 @@ public ngAfterViewInit(): void {
 
 There are a couple other methods used to traverse the tree.
 
-- `traverse()` traverses the tree in [depth-first pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR) and executes a provided callback on each node.
-- `plot()` traverses the tree and returns a many-dimensional [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)representing the shape of the tree.
+-  `traverse()` traverses the tree in [depth-first pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR) and executes a provided callback on each node.
+-  `plot()` traverses the tree and returns a many-dimensional [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)representing the shape of the tree.
 
 ### Get Branch's Current Location in the Tree
 
@@ -468,13 +468,13 @@ Destroyed roots and branches have very limited functionality. Many methods will 
 
 There are methods on TreeBranch and TreeRoot instances which grant access to underlying structures. We recommend only using these in advanced scenarios. They are not fully documented here at this time.
 
-- detectChanges()
-- dispatch()
-- getBranchesContainer()
-- getComponentInstance()
-- getHostView()
-- getNativeElement()
-- getUserlandComponentRef()
+-  detectChanges()
+-  dispatch()
+-  getBranchesContainer()
+-  getComponentInstance()
+-  getHostView()
+-  getNativeElement()
+-  getUserlandComponentRef()
 
 ## Development and Contributions
 
