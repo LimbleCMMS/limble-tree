@@ -2,8 +2,8 @@
    "name": "limble-tree",
    "version": "0.0.0",
    "engines": {
-      "node": "18.19.1",
-      "npm": "10.2.4"
+      "node": ">=22.22 <23",
+      "npm": ">=10.9.4"
    },
    "type": "module",
    "scripts": {
