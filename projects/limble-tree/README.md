@@ -4,12 +4,12 @@ An Angular library for building visual tree structures. Built and used by the te
 
 ## Features
 
--  Allows any number of different components to be rendered in the same tree.
--  Collapsible tree branches
--  Move branches around both programmatically and with built-in drag-and-drop.
--  Branches can be moved between trees.
--  No limit on tree depth or size.
--  Recently redesigned to allow better performance with large/complex trees.
+- Allows any number of different components to be rendered in the same tree.
+- Collapsible tree branches
+- Move branches around both programmatically and with built-in drag-and-drop.
+- Branches can be moved between trees.
+- No limit on tree depth or size.
+- Recently redesigned to allow better performance with large/complex trees.
 
 ## Compatibility Table
 
@@ -34,7 +34,20 @@ A basic tree is very easy to set up.
 
 ### Step 1
 
-Import the limble-tree module into your own Angular module or standalone component.
+Import the limble-tree module into your standalone component or Angular module.
+
+```typescript
+import { Component } from "@angular/core";
+import { LimbleTreeModule } from "@limble/limble-tree";
+
+@Component({
+   imports: [LimbleTreeModule],
+   template: `<div></div>`
+})
+export class MyComponent {}
+```
+
+or, if using NgModules:
 
 ```typescript
 import { NgModule } from "@angular/core";
@@ -44,20 +57,6 @@ import { LimbleTreeModule } from "@limble/limble-tree";
    imports: [LimbleTreeModule]
 })
 export class AppModule {}
-```
-
-or
-
-```typescript
-import { Component } from "@angular/core";
-import { LimbleTreeModule } from "@limble/limble-tree";
-
-@Component({
-   standalone: true,
-   imports: [LimbleTreeModule],
-   template: `<div></div>`
-})
-export class MyComponent {}
 ```
 
 ### Step 2
@@ -81,7 +80,7 @@ Use `@ViewChild` to get the `ViewContainerRef` of that element.
 Inject TreeService into your component.
 
 ```typescript
-constructor(private readonly treeService: TreeService) {}
+private readonly treeService = inject(TreeService);
 ```
 
 ### Step 5
@@ -105,7 +104,7 @@ Render components in the tree by calling `grow()`.
 const branch1 = this.tree.grow(MyTreeContentComponent);
 const branch2 = this.tree.grow(MyTreeContentComponent);
 const branch3 = this.tree.grow(MyTreeContentComponent);
-const branch3a = branch3.grow(MyTreContentComponent);
+const branch3a = branch3.grow(MyTreeContentComponent);
 ```
 
 ### Step 7
@@ -117,13 +116,13 @@ import {
    Component,
    AfterViewInit,
    ViewChild,
-   ViewContainerRef
+   ViewContainerRef,
+   inject
 } from "@angular/core";
-import { LimbleTreeModule, TreeRoot } from "@limble/limble-tree";
+import { LimbleTreeModule, TreeRoot, TreeService } from "@limble/limble-tree";
 import { MyTreeContentComponent } from "somewhere in your filesystem";
 
 @Component({
-   standalone: true,
    imports: [LimbleTreeModule],
    template: `<div #treeContainer></div>`
 })
@@ -133,7 +132,7 @@ export class MyComponent implements AfterViewInit {
 
    protected tree?: TreeRoot<MyTreeContentComponent>;
 
-   public constructor(private readonly treeService: TreeService) {}
+   private readonly treeService = inject(TreeService);
 
    public ngAfterViewInit(): void {
       this.tree = this.treeService.createEmptyTree<MyTreeContentComponent>(
@@ -144,7 +143,7 @@ export class MyComponent implements AfterViewInit {
       const branch1 = this.tree.grow(MyTreeContentComponent);
       const branch2 = this.tree.grow(MyTreeContentComponent);
       const branch3 = this.tree.grow(MyTreeContentComponent);
-      const branch3a = branch3.grow(MyTreContentComponent);
+      const branch3a = branch3.grow(MyTreeContentComponent);
    }
 }
 ```
@@ -215,7 +214,7 @@ Tree branches which have descendant branches can be collapsed, temporarily remov
 To collapse a branch, simply inject the TreeCollapseService into your component and call `collapse()`, passing in the branch to be collapsed. To restore the hidden branches, call `expand()`, passing in the same branch that was passed to `collapse()`
 
 ```typescript
-constructor(private readonly collapseService: TreeCollapseService) {}
+private readonly collapseService = inject(TreeCollapseService);
 
 public ngAfterViewInit(): void {
    this.tree = this.treeService.createEmptyTree<MyTreeContentComponent>(
@@ -226,7 +225,7 @@ public ngAfterViewInit(): void {
    const branch1 = this.tree.grow(MyTreeContentComponent);
    const branch2 = this.tree.grow(MyTreeContentComponent);
    const branch3 = this.tree.grow(MyTreeContentComponent);
-   const branch3a = branch3.grow(MyTreContentComponent);
+   const branch3a = branch3.grow(MyTreeContentComponent);
 
    //Hides the fourth branch
    this.collapseService.collapse(branch3);
@@ -241,7 +240,7 @@ public ngAfterViewInit(): void {
 A branch can be configured to be collapsed by default, which means that any children grown onto it will not be visible until `expand()` is called.
 
 ```typescript
-constructor(private readonly collapseService: TreeCollapseService) {}
+private readonly collapseService = inject(TreeCollapseService);
 
 public ngAfterViewInit(): void {
    this.tree = this.treeService.createEmptyTree<MyTreeContentComponent>(
@@ -252,7 +251,7 @@ public ngAfterViewInit(): void {
    const branch1 = this.tree.grow(MyTreeContentComponent);
    const branch2 = this.tree.grow(MyTreeContentComponent);
    const branch3 = this.tree.grow(MyTreeContentComponent, {defaultCollapsed: true});
-   const branch3a = branch3.grow(MyTreContentComponent); // this branch will be created but not rendered
+   const branch3a = branch3.grow(MyTreeContentComponent); // this branch will be created but not rendered
 
    //renders the fourth branch after 2 seconds have passed.
    setTimeout(() => {
@@ -277,7 +276,7 @@ public ngAfterViewInit(): void {
    const branch1 = this.tree1.grow(MyTreeContentComponent);
    const branch2 = this.tree1.grow(MyTreeContentComponent);
    const branch3 = this.tree1.grow(MyTreeContentComponent);
-   const branch3a = branch3.grow(MyTreContentComponent);
+   const branch3a = branch3.grow(MyTreeContentComponent);
 
    setTimeout(() => {
       //moves branch1 so it is now the second child of branch3
@@ -311,7 +310,7 @@ public ngAfterViewInit(): void {
    const branch1 = this.tree.grow(MyTreeContentComponent);
    const branch2 = this.tree.grow(MyTreeContentComponent);
    const branch3 = this.tree.grow(MyTreeContentComponent);
-   const branch3a = branch3.grow(MyTreContentComponent);
+   const branch3a = branch3.grow(MyTreeContentComponent);
 
    //removes branch1 from the tree after 2 seconds
    setTimeout(() => {
@@ -393,12 +392,12 @@ Events bubble up the tree. So subscribing to the root's `events()` observable wi
 
 Below is a list of event types that are currently emitted by the tree.
 
--  drag start
--  drop
--  drag end
--  prune
--  graft
--  destruction
+- drag start
+- drop
+- drag end
+- prune
+- graft
+- destruction
 
 Each event contains applicable information about the event, such as the nodes involved, position in the tree, etc.
 
@@ -425,7 +424,7 @@ public ngAfterViewInit(): void {
    const branch2a = branch2.grow(MyTreeContentComponent);
    const branch2b = branch2.grow(MyTreeContentComponent);
    const branch2a1 = branch2a.grow(MyTreeContentComponent);
-   const branch2a1 = branch2a.grow(MyTreeContentComponent);
+   const branch2a2 = branch2a.grow(MyTreeContentComponent);
 
    //All of these expressions are true
    assert(branch2b.parent() === branch2);
@@ -442,8 +441,8 @@ public ngAfterViewInit(): void {
 
 There are a couple other methods used to traverse the tree.
 
--  `traverse()` traverses the tree in [depth-first pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR) and executes a provided callback on each node.
--  `plot()` traverses the tree and returns a many-dimensional [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)representing the shape of the tree.
+- `traverse()` traverses the tree in [depth-first pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR) and executes a provided callback on each node.
+- `plot()` traverses the tree and returns a many-dimensional [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)representing the shape of the tree.
 
 ### Get Branch's Current Location in the Tree
 
@@ -469,13 +468,13 @@ Destroyed roots and branches have very limited functionality. Many methods will 
 
 There are methods on TreeBranch and TreeRoot instances which grant access to underlying structures. We recommend only using these in advanced scenarios. They are not fully documented here at this time.
 
--  detectChanges()
--  dispatch()
--  getBranchesContainer()
--  getComponentInstance()
--  getHostView()
--  getNativeElement()
--  getUserlandComponentRef()
+- detectChanges()
+- dispatch()
+- getBranchesContainer()
+- getComponentInstance()
+- getHostView()
+- getNativeElement()
+- getUserlandComponentRef()
 
 ## Development and Contributions
 
