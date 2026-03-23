@@ -17,7 +17,6 @@
       "lint:check": "eslint . --cache --cache-location eslint/.eslintcache --max-warnings=0",
       "ng": "ng",
       "publishPackage": "npm run check && rm -rf dist/limble-tree && npm run build && cd dist/limble-tree && npm publish",
-      "start": "ng serve",
       "test": "ng build limble-tree && ng test --no-watch --no-progress",
       "test:limble-tree": "ng test limble-tree --code-coverage",
       "test:sandbox": "ng build limble-tree && ng test sandbox"
@@ -40,7 +39,6 @@
    },
    "devDependencies": {
       "@angular-devkit/build-angular": "19.2.19",
-      "@angular-eslint/builder": "19.0.2",
       "@angular-eslint/eslint-plugin": "19.0.2",
       "@angular-eslint/eslint-plugin-template": "19.0.2",
       "@angular-eslint/schematics": "19.0.2",
@@ -52,7 +50,6 @@
       "eslint-import-resolver-typescript": "3.6.1",
       "eslint-plugin-eslint-comments": "3.2.0",
       "eslint-plugin-import": "2.29.1",
-      "eslint-watch": "8.0.0",
       "jasmine-core": "4.3.0",
       "karma": "6.4.0",
       "karma-chrome-launcher": "3.1.0",
