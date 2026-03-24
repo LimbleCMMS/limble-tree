@@ -1,13 +1,15 @@
 name: CodeChecks
 on: [pull_request]
+permissions:
+   contents: read
 jobs:
    lint:
       runs-on: ubuntu-22.04
       steps:
          - name: Get Codebase
-           uses: actions/checkout@v3
+           uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
          - name: Install Node
-           uses: actions/setup-node@v3
+           uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
            with:
               node-version: "22"
               cache: "npm"
@@ -20,9 +22,9 @@ jobs:
       runs-on: ubuntu-22.04
       steps:
          - name: Get Codebase
-           uses: actions/checkout@v3
+           uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
          - name: Install Node
-           uses: actions/setup-node@v3
+           uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
            with:
               node-version: "22"
               cache: "npm"
@@ -35,9 +37,9 @@ jobs:
       runs-on: ubuntu-22.04
       steps:
          - name: Get Codebase
-           uses: actions/checkout@v3
+           uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
          - name: Install Node
-           uses: actions/setup-node@v3
+           uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
            with:
               node-version: "22"
               cache: "npm"
