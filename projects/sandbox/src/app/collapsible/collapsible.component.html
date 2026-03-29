@@ -1,6 +1,6 @@
 <tree-node>
    <div class="container">
-      <div class="collapse-button" (click)="toggle()">
+      <button class="collapse-button" (click)="toggle()">
          @if (!collapsed) {
             <span>
                <mat-icon fontIcon="expand_less" />
@@ -11,7 +11,7 @@
                <mat-icon fontIcon="expand_more" />
             </span>
          }
-      </div>
+      </button>
       <div>
          This is a collapsible component. Click the arrow to collapse/expand
          children.
