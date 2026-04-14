@@ -22,7 +22,6 @@ import { DragoverNoChangeDetectDirective } from "../dragover-no-change-detect";
 import { assert } from "../../../shared";
 
 @Component({
-   standalone: true,
    selector: "branch",
    templateUrl: "./branch.component.html",
    styleUrls: ["./branch.component.scss"],

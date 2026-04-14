@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { TreeNodeComponent } from "../tree-node/tree-node.component";
 
 @Component({
-   standalone: true,
    selector: "text-renderer",
    templateUrl: "./text-renderer.component.html",
    styleUrls: ["./text-renderer.component.scss"],

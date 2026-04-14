@@ -4,7 +4,6 @@ import { TreeBranch, TreeDragAndDropModule } from "@limble/limble-tree";
 import { TreeNodeComponent } from "../tree-node/tree-node.component";
 
 @Component({
-   standalone: true,
    selector: "draggable",
    templateUrl: "./draggable.component.html",
    styleUrls: ["./draggable.component.scss"],
