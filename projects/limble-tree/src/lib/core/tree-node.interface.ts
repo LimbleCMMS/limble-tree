@@ -7,8 +7,7 @@ import type { TreeEvent } from "../events";
 import type { NodeComponent } from "../components";
 
 export interface TreeNode<UserlandComponent>
-   extends Branchable<UserlandComponent>,
-      ComponentContainer<NodeComponent> {
+   extends Branchable<UserlandComponent>, ComponentContainer<NodeComponent> {
    destroy: () => void;
    dispatch: (event: TreeEvent<UserlandComponent>) => void;
    events: () => Observable<TreeEvent<UserlandComponent>>;

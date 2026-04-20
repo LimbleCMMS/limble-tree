@@ -17,9 +17,9 @@ import { DestructionEvent, TreeEvent } from "../../events";
  * branches. It has methods for creating and accessing those branches. It emits
  * events when things happen in the tree.
  */
-export class TreeRoot<UserlandComponent>
-   implements TreeNode<UserlandComponent>
-{
+export class TreeRoot<
+   UserlandComponent
+> implements TreeNode<UserlandComponent> {
    private readonly rootController: RootController<UserlandComponent>;
    private readonly treeNodeBase: TreeNodeBase<UserlandComponent>;
 

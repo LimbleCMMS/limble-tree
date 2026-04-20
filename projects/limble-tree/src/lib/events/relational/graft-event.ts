@@ -3,9 +3,9 @@ import type { TreeRelationship } from "./tree-relationship.interface";
 import type { TreeBranch, TreeNode } from "../../core";
 
 /** Emits when a branch is grafted to another tree node */
-export class GraftEvent<UserlandComponent>
-   implements RelationalTreeEvent<UserlandComponent>
-{
+export class GraftEvent<
+   UserlandComponent
+> implements RelationalTreeEvent<UserlandComponent> {
    private readonly _source: TreeBranch<UserlandComponent>;
    private readonly _parent: TreeNode<UserlandComponent>;
    private readonly _child: TreeBranch<UserlandComponent>;

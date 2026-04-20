@@ -15,9 +15,9 @@ import type { TreeBranch } from "./tree-branch";
 /**
  * A wrapper around the BranchComponent that helps instantiate it and handles its events.
  */
-export class BranchController<UserlandComponent>
-   implements ComponentContainer<BranchComponent<UserlandComponent>>
-{
+export class BranchController<UserlandComponent> implements ComponentContainer<
+   BranchComponent<UserlandComponent>
+> {
    private readonly branchComponentRef: ComponentRef<
       BranchComponent<UserlandComponent>
    >;
