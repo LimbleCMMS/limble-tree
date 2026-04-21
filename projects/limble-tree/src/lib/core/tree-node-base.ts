@@ -6,9 +6,9 @@ import { TreeBranch } from "./tree-branch";
 import type { TreePlot } from "./tree-plot.interface";
 import type { TreeNode } from "./tree-node.interface";
 
-export class TreeNodeBase<UserlandComponent>
-   implements Partial<TreeNode<UserlandComponent>>
-{
+export class TreeNodeBase<UserlandComponent> implements Partial<
+   TreeNode<UserlandComponent>
+> {
    private readonly _branches: Array<TreeBranch<UserlandComponent>>;
    private readonly events$: Subject<TreeEvent<UserlandComponent>>;
    private destroyed: boolean = false;

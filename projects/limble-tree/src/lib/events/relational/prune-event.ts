@@ -3,9 +3,9 @@ import type { TreeRelationship } from "./tree-relationship.interface";
 import type { TreeNode, TreeBranch } from "../../core";
 
 /** Emitted when a branch is pruned from its parent branch */
-export class PruneEvent<UserlandComponent>
-   implements RelationalTreeEvent<UserlandComponent>
-{
+export class PruneEvent<
+   UserlandComponent
+> implements RelationalTreeEvent<UserlandComponent> {
    private readonly _source: TreeBranch<UserlandComponent>;
    private readonly _parent: TreeNode<UserlandComponent>;
    private readonly _child: TreeBranch<UserlandComponent>;
