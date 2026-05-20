@@ -1,14 +1,20 @@
 <tree-node>
    <div class="container">
-      <button class="collapse-button" (click)="toggle()">
+      <button
+         type="button"
+         class="collapse-button"
+         [attr.aria-expanded]="!collapsed"
+         [attr.aria-label]="collapsed ? 'Expand children' : 'Collapse children'"
+         (click)="toggle()"
+      >
          @if (!collapsed) {
             <span>
-               <mat-icon fontIcon="expand_less" />
+               <mat-icon fontIcon="expand_less" aria-hidden="true" />
             </span>
          }
          @if (collapsed) {
             <span>
-               <mat-icon fontIcon="expand_more" />
+               <mat-icon fontIcon="expand_more" aria-hidden="true" />
             </span>
          }
       </button>
