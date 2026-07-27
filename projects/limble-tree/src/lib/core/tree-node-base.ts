@@ -84,6 +84,8 @@ export class TreeNodeBase<UserlandComponent> implements Partial<
       child: TreeBranch<UserlandComponent>
    ): void {
       const index = this.branches().findIndex((branch) => branch === child);
+      // An absent child yields -1, and splice(-1, 1) would drop the last branch.
+      if (index === -1) return;
       this._branches.splice(index, 1);
    }
 
