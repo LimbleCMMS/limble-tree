@@ -10,7 +10,7 @@ import {
    ErrorConstructorComponent,
    ErrorInitComponent
 } from "../../test-util";
-import { type TreeEvent, DestructionEvent } from "../../events";
+import { type TreeEvent, DestructionEvent, PruneEvent } from "../../events";
 import { RootComponent } from "../../components";
 import { TreeError } from "../../errors";
 
@@ -80,6 +80,23 @@ describe("TreeRoot", () => {
          .getNativeElement()
          .getElementsByTagName("branch");
       expect(branchComponents.length).toBe(0);
+   });
+
+   it("should keep its branches intact when a PruneEvent names a branch that is not its child", () => {
+      const root = new TreeRoot<EmptyComponent>(getViewContainer());
+      const branch1 = getStandardBranch();
+      const branch2 = getStandardBranch();
+      branch1.graftTo(root);
+      branch2.graftTo(root);
+      const stranger = getStandardBranch();
+      root.dispatch(
+         new PruneEvent(stranger, {
+            parent: root,
+            child: stranger,
+            index: 0
+         })
+      );
+      expect(root.branches()).toEqual([branch1, branch2]);
    });
 
    it("should emit any events it receives from descendants", () => {
